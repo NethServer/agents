@@ -56,9 +56,9 @@ be author of a commit.
 When AI tools contribute to development, proper attribution
 helps track the evolving role of AI in the development process.
 
-Contributions MUST include a Co-authored-by tag in the following format::
+Contributions MUST include a Assisted-by tag in the following format::
 
-  Co-authored-by: AGENT_NAME:MODEL_VERSION
+  Assisted-by: AGENT_NAME:MODEL_VERSION
 
 Where:
 
@@ -67,7 +67,7 @@ Where:
 
 Example:
 
-  Co-authored-by: Copilot:gpt-54-mini
+  Assisted-by: Copilot:gpt-54-mini
 
 ## Workflow
 
