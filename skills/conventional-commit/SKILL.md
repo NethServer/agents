@@ -56,18 +56,24 @@ be author of a commit.
 When AI tools contribute to development, proper attribution
 helps track the evolving role of AI in the development process.
 
-Contributions MUST include a Assisted-by tag in the following format::
+Contributions MUST include an `Assisted-by` trailer in the following
+format:
 
   Assisted-by: AGENT_NAME:MODEL_VERSION
 
 Where:
 
 * ``AGENT_NAME`` is the name of the AI tool or framework
-* ``MODEL_VERSION`` is the specific model version used
+* ``MODEL_VERSION`` is the exact model label used for the session
 
 Example:
 
-  Assisted-by: Copilot:gpt-54-mini
+  Assisted-by: Codex:GPT-5.5
+
+Do not omit the `Assisted-by:` key. Do not shorten a point release or
+user-visible model label, for example using `GPT-5` when the active
+model is `GPT-5.5`. If the exact model label is unavailable or
+contradicts the user-visible selector, ask the user before committing.
 
 ## Workflow
 
@@ -108,7 +114,8 @@ Analyze the diff to determine:
 
 - **Type**: What kind of change is this?
 - **Scope**: What area/module is affected?
-- **Description**: One-line summary of what changed (present tense, imperative mood, <72 chars)
+- **Description**: One-line summary of what changed (present tense,
+  imperative mood, short enough that the full subject is <=50 chars)
 
 ### 4. Execute Commit
 
@@ -120,11 +127,24 @@ git commit -m "<type>[scope]: <description>"
 git commit -m "$(cat <<'EOF'
 <type>[scope]: <description>
 
-<body>
+<body wrapped at 72 chars>
 
 <optional footer>
 EOF
 )"
+```
+
+Do not pass long body paragraphs as single `-m` values. Git stores each
+argument exactly as provided and does not wrap commit message text.
+
+After committing, verify the message and amend immediately if it fails:
+
+```bash
+git show --format=%B --no-patch HEAD | awk '
+NR == 1 && length($0) > 50 { print "subject >50: " length($0); bad=1 }
+NR > 1 && length($0) > 72 { print "body >72: " length($0); bad=1 }
+END { exit bad }
+'
 ```
 
 ## Commit rules
@@ -139,7 +159,7 @@ EOF
 - Reference issues: `Closes #123`, `Refs #456`
 - Always include a description body
 - Use the body to explain what and why, not how
-- Wrap the description body at 72 characters
+- Wrap body and footer lines at 72 characters
 
 ## Git Safety Protocol
 
@@ -148,4 +168,3 @@ EOF
 - NEVER skip hooks (--no-verify) unless user asks
 - NEVER force push to main/master
 - If commit fails due to hooks, fix and create NEW commit (don't amend)
-
