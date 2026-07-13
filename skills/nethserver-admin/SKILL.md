@@ -3,7 +3,7 @@ name: nethserver-admin
 description: Use when shell or SSH access to a NethServer 8 node is available and the agent must inspect, install, configure, update, remove, or troubleshoot NS8 modules, actions, containers, routes, logs, volumes, firewall, or service discovery.
 version: 1.2.0
 author: Kabutojira
-license: GPLv34
+license: GPLv3
 metadata:
   hermes:
     tags: [ns8, nethserver8, ssh, api-cli, runagent, podman, systemd, journalctl, logcli, traefik, modules, diagnostics, sysadmin]
