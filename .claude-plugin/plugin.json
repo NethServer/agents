@@ -1,0 +1,8 @@
+{
+  "name": "nethserver-skills",
+  "description": "Coding agent skills tailored to NethServer development guidelines",
+  "author": {
+    "name": "NethServer",
+    "url": "https://github.com/NethServer"
+  }
+}
