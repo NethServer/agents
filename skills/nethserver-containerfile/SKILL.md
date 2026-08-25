@@ -8,7 +8,7 @@ description: 'Write and review secure, production-ready Containerfiles following
 ## Overview
 
 Write and review Containerfiles following NethServer container security best practices.
-Source: [NethServer Development Handbook — Creating Secure Containers](https://nethserver.github.io/dev/best_practices/#creating-secure-containers)
+Source: [NethServer Development Handbook — Creating Secure Containers](https://handbook.nethserver.org/best_practices/#creating-secure-containers)
 
 ---
 

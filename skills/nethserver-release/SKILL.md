@@ -8,7 +8,7 @@ description: 'Create NethServer module or package releases following semver and 
 ## Overview
 
 Tag and publish NethServer module or package releases using the correct versioning scheme.
-Source: [NethServer Development Handbook — Version Numbering Rules](https://nethserver.github.io/dev/version_numbering/)
+Source: [NethServer Development Handbook — Version Numbering Rules](https://handbook.nethserver.org/version_numbering/)
 
 ---
 

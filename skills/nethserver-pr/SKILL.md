@@ -8,7 +8,7 @@ description: 'Create and manage pull requests following NethServer contribution 
 ## Overview
 
 Create and manage pull requests following NethServer project conventions.
-Source: [NethServer Development Handbook — Pull Requests](https://nethserver.github.io/dev/pull_requests/)
+Source: [NethServer Development Handbook — Pull Requests](https://handbook.nethserver.org/pull_requests/)
 
 ---
 
