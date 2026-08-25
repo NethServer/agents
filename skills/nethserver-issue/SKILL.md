@@ -8,7 +8,7 @@ description: 'Write well-structured GitHub issues following NethServer contribut
 ## Overview
 
 Write clear, actionable GitHub issues following NethServer project conventions.
-Source: [NethServer Development Handbook — Issues](https://nethserver.github.io/dev/issues/)
+Source: [NethServer Development Handbook — Issues](https://handbook.nethserver.org/issues/)
 
 ---
 

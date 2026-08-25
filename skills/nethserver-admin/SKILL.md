@@ -18,7 +18,7 @@ Use this skill only after a target NS8 node is known and direct shell/SSH access
 Primary references:
 
 - Dev manual: `https://nethserver.github.io/ns8-core/`
-- Admin manual: `https://docs.nethserver.org/projects/ns8/en/latest/`
+- Admin manual: `https://docs.nethserver.org/docs/administrator-manual`
 - Module actions: `https://nethserver.github.io/ns8-core/modules/agent/`
 - Rootless/rootfull: `https://nethserver.github.io/ns8-core/modules/rootless_rootfull/`
 - Logs: `https://nethserver.github.io/ns8-core/core/logs/`
