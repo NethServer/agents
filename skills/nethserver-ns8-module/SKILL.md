@@ -1,6 +1,6 @@
 ---
 name: nethserver-ns8-module
-description: 'Develop and review NethServer 8 modules following project conventions. Use when working in an ns8-* module repository — writing action or event handlers, systemd units, backup/restore, build-images.sh, or the Vue.js frontend — or when the repo is laid out as imageroot/ + ui/, or mentions "org.nethserver.*" labels. Supports: (1) Module architecture and directory layout, (2) Authorization model with scopes, roles, and selfadm, (3) Backend patterns — agent SDK, Redis, journald logging, secret handling, service discovery, systemd pod ordering, (4) Backup and restore for MariaDB and PostgreSQL, (5) Frontend patterns — Vue 2, Vuex, Carbon, ns8-ui-lib component priority, task progress, i18n'
+description: 'Develop and review NethServer 8 modules following project conventions. Use in an ns8-* module repository — imageroot/, ui/ and build-images.sh at its root, or a repo declaring org.nethserver.* labels. Not for NethServer/ns8-core itself, which carries those under core/ with a build-image.sh in the singular; use nethserver-ns8-core there. Answers questions such as: where to put a generated password or any secret so backup and restore keep it; how to signal a validation error from an action; why a log line never reaches journald; how to declare a privilege or grant an action to a role; how to order the containers of a pod; how to back up and restore MariaDB or PostgreSQL; how to make a task report progress to the UI; which ns8-ui-lib component to reach for; how to add a translatable string'
 ---
 
 # NethServer 8 module development
@@ -14,6 +14,56 @@ via `--label="org.nethserver.rootfull=1"`.
 Backend lives under `imageroot/` (Python 3 + bash). Frontend lives under `ui/` (Vue.js 2).
 Read the **Backend** sections when touching actions, events, systemd, or backup; read the
 **Frontend** sections when touching `ui/`.
+
+---
+
+## Where the manual already answers
+
+The developer manual at `https://nethserver.github.io/ns8-core/`, generated from the
+`docs/` tree of `NethServer/ns8-core`, specifies the platform contracts this skill
+builds on. Read the page rather than reimplementing what it defines:
+
+| Subject | Read |
+|---|---|
+| Agent, action protocol | `docs/modules/agent.md` |
+| Backup and restore | `docs/modules/backup_restore.md` |
+| TLS certificates | `docs/modules/certificates.md` |
+| Code snippets | `docs/modules/code_snippets.md` |
+| Database | `docs/modules/database.md` |
+| Images | `docs/modules/images.md` |
+| Metadata | `docs/modules/metadata.md` |
+| Network | `docs/modules/network.md` |
+| New module tutorial, build and deploy loop | `docs/modules/new_module.md` |
+| Port allocation | `docs/modules/port_allocation.md` |
+| Rootless vs rootfull | `docs/modules/rootless_rootfull.md` |
+| Service providers | `docs/modules/service_providers.md` |
+| Systemd units | `docs/modules/systemd_units.md` |
+| Testing | `docs/modules/testing.md` |
+| Updates, `update-module.d/` | `docs/modules/updates.md` |
+| Volumes | `docs/modules/volumes.md` |
+| Community certification | `docs/modules/certification.md` |
+
+The deploy loop in particular is written down there: `bash build-images.sh`, then
+`buildah login ghcr.io`, `buildah push`, then `add-module
+ghcr.io/<user>/<module>:latest <node-id>`. See `docs/modules/new_module.md`.
+
+### The `agent` Python package is shipped by core
+
+`import agent` resolves to `/usr/local/agent/pypkg/agent/` on the node. It comes from
+the core image, and reaches the import path through a `pypkg.pth` file dropped into
+the core interpreter's site-packages — no `PYTHONPATH` involved. It belongs to no
+module repository, and no page of the manual is a reference for it.
+
+Read the source before writing a helper that may already exist. Firewall zones and
+rich rules, port allocation, restic backup, volume arguments, Traefik routes and
+certificates, service discovery and user domain binding are all in there:
+
+```bash
+grep '^def ' /usr/local/agent/pypkg/agent/__init__.py
+```
+
+What it offers depends on the core version installed on the target node, not on
+anything declared in the module repository.
 
 ---
 
