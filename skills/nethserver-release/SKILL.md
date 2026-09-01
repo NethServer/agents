@@ -1,6 +1,7 @@
 ---
 name: nethserver-release
-description: 'Create NethServer module or package releases following semver and project-specific versioning rules. Use when the user asks to release a new version, tag a release, bump a version number, or mentions "/release". Defaults to testing/pre-release unless stable is explicitly requested. Supports: (1) Version increment decision (major/minor/patch), (2) Testing pre-release by default (X.Y.Z-testing.N suffix), (3) Stable release only on explicit user request, (4) NethServer 8/NethVoice via gh ns8-release-module, (5) NethSecurity OpenWrt versioning conventions'
+description: Use when the user asks to release a new NethServer or NethVoice version, tag a release, bump a version number, promote a pre-release to stable, or mentions "/release".
+model: haiku
 ---
 
 # NethServer Release

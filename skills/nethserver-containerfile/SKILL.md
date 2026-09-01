@@ -1,6 +1,7 @@
 ---
 name: nethserver-containerfile
-description: 'Write and review secure, production-ready Containerfiles following NethServer container best practices. Use when creating a new Containerfile, reviewing an existing container image, or mentions "/Containerfile". Supports: (1) Rootless container configuration with non-root USER, (2) Multi-stage build separation of build and runtime, (3) Minimal and pinned base image selection (Alpine/Debian-slim), (4) Vulnerability scanning guidance with Trivy and layer inspection with Dive, (5) Renovate setup for automated dependency updates'
+description: Use when writing, reviewing, or hardening a Containerfile or Dockerfile for a NethServer container image, or when the user mentions "/Containerfile".
+model: sonnet
 ---
 
 # NethServer Secure Containerfile

@@ -1,6 +1,7 @@
 ---
 name: nethserver-pr
-description: 'Create and manage pull requests following NethServer contribution conventions. Use when the user asks to open a PR, submit a contribution, or mentions "/pr". Supports: (1) PR title and description structure with a ready-to-use template, (2) Correct issue link format for NethServer/NethVoice and NethSecurity, (3) Reviewer and self-assignee selection, (4) Merge commit conventions with issue references for automation, (5) Draft PR guidance for work-in-progress contributions'
+description: Use when the user asks to open, describe, review, or merge a NethServer pull request, or mentions "/pr".
+model: haiku
 ---
 
 # NethServer Pull Request Guidelines
