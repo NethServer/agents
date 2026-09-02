@@ -75,6 +75,8 @@ user-visible model label, for example using `GPT-5` when the active
 model is `GPT-5.5`. If the exact model label is unavailable or
 contradicts the user-visible selector, ask the user before committing.
 
+When `Assisted-by:` is present, the commit message MUST NOT contain a `Co-Authored-By` tag with the agent name.
+
 ## Workflow
 
 ### 1. Analyze Diff
@@ -152,7 +154,6 @@ END { exit bad }
 - One logical change per commit
 - Separate subject from body with a blank line
 - Limit the subject line to 50 characters
-- Capitalize the subject line
 - Do not end the subject line with a period
 - Present tense: "add" not "added"
 - Imperative mood: "fix bug" not "fixes bug"
