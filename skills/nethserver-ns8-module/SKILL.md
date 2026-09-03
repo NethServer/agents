@@ -1,6 +1,6 @@
 ---
 name: nethserver-ns8-module
-description: 'Use when working in an ns8-* module repository — writing or reviewing action and event handlers, systemd units, backup/restore, build-images.sh, or the Vue.js UI — or when the repo is laid out as imageroot/ + ui/, or mentions "org.nethserver.*" labels.'
+description: 'Use when working in an ns8-* module repository — writing or reviewing action and event handlers, systemd units, backup/restore, build-images.sh, or the Vue.js UI — or when the repo is laid out as imageroot/ + ui/, or mentions "org.nethserver.*" labels. Also use on module symptoms: an action step that fails or halts the sequence, log lines that never reach journald, a password or secret to store, a backup or restore that loses data, a task that reports no progress to the UI, a missing authorization scope, containers of a pod starting in the wrong order. Not for NethServer/ns8-core itself, which keeps its code under core/ with build-image.sh in the singular — use nethserver-ns8-core there.'
 ---
 
 # NethServer 8 module development
