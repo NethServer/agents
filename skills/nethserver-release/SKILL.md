@@ -1,6 +1,6 @@
 ---
 name: nethserver-release
-description: Use when the user asks to release a new NethServer or NethVoice version, tag a release, bump a version number, promote a pre-release to stable, or mentions "/release".
+description: Use when the user asks to release a new NethServer 8 or NethVoice module version, tag a module release, bump a module version number, promote a pre-release to stable, or mentions "/release". Not for the NethSecurity repositories, which release on their own rules.
 model: haiku
 ---
 
@@ -10,6 +10,12 @@ model: haiku
 
 Tag and publish NethServer module or package releases using the correct versioning scheme.
 Source: [NethServer Development Handbook — Version Numbering Rules](https://handbook.nethserver.org/version_numbering/)
+
+Scope: NethServer 8 and NethVoice modules, plus `ns8-nethsecurity-controller`. The
+NethSecurity repositories themselves are out of scope — they publish no pre-releases, the
+firmware releases from a push to the `release` branch rather than from a tag, and
+`nethsecurity-ui` is driven by release-please. Stop and ask the author rather than applying
+the rules below there.
 
 ---
 
