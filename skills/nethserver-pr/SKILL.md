@@ -27,7 +27,10 @@ Before opening a PR, verify all of the following:
    - NethSecurity (module repo): `NethServer/nethsecurity#<number>` — e.g., `NethServer/nethsecurity#1155`
 4. **Description**: Explain what was changed and how the feature/fix is supposed to work.
 5. **Cross-repo dependencies**: If this PR depends on other PRs in other repositories, list them explicitly in the description.
-6. **Reviewer**: Select at least one reviewer. GitHub's suggestions are usually appropriate.
+6. **Reviewer**: The author decides who reviews, and when. An agent must never add a
+   reviewer on its own, and must never accept GitHub's suggestions on the author's behalf.
+   Open the PR with no reviewer unless the user named them, and say so when reporting the
+   PR URL.
 7. **Assignee**: Assign yourself as the initial assignee to track ownership and status.
 
 ### PR description template
@@ -113,5 +116,5 @@ To convert a draft to a ready PR, set it to **"Ready for review"**.
 | NethServer/NethVoice issue | Link as `NethServer/dev#N` |
 | NethSecurity main repo | Link as `#N` |
 | NethSecurity module repo | Link as `NethServer/nethsecurity#N` |
-| No reviewer selected | Use GitHub's reviewer suggestions |
+| No reviewer named | Open the PR without one and report it to the author |
 | CI fails | Fix before requesting review |
