@@ -39,7 +39,14 @@ skills/nethserver-ns8-module/
 
 When adding to a split skill, put the content in the matching `references/` file and add a
 keyword to its row in the reference map. Only add to `SKILL.md` if the rule applies no matter
-which reference file gets read.
+which reference file gets read. Three corollaries:
+
+- A rule lives in one place only, either the router or a reference, never both. Duplicated
+  rules drift apart.
+- A rule kept in the router must not depend on a section that lives in a reference file, or
+  an agent reading another reference gets the rule without its content.
+- Reference paths are relative to the skill directory, so `references/backend.md` means
+  `skills/<skill>/references/backend.md`.
 
 ### Model overrides
 
