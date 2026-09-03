@@ -68,18 +68,6 @@ api-cli run list-installed-modules | jq .
 podman ps --format '{{.Names}}\t{{.Status}}' || true
 ```
 
-## Post-change verification
-
-After every install, update, configure, restart, remove, route, certificate, or firewall change, verify the changed scope with this sequence:
-
-1. Confirm the action or command exit code and stdout.
-2. Check `get-configuration` when the module exposes it.
-3. Check `get-status` for rootless modules, or the correct systemd unit status for rootfull modules.
-4. Read `api-server-logs` or a short journal tail for the module.
-5. Check the correct Podman context with `podman ps -a`.
-6. For web apps, check route and certificate state.
-7. Check the last API audit row when an API action changed state.
-
 ## Find modules and actions
 
 List installed instances:

@@ -35,8 +35,20 @@ Primary references:
 3. Do not invent action names or JSON fields. Run `list-actions`, then inspect current config or module source.
 4. Treat `remove-module --no-preserve`, manual volume deletion, Redis writes, and direct file edits as destructive.
 5. For rootless modules, do not use `su`/SSH into the module user. Since Core 3.20 rootless users may have `/sbin/nologin`; use `runagent -m <module_id>`.
-6. After every change, run the Post-change verification sequence.
+6. After every change, run the Post-change verification sequence below.
 7. When editing action/event scripts, keep structured stdout clean. Send diagnostics to stderr: `echo "message" >&2`.
+
+## Post-change verification
+
+After every install, update, configure, restart, remove, route, certificate, or firewall change, verify the changed scope with this sequence:
+
+1. Confirm the action or command exit code and stdout.
+2. Check `get-configuration` when the module exposes it.
+3. Check `get-status` for rootless modules, or the correct systemd unit status for rootfull modules.
+4. Read `api-server-logs` or a short journal tail for the module.
+5. Check the correct Podman context with `podman ps -a`.
+6. For web apps, check route and certificate state.
+7. Check the last API audit row when an API action changed state.
 
 ## Reference map
 
