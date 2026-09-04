@@ -1,33 +1,22 @@
 # api-server and api-moduled internals
 
-Beyond the routes and configuration listed in `core/api-server/AGENTS.md`:
-
-- Authentication is a Redis ACL credential check at login, optionally followed by
-  TOTP. The issued JWT carries only the username and the 2FA flag — no roles, no
-  action list. Permissions are re-read from Redis on every request by the identity
-  handler, so a revoked grant takes effect without waiting for token expiry.
-- Authorization is action-based, not role-based. The requested action is matched
-  against the user's authorized action patterns with `filepath.Match`, in both
-  `core/api-server/middleware/middleware.go` and `core/api-server/methods/auth.go`.
-  GET requests bypass the authorization check — as does `POST /api/2FA`. The GET
-  exemption carries a `TODO` in `middleware.go`, so treat it as provisional rather
-  than as a guarantee to build on.
-- The audit log is a SQLite database in WAL mode. Three action names are recorded:
-  `login-ok`, `auth-fail` and `create-task` (`core/api-server/methods/audit.go` and
-  `core/api-server/methods/tasks.go`).
-- The WebSocket bridge is Melody. It subscribes to `progress/*` with `PSubscribe`
-  and relays every message to connected clients
-  (`core/api-server/socket/socket.go`). Clients authenticate by sending an
-  `authorize` socket action carrying the JWT. `socket.go` calls `melody.New()` and
-  overrides none of its configuration, so the library's own defaults — frame size
-  ceiling included — are what apply. The frame protocol itself — `logs-start`,
-  `logs-stop`, task events, with their JSON payloads — is written down in
-  `core/api-server/README.md`, not in `docs/`.
-- Task queues and result keys are the ones in `references/actions-and-agent-sdk.md`: `cluster/tasks`,
-  `node/<id>/tasks`, `module/<id>/tasks`, and `task/<agent>/<task-id>/…`.
-
-api-moduled is a different animal. It has no Redis client, no audit database and no
-WebSocket. Routing is filesystem-based: `POST /api/<handler>` executes
-`handlers/<handler>/post` with the request JSON on stdin. Do not add cluster
+Read `core/api-server/AGENTS.md` first: routes, JWT lifecycle and claims, action-based
+authorization with `filepath.Match`, TOTP, the SQLite audit store in WAL mode with its
+`login-ok`/`auth-fail`/`create-task` events, and the Melody WebSocket relay are all there.
+`core/api-server/README.md` adds the frame protocol — `logs-start`, `logs-stop`, task
+events and their JSON payloads — which `docs/` does not carry. For api-moduled, its own
+`core/api-moduled/AGENTS.md` documents the filesystem routing (`POST /api/<handler>` runs
+`handlers/<handler>/post`), and the rule that matters is only this: do not add cluster
 awareness to it.
 
+What none of those files say:
+
+- The GET authorization bypass carries a `TODO` in `core/api-server/middleware/middleware.go`.
+  Treat it as provisional, never as a guarantee to build on.
+- `/api/2FA` is exempt from authorization for both `POST` and `DELETE`, next to that
+  bypass in the same function.
+- Grants are re-read from Redis on every request: `IdentityHandler` calls
+  `methods.RedisAuthorization`. A revoked grant therefore takes effect immediately,
+  without waiting for the 14-day token expiry.
+- `core/api-server/socket/socket.go` calls `melody.New()` and overrides none of its
+  configuration, so the library's own defaults apply, frame size ceiling included.
