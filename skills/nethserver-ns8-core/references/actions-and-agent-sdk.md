@@ -65,11 +65,17 @@ The actions under `usr/local/agent/actions/` — `create-module`, `destroy-modul
 `list-volumes`, `list-service-providers`, `transfer-state` — are inherited by every
 module. Changing one changes the contract of every ns8-* module in existence.
 
-> **⚠️ Only the `cluster` agent and `api-server` may LPUSH tasks into Redis.**
-> Module agents submit tasks through the api-server HTTP API. `agent.tasks` therefore
-> only works from an action step running on a cluster node, because the API server
-> accepts agent credentials from loopback and the cluster VPN only. See
-> `docs/core/agents.md`.
+> **⚠️ Only the `cluster` agent and `api-server` may LPUSH into `cluster/tasks`.**
+> Measured with `ACL DRYRUN` on a live leader (core 3.22.0-dev.3): `cluster` and
+> `api-server` are accepted on both `cluster/tasks` and `node/<id>/tasks`; a node agent
+> is accepted on its own `node/<id>/tasks` and refused on `cluster/tasks`; a module agent
+> is refused on both and reaches only `module/<id>/tasks`. Module agents therefore submit
+> cluster work through the api-server HTTP API, and `agent.tasks` only works from an action
+> step running as the cluster agent, because the API server accepts agent credentials from
+> loopback and the cluster VPN only.
+>
+> Check it on any node without writing anything:
+> `redis-cli ACL DRYRUN module/<id> LPUSH cluster/tasks x`
 
 ## Writing a core action step
 

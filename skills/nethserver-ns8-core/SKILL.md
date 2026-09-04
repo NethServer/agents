@@ -39,8 +39,9 @@ nothing and tells you it moved.
 - Any non-zero exit from an action step halts the remaining steps. An `update-core`
   hook is the opposite: a non-zero exit only warns and the next script still runs.
   (`references/actions-and-agent-sdk.md`, `references/build-test-ship.md`)
-- Only the `cluster` agent and api-server may LPUSH tasks into Redis, so `agent.tasks`
-  works only from an action step running on a cluster node. (`references/actions-and-agent-sdk.md`)
+- Only the `cluster` agent and api-server may LPUSH into `cluster/tasks` and a node queue;
+  every other agent reaches its own queue and no one else's. So `agent.tasks` works from a
+  cluster action step, not from a module one. (`references/actions-and-agent-sdk.md`)
 - The actions under `core/imageroot/usr/local/agent/actions/` and the `agent` Python
   package are public API — a changed signature breaks ns8-* repositories you will
   never see. (`references/actions-and-agent-sdk.md`)
