@@ -18,6 +18,51 @@ Once installed, activate a skill by typing its `/` name (or let the agent pick i
 - `/nethserver-release` — create module and package releases following semver
 - `/conventional-commit` — conventional commit messages with intelligent staging
 
+## Skill structure and context cost
+
+A skill's `description` is injected into **every** conversation, while its `SKILL.md` body is
+loaded only when the skill is invoked. Both cost context, so skills here follow two rules:
+
+- **Descriptions state triggers only.** They say *when* to use the skill, not what it does or
+  how it works. No feature lists — those belong in the body.
+- **Large skills use progressive disclosure.** `SKILL.md` stays a short router: scope, the
+  non-negotiable rules, and a reference map. The detail lives in `references/*.md`, and the
+  agent reads only the one file its task needs.
+
+```
+skills/nethserver-ns8-module/
+  SKILL.md                              # router: overview, always-applies rules, reference map
+  references/layout-and-authorization.md
+  references/backend.md
+  references/backup-restore.md
+  references/frontend.md
+```
+
+When adding to a split skill, put the content in the matching `references/` file and add a
+keyword to its row in the reference map. Only add to `SKILL.md` if the rule applies no matter
+which reference file gets read. Three corollaries:
+
+- A rule lives in one place only, either the router or a reference, never both. Duplicated
+  rules drift apart.
+- A rule kept in the router must not depend on a section that lives in a reference file, or
+  an agent reading another reference gets the rule without its content.
+- Reference paths are relative to the skill directory, so `references/backend.md` means
+  `skills/<skill>/references/backend.md`.
+
+### Model overrides
+
+Template-driven skills declare a cheaper model in frontmatter so they do not spend a
+frontier-model turn on mechanical work:
+
+| Skill | `model:` |
+| --- | --- |
+| `nethserver-pr`, `nethserver-release` | `haiku` |
+| `conventional-commit`, `nethserver-issue`, `nethserver-containerfile` | `sonnet` |
+| `nethserver-admin`, `nethserver-ns8-module` | none — these need full reasoning |
+
+The override applies to the turn that invokes the skill and is not saved to your settings.
+Remove the `model:` line if you would rather always use your session model.
+
 ## Install as a Claude Code plugin
 
 This repository is a Claude Code plugin marketplace. In your Claude Code session:

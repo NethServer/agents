@@ -1,6 +1,7 @@
 ---
 name: conventional-commit
-description: 'Execute git commit with conventional commit message analysis, intelligent staging, and message generation. Use when user asks to commit changes, create a git commit, or mentions "/commit". Supports: (1) Auto-detecting type and scope from changes, (2) Generating conventional commit messages from diff, (3) Interactive commit with optional type/scope/description overrides, (4) Intelligent file staging for logical grouping'
+description: Use when the user asks to commit changes, create a git commit, stage files for a commit, or mentions "/commit".
+model: sonnet
 ---
 
 # Git Commit with Conventional Commits
@@ -74,6 +75,8 @@ Do not omit the `Assisted-by:` key. Do not shorten a point release or
 user-visible model label, for example using `GPT-5` when the active
 model is `GPT-5.5`. If the exact model label is unavailable or
 contradicts the user-visible selector, ask the user before committing.
+
+When `Assisted-by:` is present, the commit message MUST NOT contain a `Co-Authored-By` tag with the agent name.
 
 ## Workflow
 
@@ -152,7 +155,6 @@ END { exit bad }
 - One logical change per commit
 - Separate subject from body with a blank line
 - Limit the subject line to 50 characters
-- Capitalize the subject line
 - Do not end the subject line with a period
 - Present tense: "add" not "added"
 - Imperative mood: "fix bug" not "fixes bug"

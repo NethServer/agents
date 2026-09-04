@@ -1,6 +1,7 @@
 ---
 name: nethserver-issue
-description: 'Write well-structured GitHub issues following NethServer contribution guidelines. Use when the user asks to open an issue, file a bug report, request a feature, or mentions "/issue". Supports: (1) Bug report template with component, reproduction steps, and expected behavior, (2) Feature request template with user value and references, (3) Issue type selection (Bug/Feature/Design/Backend/Frontend/Task/Draft), (4) Label guidance (testing, verified, milestone goal), (5) Security vulnerability reporting rules and correct tracker URLs'
+description: Use when the user asks to open a GitHub issue, file a NethServer bug report, request a feature, or mentions "/issue".
+model: sonnet
 ---
 
 # NethServer Issue Writing Guidelines
@@ -8,7 +9,7 @@ description: 'Write well-structured GitHub issues following NethServer contribut
 ## Overview
 
 Write clear, actionable GitHub issues following NethServer project conventions.
-Source: [NethServer Development Handbook — Issues](https://nethserver.github.io/dev/issues/)
+Source: [NethServer Development Handbook — Issues](https://handbook.nethserver.org/issues/)
 
 ---
 

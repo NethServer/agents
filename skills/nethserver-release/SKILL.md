@@ -1,6 +1,7 @@
 ---
 name: nethserver-release
-description: 'Create NethServer module or package releases following semver and project-specific versioning rules. Use when the user asks to release a new version, tag a release, bump a version number, or mentions "/release". Defaults to testing/pre-release unless stable is explicitly requested. Supports: (1) Version increment decision (major/minor/patch), (2) Testing pre-release by default (X.Y.Z-testing.N suffix), (3) Stable release only on explicit user request, (4) NethServer 8/NethVoice via gh ns8-release-module, (5) NethSecurity OpenWrt versioning conventions'
+description: Use when the user asks to release a new NethServer 8 or NethVoice module version, tag a module release, bump a module version number, promote a pre-release to stable, or mentions "/release". Not for the NethSecurity repositories, which release on their own rules.
+model: haiku
 ---
 
 # NethServer Release
@@ -8,7 +9,13 @@ description: 'Create NethServer module or package releases following semver and 
 ## Overview
 
 Tag and publish NethServer module or package releases using the correct versioning scheme.
-Source: [NethServer Development Handbook — Version Numbering Rules](https://nethserver.github.io/dev/version_numbering/)
+Source: [NethServer Development Handbook — Version Numbering Rules](https://handbook.nethserver.org/version_numbering/)
+
+Scope: NethServer 8 and NethVoice modules, plus `ns8-nethsecurity-controller`. The
+NethSecurity repositories themselves are out of scope — they publish no pre-releases, the
+firmware releases from a push to the `release` branch rather than from a tag, and
+`nethsecurity-ui` is driven by release-please. Stop and ask the author rather than applying
+the rules below there.
 
 ---
 
