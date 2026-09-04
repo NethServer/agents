@@ -58,7 +58,7 @@ frontier-model turn on mechanical work:
 | --- | --- |
 | `nethserver-pr`, `nethserver-release` | `haiku` |
 | `conventional-commit`, `nethserver-issue`, `nethserver-containerfile` | `sonnet` |
-| `nethserver-admin`, `nethserver-ns8-module` | none — these need full reasoning |
+| `nethserver-admin`, `nethserver-ns8-core`, `nethserver-ns8-module` | none — these need full reasoning |
 
 The override applies to the turn that invokes the skill and is not saved to your settings.
 Remove the `model:` line if you would rather always use your session model.
