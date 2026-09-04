@@ -1,10 +1,10 @@
 ---
 name: nethserver-admin
 description: Use when shell or SSH access to a NethServer 8 node is available and the agent must inspect, install, configure, update, remove, or troubleshoot NS8 modules, actions, containers, routes, logs, volumes, firewall, or service discovery.
-version: 1.2.0
-author: Kabutojira
 license: GPLv3
 metadata:
+  version: 1.3.0
+  author: Kabutojira
   hermes:
     tags: [ns8, nethserver8, ssh, api-cli, runagent, podman, systemd, journalctl, logcli, traefik, modules, diagnostics, sysadmin]
 ---
@@ -26,7 +26,6 @@ Primary references:
 - Logs: `https://nethserver.github.io/ns8-core/core/logs/`
 - Updates: `https://nethserver.github.io/ns8-core/modules/updates/`
 - Traefik routes: `https://github.com/NethServer/ns8-traefik`
-- NS8 diagnostic patterns: `https://github.com/Stell0/sysanal3`
 
 ## Safety rules
 
@@ -56,7 +55,7 @@ After every install, update, configure, restart, remove, route, certificate, or 
 | --- | --- |
 | Day-to-day operations: `api-cli`, `runagent`, `podman`, `systemctl`, `journalctl`, `redis-cli`, install/remove/update a module, configure a module, rootless vs rootfull, logs, containers/volumes/mounts, Traefik HTTP routes, issuing/replacing a certificate (`set-route`, `set-certificate`), service discovery/users/events/firewall | `references/operations.md` |
 | Diagnostics and reporting: support bundle, health check, node identity/pressure, module inventory, container and unit health, read-only TLS expiry scan across endpoints, severe host log patterns, "the server is broken", troubleshooting sequence, report format | `references/diagnostics.md` |
-| NethVoice / telephony issues: Asterisk, FreePBX, SIP, hairpin NAT, NethVoice proxy routes | `references/nethvoice.md` |
+| NethVoice / telephony quick entry and mandatory handoff to the production-specific skill | `references/nethvoice.md` |
 | CrowdSec issues: `cscli`, bans, decisions | `references/crowdsec.md` |
 
 ## Common errors to avoid

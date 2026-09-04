@@ -1,93 +1,26 @@
-# NethVoice diagnostics
+# NethVoice safe quick entry
 
-## NethVoice diagnostics
+This reference stops at safe NS8 discovery. Activate `nethvoice-admin` before any NethVoice SSH/shell command beyond the discovery below. If that skill is unavailable, stop and report the missing production operations layer; do not reconstruct telephony procedures from memory.
 
-Use only when a local `nethvoice`, `nethvoice-proxy`, `nethcti`, `phonebook`, or `satellite` module is involved.
+## Safe discovery
 
-Find related modules:
-
-```bash
-api-cli run list-installed-modules | jq -r '..|objects|select(.id? and (.id|test("nethvoice|nethcti|phonebook|satellite")))|.id' | sort -u
-redis-cli --scan --pattern 'module/*/environment' | while read k; do
-  mid=${k#module/}; mid=${mid%/environment}
-  img=$(redis-cli --raw HGET "$k" IMAGE_URL 2>/dev/null)
-  echo "$mid $img"
-done | grep -E 'nethvoice|nethcti|phonebook|satellite'
-```
-
-### FreePBX/container checks
+Confirm the host/node first, then list only module placement and version fields:
 
 ```bash
-nv=<nethvoice_module_id>
-runagent -m $nv podman exec freepbx getent hosts ibm.com
-runagent -m $nv podman exec freepbx cat /etc/resolv.conf
-runagent -m $nv podman exec mariadb sh -c 'mysqlcheck -uroot -p${MARIADB_ROOT_PASSWORD} -A'
-runagent -m $nv podman exec mariadb sh -c 'mysql -uroot -p${MARIADB_ROOT_PASSWORD} -N -B asterisk -e "SELECT `key`, val, type, id FROM kvstore_Sipsettings WHERE `key` = '\''localnets'\'';"'
-runagent -m $nv podman exec freepbx sh -c 'printenv SMTP_FROM_ADDRESS; grep -E "^[[:space:]]*mailcmd[[:space:]]*=" /etc/asterisk/voicemail.conf 2>/dev/null | grep -F -- "send_email -f " || true'
+api-cli run get-cluster-status \
+  | jq '{leader, nodes: [.nodes[] | {id, local, online}]}'
+api-cli run list-installed-modules \
+  | jq '[to_entries[] as $image | $image.value[]? | select(.module == "nethvoice" or .module == "nethvoice-proxy") | {id: .id, module: .module, source: .source, version: .version, node: .node}]'
 ```
 
-### Asterisk state
+For each exact local module ID, discover action names before inspecting an action or schema:
 
 ```bash
-nv=<nethvoice_module_id>
-runagent -m $nv podman exec freepbx pgrep asterisk
-runagent -m $nv podman exec freepbx asterisk -rx 'pjsip show contacts'
-runagent -m $nv podman exec freepbx asterisk -rx 'pjsip show transports'
-runagent -m $nv podman exec freepbx asterisk -rx 'database show AMPUSER' | grep -F '/AMPUSER//cidname' || true
-runagent -m $nv podman exec freepbx asterisk -rx 'database show CF'
-runagent -m $nv podman exec freepbx asterisk -rx 'queue show'
+api-cli run module/<module_id>/list-actions | jq .
 ```
 
-Interpretation hints:
+NethVoice depends on the proxy assigned to the same node. Each NethVoice host route must ultimately target that node's service-discovery address and the instance's dynamically allocated Asterisk SIP port. The dedicated skill owns the safe method for resolving and verifying this relationship.
 
-- `/AMPUSER//cidname` is a bad empty-extension AstDB entry; remove from Asterisk CLI only when confirmed: `database del AMPUSER/ cidname`.
-- `database show CF` exposes call forwards; check for loops such as `200 -> 201 -> 200`.
-- Many `ringall` queues, or a `ringall` queue with many agents, can amplify call load.
-- Asterisk should normally not listen directly on public `5060`/`5061`; Kamailio/proxy owns those ports.
+After the dedicated skill is active, its allowlist-only `../../nethvoice-admin/scripts/collect_diagnostics.py` is the preferred quick topology check; it compares the discovered route without printing raw contacts, trunks, logs, or database rows.
 
-### Asterisk full log high-signal scan
-
-```bash
-nv=<nethvoice_module_id>
-runagent -m $nv podman exec freepbx sh -lc '
-patterns="Too many open files|Cannot create socket|Channel allocation failed|Unable to create channel of type|we couldn'"'"'t allocate a port for RTP instance|No RTP engine was found|failed to setup RTP instance|RTP no remote address on instance|Unable to allocate RTP socket|Couldn'"'"'t negotiate stream|No translator path exists|Failed to create srtp session|SRTP (protect|unprotect)|Is endpoint registered and reachable"
-grep -E -i -m 20 "$patterns" /var/log/asterisk/full 2>/dev/null || true
-for f in /var/log/asterisk/full.*.gz; do test -e "$f" && gzip -cd "$f" | grep -E -i -m 20 "$patterns"; done
-'
-```
-
-### NethVoice proxy route consistency
-
-A local `nethvoice-proxy` should route each `NETHVOICE_HOST` to `sip:<wg0 IPv4>:<ASTERISK_SIP_PORT>`.
-
-```bash
-proxy=<nethvoice_proxy_module_id>
-runagent -m $proxy podman exec -i postgres sh -lc '
-psql -U "$POSTGRES_USER" "$POSTGRES_DB" <<SQL
-COPY (
-  SELECT r.target AS domain, d.destination AS uri
-  FROM nethvoice_proxy_routes r
-  JOIN dispatcher d ON d.setid = r.setid
-  WHERE r.route_type = '\''domain'\''
-  ORDER BY r.target, d.destination
-) TO STDOUT WITH CSV HEADER;
-SQL
-'
-
-nv=<nethvoice_module_id>
-runagent -m $nv sh -lc 'grep -E "^(NETHVOICE_HOST|ASTERISK_SIP_PORT)=" "$AGENT_STATE_DIR/environment"'
-ip -o -4 addr show dev wg0 | awk '{print $4}' | cut -d/ -f1 | head -1
-```
-
-### Hairpin NAT probes for SIP/NethVoice
-
-Use only when public-IP SIP reachability from inside the LAN matters.
-
-```bash
-public_ip=$(curl -4 -fsS --max-time 5 https://api64.ipify.org || curl -4 -fsS --max-time 5 https://ipv4.icanhazip.com)
-ip route get "$public_ip"
-timeout 6 openssl s_client -connect "$public_ip:5061" -brief </dev/null
-```
-
-For UDP/TCP SIP hairpin, send a minimal `OPTIONS` request to `$public_ip:5060`; ensure `ss` first shows port `5060` owned by `kamailio`.
-
+Do not use this quick entry to print raw contacts/endpoints, call forwards, queue members, trunk patterns, log lines, database values, environment/password files, or customer identifiers. Do not perform DNS/SIP/RTP/TLS probes, test calls, traces, captures, debug toggles, service restarts, configuration, SQL, file edits, or Redis writes without the dedicated skill's preflight and approval gates.

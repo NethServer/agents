@@ -1,7 +1,7 @@
-# NethServer Coding Agent Skills
+# NethServer Administration and Development Agent Skills
 
-A collection of coding agent skills tailored to [NethServer](https://github.com/NethServer) development guidelines.
-These skills are derived from the [NethServer Development Handbook](https://nethserver.github.io/dev/).
+A collection of agent skills for safe [NethServer](https://github.com/NethServer) administration and development.
+Development guidance is derived from the [NethServer Development Handbook](https://nethserver.github.io/dev/).
 
 ## Available skills
 
@@ -10,6 +10,7 @@ Skill definitions live under the `skills/` directory.
 Once installed, activate a skill by typing its `/` name (or let the agent pick it automatically):
 
 - `/nethserver-admin` — inspect, install, configure, and troubleshoot NS8 nodes over shell/SSH
+- `/nethvoice-admin` — diagnose, repair, and operate production NethVoice and NethVoice Proxy instances safely
 - `/nethserver-containerfile` — write and review secure, production-ready Containerfiles
 - `/nethserver-issue` — write well-structured GitHub issues
 - `/nethserver-ns8-module` — develop and review NS8 modules (backend + frontend conventions)
@@ -57,7 +58,7 @@ frontier-model turn on mechanical work:
 | --- | --- |
 | `nethserver-pr`, `nethserver-release` | `haiku` |
 | `conventional-commit`, `nethserver-issue`, `nethserver-containerfile` | `sonnet` |
-| `nethserver-admin`, `nethserver-ns8-module` | none — these need full reasoning |
+| `nethserver-admin`, `nethvoice-admin`, `nethserver-ns8-module` | none — these need full reasoning |
 
 The override applies to the turn that invokes the skill and is not saved to your settings.
 Remove the `model:` line if you would rather always use your session model.
