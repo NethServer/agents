@@ -1,6 +1,6 @@
 ---
 name: nethserver-ns8-core
-description: 'Use inside a checkout of NethServer/ns8-core — the tree carrying core/agent/, core/api-server/, core/api-moduled/, core/imageroot/ and core/build-image.sh. Also use on core symptoms: go build fails in core/api-server; a cluster or node action to add or change, and who may enqueue it; an action step whose output is corrupted or whose logs never reach journald; the core UI to run with hot reload against a real node; a Vue or Carbon idiom that will not build here; which of the three test loops to run; a branch image to push onto a test node; a hook under update-core.d/ that never ran; a change that has to reach clusters already installed. For writing ns8-* application modules use nethserver-ns8-module; for operating a live cluster over SSH use nethserver-admin.'
+description: 'Use when working in NethServer/ns8-core — core/agent/, core/api-server/, core/api-moduled/, core/imageroot/, core/ui/, core/tests/, update-core.d/. Read it before searching the tree by hand: cluster and node actions, events, the Go builds, the core UI, the test loops, update-core hooks. Not for ns8-* modules (use nethserver-ns8-module) or live clusters (nethserver-admin).'
 ---
 
 # NethServer 8 core development
