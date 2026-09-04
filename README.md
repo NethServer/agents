@@ -12,6 +12,7 @@ Once installed, activate a skill by typing its `/` name (or let the agent pick i
 - `/nethserver-admin` — inspect, install, configure, and troubleshoot NS8 nodes over shell/SSH
 - `/nethserver-containerfile` — write and review secure, production-ready Containerfiles
 - `/nethserver-issue` — write well-structured GitHub issues
+- `/nethserver-ns8-core` — navigate and modify the ns8-core platform repository itself
 - `/nethserver-ns8-module` — develop and review NS8 modules (backend + frontend conventions)
 - `/nethserver-pr` — create and manage pull requests
 - `/nethserver-release` — create module and package releases following semver
@@ -57,7 +58,7 @@ frontier-model turn on mechanical work:
 | --- | --- |
 | `nethserver-pr`, `nethserver-release` | `haiku` |
 | `conventional-commit`, `nethserver-issue`, `nethserver-containerfile` | `sonnet` |
-| `nethserver-admin`, `nethserver-ns8-module` | none — these need full reasoning |
+| `nethserver-admin`, `nethserver-ns8-core`, `nethserver-ns8-module` | none — these need full reasoning |
 
 The override applies to the turn that invokes the skill and is not saved to your settings.
 Remove the `model:` line if you would rather always use your session model.
