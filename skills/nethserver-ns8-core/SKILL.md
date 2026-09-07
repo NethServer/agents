@@ -1,19 +1,21 @@
 ---
 name: nethserver-ns8-core
-description: 'Use when working in NethServer/ns8-core — core/agent/, core/api-server/, core/api-moduled/, core/imageroot/, core/ui/, core/tests/, update-core.d/. Read it before searching the tree by hand: cluster and node actions, events, the Go builds, the core UI, the test loops, update-core hooks. Not for ns8-* modules (use nethserver-ns8-module) or live clusters (nethserver-admin).'
+description: 'Use when working in NethServer/ns8-core — core/agent/, core/api-server/, core/api-moduled/, core/imageroot/, core/ui/, core/tests/, update-core.d/. Read it before searching the tree by hand: cluster and node actions, events, the Go builds, the core UI, the test loops, update-core hooks. Also use on core symptoms: a core UI page that hangs or loads slowly, a cluster task that never completes, an action step that halts the steps after it, a Go build that fails on a second func main, an update-core hook that runs without effect, app versions missing from the software center. Not for ns8-* modules (use nethserver-ns8-module) or live clusters (nethserver-admin).'
 ---
 
 # NethServer 8 core development
 
-Read the reference file for your task before writing anything. Do not read all of them.
+Read the reference row for your task before your first grep, not only before you write:
+diagnosing an existing behaviour counts. Read that one file, not all of them.
 
 ## Scope
 
 ns8-core is a production platform with thousands of installations. Breaking changes
 are not allowed. Most conventions are already documented inside the repository —
 `AGENTS.md`, the per-component `AGENTS.md` and `README.md`, and `docs/` — and this
-skill deliberately does not repeat them. `references/repository-and-docs.md` maps
-every question onto the file that answers it; read that map before grepping.
+skill deliberately does not repeat them. The *Reference map* below is the entry point
+into this skill. `references/repository-and-docs.md` is a different map: it points a
+question at the file **inside the repository** that answers it.
 
 This skill covers ns8-core as an object of development. For writing an ns8-* module
 use `nethserver-ns8-module`; for operating a live cluster use `nethserver-admin`.
