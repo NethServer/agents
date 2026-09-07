@@ -3,7 +3,7 @@ name: nethvoice-admin
 description: Use when a production NS8 task concerns NethVoice, ns8-nethvoice, ns8-nethvoice-proxy, NethCTI, or their SIP/RTP path.
 license: GPLv3
 metadata:
-  version: 0.1.1
+  version: 0.1.2
   author: NethServer project contributors
   hermes:
     tags: [nethvoice, ns8, production, voip, sip, rtp, asterisk, freepbx, kamailio, nethcti]

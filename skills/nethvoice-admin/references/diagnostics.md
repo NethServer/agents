@@ -77,6 +77,15 @@ Signaling success does not validate media. Compare the installed Asterisk and pr
 
 Check hairpin NAT when LAN devices resolve NethVoice/proxy names to the public address. Check SIP ALG/NAT helpers, multi-WAN source stability, MTU, and firewall direction. A packet capture or RTP debug contains communications metadata and potentially audio; require an approved endpoint/time filter, duration, storage location, owner, cleanup time, and rollback for debug settings.
 
+For a call already authorized and identified by one exact Call-ID, inspect the installed RTPengine command surface and then that session only. Replace the placeholders with the exact discovered proxy module ID and the user-supplied or narrowly correlated Call-ID:
+
+```bash
+runagent -m <proxy-module-id> podman exec rtpengine rtpengine-ctl --help
+runagent -m <proxy-module-id> podman exec rtpengine rtpengine-ctl list sessions <call-id>
+```
+
+Keep the lookup scoped to one Call-ID. Do not replace it with an aggregate selector, enumerate unrelated sessions, or use `terminate`, configuration, debug, or other mutating control verbs. Treat the result as communications metadata: compare per-leg packet/byte counters, last-packet timing, and relay direction, then report with opaque leg labels and without reproducing the Call-ID, SIP identities, or endpoint addresses unless topology proof requires an infrastructure address. A zero or static receive counter localizes the missing media direction but does not by itself prove whether the cause is SDP, NAT/firewall, routing, or the remote endpoint.
+
 ## WebRTC, CTI, and Janus
 
 Distinguish UI delivery, authentication, CTI server events, middleware APIs, Asterisk control, WebSocket routing, Janus signaling, and browser media. Verify CTI/Janus HTTP routes and certificate names, discovered ports, container health, restart counts, and browser errors supplied by the user.

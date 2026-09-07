@@ -12,7 +12,7 @@ class SkillContractTests(unittest.TestCase):
         text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         frontmatter = text.split("---", 2)[1]
         self.assertIn("name: nethvoice-admin", frontmatter)
-        self.assertIn("version: 0.1.1", frontmatter)
+        self.assertIn("version: 0.1.2", frontmatter)
         self.assertIn("author: NethServer project contributors", frontmatter)
         self.assertIn("license: GPLv3", frontmatter)
         self.assertNotRegex(frontmatter, r"(?m)^model:")
@@ -77,6 +77,14 @@ class SkillContractTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("module: .module", text)
         self.assertNotIn("{id, module,", text)
+
+    def test_rtpengine_diagnostics_are_single_session_and_read_only(self):
+        text = (SKILL_DIR / "references" / "diagnostics.md").read_text(encoding="utf-8")
+        self.assertIn("rtpengine-ctl --help", text)
+        self.assertIn("rtpengine-ctl list sessions <call-id>", text)
+        self.assertIn("Keep the lookup scoped to one Call-ID", text)
+        self.assertIn("Do not replace it with an aggregate selector", text)
+        self.assertIn("or use `terminate`, configuration, debug, or other mutating control verbs", text)
 
 
 if __name__ == "__main__":
