@@ -13,9 +13,8 @@ diagnosing an existing behaviour counts. Read that one file, not all of them.
 ns8-core is a production platform with thousands of installations. Breaking changes
 are not allowed. Most conventions are already documented inside the repository —
 `AGENTS.md`, the per-component `AGENTS.md` and `README.md`, and `docs/` — and this
-skill deliberately does not repeat them. The *Reference map* below is the entry point
-into this skill. `references/repository-and-docs.md` is a different map: it points a
-question at the file **inside the repository** that answers it.
+skill deliberately does not repeat them. `references/repository-and-docs.md` maps
+every question onto the file that answers it; read that map before grepping.
 
 This skill covers ns8-core as an object of development. For writing an ns8-* module
 use `nethserver-ns8-module`; for operating a live cluster use `nethserver-admin`.
