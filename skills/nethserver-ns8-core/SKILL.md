@@ -45,7 +45,7 @@ nothing and tells you it moved.
   cluster action step, not from a module one. (`references/actions-and-agent-sdk.md`)
 - The actions under `core/imageroot/usr/local/agent/actions/` and the `agent` Python
   package are public API — a changed signature breaks ns8-* repositories you will
-  never see. `cluster` and `node` are core-internal by intent, but `pypkg.pth` puts all
+  never see. `cluster` and `node` are core-internal in name only: `pypkg.pth` puts all
   three on every agent's path and core's own public surfaces import them:
   `cluster.backup` from `list-backup-repositories`, `cluster.userdomains` from
   `agent/ldapproxy.py`. Grep the callers before changing a signature there too.
