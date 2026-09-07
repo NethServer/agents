@@ -97,7 +97,7 @@ allocation, restic backup, volume arguments, Traefik routes and certificates, se
 discovery, user domain binding are already in it. Index it before writing a helper:
 
 ```bash
-# released core, needs no node — ns8-stable is a tag, main is ahead in dev
+# ns8-stable is a tag on the released core; main is ahead in dev
 curl -s https://raw.githubusercontent.com/NethServer/ns8-core/ns8-stable/core/imageroot/usr/local/agent/pypkg/agent/__init__.py | grep '^def '
 ```
 
