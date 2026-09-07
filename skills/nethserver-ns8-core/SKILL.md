@@ -1,11 +1,12 @@
 ---
 name: nethserver-ns8-core
-description: 'Use when working in NethServer/ns8-core — core/agent/, core/api-server/, core/api-moduled/, core/imageroot/, core/ui/, core/tests/, update-core.d/. Read it before searching the tree by hand: cluster and node actions, events, the Go builds, the core UI, the test loops, update-core hooks. Not for ns8-* modules (use nethserver-ns8-module) or live clusters (nethserver-admin).'
+description: 'Use when working in NethServer/ns8-core — core/agent/, core/api-server/, core/api-moduled/, core/imageroot/, core/ui/, core/tests/, update-core.d/. Read it before searching the tree by hand: cluster and node actions, events, the Go builds, the core UI, the test loops, update-core hooks. Also use on core symptoms: a core UI page that hangs or loads slowly, a cluster task that never completes, an action step that halts the steps after it, a Go build that fails on a second func main, an update-core hook that runs without effect, app versions missing from the software center. Not for ns8-* modules (use nethserver-ns8-module) or live clusters (nethserver-admin).'
 ---
 
 # NethServer 8 core development
 
-Read the reference file for your task before writing anything. Do not read all of them.
+Read the reference row for your task before your first grep, not only before you write:
+diagnosing an existing behaviour counts. Read that one file, not all of them.
 
 ## Scope
 
@@ -44,7 +45,11 @@ nothing and tells you it moved.
   cluster action step, not from a module one. (`references/actions-and-agent-sdk.md`)
 - The actions under `core/imageroot/usr/local/agent/actions/` and the `agent` Python
   package are public API — a changed signature breaks ns8-* repositories you will
-  never see. (`references/actions-and-agent-sdk.md`)
+  never see. `cluster` and `node` are core-internal in name only: `pypkg.pth` puts all
+  three on every agent's path and core's own public surfaces import them:
+  `cluster.backup` from `list-backup-repositories`, `cluster.userdomains` from
+  `agent/ldapproxy.py`. Grep the callers before changing a signature there too.
+  (`references/actions-and-agent-sdk.md`)
 - Store state in Redis, never on the filesystem: filesystem state does not replicate
   and is lost on restore. (`references/actions-and-agent-sdk.md`)
 - An image never migrates an installed cluster. A change needing migration also needs
