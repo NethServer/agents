@@ -46,7 +46,11 @@ nothing and tells you it moved.
   cluster action step, not from a module one. (`references/actions-and-agent-sdk.md`)
 - The actions under `core/imageroot/usr/local/agent/actions/` and the `agent` Python
   package are public API — a changed signature breaks ns8-* repositories you will
-  never see. (`references/actions-and-agent-sdk.md`)
+  never see. `cluster` and `node` are core-internal by intent, but `pypkg.pth` puts all
+  three packages on every agent's path, and public code already reaches in:
+  `cluster.backup` from the inherited `list-backup-repositories`, `cluster.userdomains`
+  from `agent/ldapproxy.py`. Read the callers before changing a signature there too.
+  (`references/actions-and-agent-sdk.md`)
 - Store state in Redis, never on the filesystem: filesystem state does not replicate
   and is lost on restore. (`references/actions-and-agent-sdk.md`)
 - An image never migrates an installed cluster. A change needing migration also needs

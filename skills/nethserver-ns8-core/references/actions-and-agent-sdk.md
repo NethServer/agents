@@ -159,7 +159,14 @@ plain text readable by every module on the node.
 action imports, `cluster`, leader-only helpers such as `grants.py`, and `node`.
 
 `import agent` needs no path setup because `install-core.sh` drops a `pypkg.pth` into
-the core interpreter's site-packages. The `PYTHONPATH` entries in an agent's
+the core interpreter's site-packages. That one path entry covers the whole directory,
+so `cluster` and `node` import just as freely from a module agent. Leader-only
+describes their intent, not their reach, and public code already crosses the line:
+the inherited `list-backup-repositories` action imports `cluster.backup`, and
+`agent/ldapproxy.py` — inside the public package — imports `cluster.userdomains`.
+Grep for the callers before changing a signature in `cluster` or `node`.
+
+The `PYTHONPATH` entries in an agent's
 `state/agent.env` are unrelated — they add that agent's *own* extra packages, and
 `05set_agentenv_path`, an `update-core` hook (`references/build-test-ship.md`), is what
 keeps them in step.
