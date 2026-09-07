@@ -90,6 +90,16 @@ exec 1>&2   # all subsequent echo/printf go to journald
 `agent.SD_WARNING`, `agent.SD_ERR`, `agent.SD_INFO`, `agent.SD_NOTICE` are systemd journal priority prefixes — journald parses them to set log level.
 
 ### Agent SDK (Python)
+`import agent` resolves to `/usr/local/agent/pypkg/agent/`, put on the path by a
+`pypkg.pth` from the core image — no `PYTHONPATH`, no copy in the module repo, contents
+follow the node's core version. Firewall zones and rich rules, port allocation, restic
+backup, volume arguments, Traefik routes and certificates, service discovery, user domain
+binding are already in it. Index before writing a helper:
+
+```bash
+grep '^def ' /usr/local/agent/pypkg/agent/__init__.py
+```
+
 ```python
 import agent
 
