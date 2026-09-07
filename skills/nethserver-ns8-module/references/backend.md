@@ -92,17 +92,29 @@ exec 1>&2   # all subsequent echo/printf go to journald
 ### Agent SDK (Python)
 The package resolves nowhere in the module repo. It ships in the core image and reaches
 `import agent` through a `pypkg.pth` — no `PYTHONPATH`, nothing to install locally, and
-what it offers follows the target node's core version. Firewall zones and rich rules, port
-allocation, restic backup, volume arguments, Traefik routes and certificates, service
-discovery, user domain binding are already in it. Index it before writing a helper:
+what it offers follows the target node's core version. Check this index before writing a
+helper by hand:
 
-```bash
-# ns8-stable is a tag on the released core; main is ahead in dev
-curl -s https://raw.githubusercontent.com/NethServer/ns8-core/ns8-stable/core/imageroot/usr/local/agent/pypkg/agent/__init__.py | grep '^def '
+```
+env, Redis      redis_connect read_envfile write_envfile set_env mset_env unset_env
+                munset_env dump_env
+action, task    set_status set_progress set_weight get_progress_callback assert_exp
+                run_helper resolve_agent_id get_module_seq slurp_file
+firewall        add_public_service remove_public_service add_custom_zone
+                remove_custom_zone add_rich_rules remove_rich_rules add_tun remove_tun
+ports, routes   allocate_ports deallocate_ports tcp_port_in_use http_route_in_use
+                set_route get_route set_certificate get_certificate
+                get_certificate_and_key certificate_event_matches
+backup, volume  prepare_restic_command run_restic get_existing_volume_args
+                get_state_volume_args get_image_name_from_url
+discovery       list_service_providers bind_user_domains get_bound_domain_list
+                get_smarthost_settings get_hostname
+submodules      tasks/ ldapclient/ ldapproxy.py volumes.py safeio.py facts.py
 ```
 
-Same tree at `/usr/local/agent/pypkg/agent/` on a node, next to `tasks/`, `ldapclient/`,
-`ldapproxy.py`, `volumes.py`, `safeio.py`, `facts.py`.
+Indexed from the `ns8-stable` tag; an older node carries less. On a node the tree is at
+`/usr/local/agent/pypkg/agent/`. Fetch the source only for a signature or a missing name:
+`curl -s https://raw.githubusercontent.com/NethServer/ns8-core/ns8-stable/core/imageroot/usr/local/agent/pypkg/agent/__init__.py | grep '^def '`.
 
 ```python
 import agent
