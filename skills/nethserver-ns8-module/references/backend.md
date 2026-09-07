@@ -90,15 +90,19 @@ exec 1>&2   # all subsequent echo/printf go to journald
 `agent.SD_WARNING`, `agent.SD_ERR`, `agent.SD_INFO`, `agent.SD_NOTICE` are systemd journal priority prefixes — journald parses them to set log level.
 
 ### Agent SDK (Python)
-`import agent` resolves to `/usr/local/agent/pypkg/agent/`, put on the path by a
-`pypkg.pth` from the core image — no `PYTHONPATH`, no copy in the module repo, contents
-follow the node's core version. Firewall zones and rich rules, port allocation, restic
-backup, volume arguments, Traefik routes and certificates, service discovery, user domain
-binding are already in it. Index before writing a helper:
+The package resolves nowhere in the module repo. It ships in the core image and reaches
+`import agent` through a `pypkg.pth` — no `PYTHONPATH`, nothing to install locally, and
+what it offers follows the target node's core version. Firewall zones and rich rules, port
+allocation, restic backup, volume arguments, Traefik routes and certificates, service
+discovery, user domain binding are already in it. Index it before writing a helper:
 
 ```bash
-grep '^def ' /usr/local/agent/pypkg/agent/__init__.py
+# released core, needs no node — ns8-stable is a tag, main is ahead in dev
+curl -s https://raw.githubusercontent.com/NethServer/ns8-core/ns8-stable/core/imageroot/usr/local/agent/pypkg/agent/__init__.py | grep '^def '
 ```
+
+Same tree at `/usr/local/agent/pypkg/agent/` on a node, next to `tasks/`, `ldapclient/`,
+`ldapproxy.py`, `volumes.py`, `safeio.py`, `facts.py`.
 
 ```python
 import agent
