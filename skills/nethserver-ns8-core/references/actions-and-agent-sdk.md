@@ -160,11 +160,17 @@ action imports, `cluster`, leader-only helpers such as `grants.py`, and `node`.
 
 `import agent` needs no path setup because `install-core.sh` drops a `pypkg.pth` into
 the core interpreter's site-packages. That one path entry covers the whole directory,
-so `cluster` and `node` import just as freely from a module agent. Leader-only
-describes their intent, not their reach, and public code already crosses the line:
-the inherited `list-backup-repositories` action imports `cluster.backup`, and
-`agent/ldapproxy.py` — inside the public package — imports `cluster.userdomains`.
-Grep for the callers before changing a signature in `cluster` or `node`.
+so `cluster` and `node` import just as freely from a node or a module agent.
+
+Leader-only is accurate for `grants`, `alerts`, `inventory`, `modules` and `vpn` —
+`node/update-core.d/50update_grants` looks like a counter-example but exits on a worker
+before it touches anything. Two submodules break the label. `cluster.backup` is used by
+`node/bin/run-backup`, `node/bin/rclonegwctl` and `node/actions/validate-backup-destination`,
+which run on every node, and by the inherited `list-backup-repositories`, which runs
+only in module agents. `cluster.userdomains` is imported by `agent/ldapproxy.py`, inside
+the public package. `node` is not leader-only at all: `node.ports_manager` serves the
+port actions on every node. Grep the callers before changing a signature in either
+package.
 
 The `PYTHONPATH` entries in an agent's
 `state/agent.env` are unrelated — they add that agent's *own* extra packages, and
