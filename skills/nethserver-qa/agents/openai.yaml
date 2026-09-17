@@ -1,0 +1,4 @@
+interface:
+  display_name: "NethServer 8 QA"
+  short_description: "Verify NethServer 8 issues on real QA nodes"
+  default_prompt: "Use $nethserver-qa to execute the issue QA cases on the supplied NethServer 8 environment and report the results."
