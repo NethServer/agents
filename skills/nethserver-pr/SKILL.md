@@ -13,6 +13,17 @@ Source: [NethServer Development Handbook — Pull Requests](https://handbook.net
 
 ---
 
+## Text formatting
+
+GitHub renders PR titles and descriptions as HTML, so paragraphs reflow
+to the reader's viewport. Do **not** hard-wrap body text at a fixed
+column (e.g. 72 chars) — write each paragraph as a single long line.
+Use blank lines to separate paragraphs and Markdown lists/headings for
+structure. This differs from commit messages, which are plain text and
+must stay wrapped (see the `conventional-commit` skill).
+
+---
+
 ## Submitting a pull request
 
 ### Checklist

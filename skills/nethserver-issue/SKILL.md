@@ -24,6 +24,18 @@ Create an issue once the problem is confirmed and the work can be formally descr
 
 ---
 
+## Text formatting
+
+GitHub renders issue titles and descriptions as HTML, so paragraphs
+reflow to the reader's viewport. Do **not** hard-wrap body text at a
+fixed column (e.g. 72 chars) — write each paragraph as a single long
+line. Use blank lines to separate paragraphs and Markdown lists/
+headings for structure. This differs from commit messages, which are
+plain text and must stay wrapped (see the `conventional-commit`
+skill).
+
+---
+
 ## Issue types
 
 Choose the correct GitHub issue type when opening an issue, and do not use any label:
