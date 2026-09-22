@@ -42,45 +42,33 @@ rule as a commit subject line. This eases the merge phase and keeps
 
 ## Submitting a pull request
 
-### Checklist
+- **Target branch**: PR is submitted against `main` (for the current stable release).
 
-Before opening a PR, verify all of the following:
-
-1. **Target branch**: PR is submitted against `main` (for the current stable release).
-2. **Title**: Brief, descriptive explanation of the feature, fix, or enhancement,
+- **Title**: Brief, descriptive explanation of the feature, fix, or enhancement,
    in Conventional Commit style, limited to 50 characters — it becomes the
-   commit subject on merge/squash (see Text formatting below).
-3. **Issue link**: The PR body must contain a reference to the related issue:
-   - NethServer / NethVoice: `NethServer/dev#<number>` — e.g., `NethServer/dev#1122`
-   - NethSecurity (main repo): `#<number>` — e.g., `#1145`
-   - NethSecurity (module repo): `NethServer/nethsecurity#<number>` — e.g., `NethServer/nethsecurity#1155`
-4. **Description**: Explain what was changed and how the feature/fix is supposed to work.
-5. **Cross-repo dependencies**: If this PR depends on other PRs in other repositories, list them explicitly in the description.
-6. **Reviewer**: The author decides who reviews, and when. An agent must never add a
+   commit subject on merge/squash (see Text formatting above).
+
+- **Description**: for PR reviewer(s), non-verbose (stay above-the-fold)
+
+   1. A single paragraph explaining the PR motivation. Insert references to the related issue:
+      - NethServer / NethVoice: `NethServer/dev#<number>` — e.g., `NethServer/dev#1122`
+      - NethSecurity (main repo): `#<number>` — e.g., `#1145`
+      - NethSecurity (module repo): `NethServer/nethsecurity#<number>` — e.g., `NethServer/nethsecurity#1155`
+
+   1. (optional) Single paragraph explaining if and how overall behavior/architecture changes. Used to introduce the next list.
+
+   1. List items to explain main changes. Refer to commits for details, or omit them completely.
+
+   1. (if applicable) compact 4th-level heading: "How to test", followed by a list of steps to verify the change works correctly.
+
+   1. (optional, separated by horizontal line) List of (cross-repo) pull requests dependencies.
+
+- **Reviewer**: The author decides who reviews, and when. An agent must never add a
    reviewer on its own, and must never accept GitHub's suggestions on the author's behalf.
    Open the PR with no reviewer unless the user named them, and say so when reporting the
    PR URL.
-7. **Assignee**: Assign yourself as the initial assignee to track ownership and status.
 
-### PR description template
-
-```markdown
-## Summary
-
-<Brief description of what was changed and why>
-
-## Related issue
-
-NethServer/dev#<number>
-
-## How to test
-
-<Steps to verify the change works correctly>
-
-## Dependencies
-
-<List any other PRs that must be merged first, if applicable>
-```
+- **Assignee**: Assign yourself as the initial assignee to track ownership and status.
 
 ---
 
