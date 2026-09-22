@@ -13,6 +13,17 @@ Source: [NethServer Development Handbook — Issues](https://handbook.nethserver
 
 ---
 
+## Writing style
+
+Use simple, plain English and avoid technical jargon — bug reports and
+feature requests are read by people with varying technical backgrounds
+(support staff, partners, QA, non-native English speakers). Prefer
+everyday words over internal terminology, spell out acronyms on first
+use, and describe symptoms/behavior from the user's perspective rather
+than in implementation terms.
+
+---
+
 ## Before opening an issue
 
 Issues are **not** a to-do list. Open an issue only when you are ready to produce a formal output (code change, new container image, package). If you are exploring an idea or hunting a hard-to-reproduce bug, open a **community discussion** first:

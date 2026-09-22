@@ -13,6 +13,16 @@ Source: [NethServer Development Handbook — Pull Requests](https://handbook.net
 
 ---
 
+## Writing style
+
+Use simple, plain English and avoid technical jargon in the PR title
+and description — reviewers, QA, and other readers may not share the
+same technical background. Prefer everyday words over internal
+terminology, spell out acronyms on first use, and describe the change
+and its effect in terms a non-author can follow.
+
+---
+
 ## Text formatting
 
 GitHub renders PR descriptions as HTML, so paragraphs reflow to the
