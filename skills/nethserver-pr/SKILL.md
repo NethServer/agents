@@ -15,12 +15,18 @@ Source: [NethServer Development Handbook — Pull Requests](https://handbook.net
 
 ## Text formatting
 
-GitHub renders PR titles and descriptions as HTML, so paragraphs reflow
-to the reader's viewport. Do **not** hard-wrap body text at a fixed
-column (e.g. 72 chars) — write each paragraph as a single long line.
-Use blank lines to separate paragraphs and Markdown lists/headings for
+GitHub renders PR descriptions as HTML, so paragraphs reflow to the
+reader's viewport. Do **not** hard-wrap body text at a fixed column
+(e.g. 72 chars) — write each paragraph as a single long line. Use
+blank lines to separate paragraphs and Markdown lists/headings for
 structure. This differs from commit messages, which are plain text and
 must stay wrapped (see the `conventional-commit` skill).
+
+The PR **title** is a different matter: on merge/squash it becomes the
+commit subject, so keep it to 50 characters or less, in Conventional
+Commit style (e.g. `fix(ui): correct session timeout handling`) — same
+rule as a commit subject line. This eases the merge phase and keeps
+`git log` readable.
 
 ---
 
@@ -31,7 +37,9 @@ must stay wrapped (see the `conventional-commit` skill).
 Before opening a PR, verify all of the following:
 
 1. **Target branch**: PR is submitted against `main` (for the current stable release).
-2. **Title**: Brief, descriptive explanation of the feature, fix, or enhancement.
+2. **Title**: Brief, descriptive explanation of the feature, fix, or enhancement,
+   in Conventional Commit style, limited to 50 characters — it becomes the
+   commit subject on merge/squash (see Text formatting below).
 3. **Issue link**: The PR body must contain a reference to the related issue:
    - NethServer / NethVoice: `NethServer/dev#<number>` — e.g., `NethServer/dev#1122`
    - NethSecurity (main repo): `#<number>` — e.g., `#1145`
