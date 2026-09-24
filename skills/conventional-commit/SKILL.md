@@ -158,9 +158,8 @@ END { exit bad }
 - Do not end the subject line with a period
 - Present tense: "add" not "added"
 - Imperative mood: "fix bug" not "fixes bug"
-- Reference issues: `Closes #123`, `Refs #456`
 - Always include a description body
-- Use the body to explain what and why, not how
+- Use the body to explain what and why, not how. Omit evident patch detail explanation.
 - Wrap body and footer lines at 72 characters
 
 ## Git Safety Protocol
