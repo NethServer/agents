@@ -42,7 +42,8 @@ rule as a commit subject line. This eases the merge phase and keeps
 
 ## Submitting a pull request
 
-- **Target branch**: PR is submitted against `main` (for the current stable release).
+- **Target branch**: PR is submitted against the repo's default branch (usually `main`,
+   but e.g. `master` on `NethServer/dev`) for the current stable release.
 
 - **Title**: Brief, descriptive explanation of the feature, fix, or enhancement,
    in Conventional Commit style, limited to 50 characters — it becomes the
@@ -134,7 +135,7 @@ To convert a draft to a ready PR, set it to **"Ready for review"**.
 | Situation | Action |
 |---|---|
 | Work in progress | Open as **draft PR** |
-| Bug fix or feature ready | Open PR targeting `main` |
+| Bug fix or feature ready | Open PR targeting the repo's default branch |
 | NethServer/NethVoice issue | Link as `NethServer/dev#N` |
 | NethSecurity main repo | Link as `#N` |
 | NethSecurity module repo | Link as `NethServer/nethsecurity#N` |
