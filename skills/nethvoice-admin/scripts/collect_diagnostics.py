@@ -12,8 +12,8 @@ import sys
 from collections import Counter
 
 
-SCHEMA_VERSION = "1.1.0"
-COLLECTOR_VERSION = "0.1.1"
+SCHEMA_VERSION = "1.2.0"
+COLLECTOR_VERSION = "0.1.2"
 DEFAULT_TIMEOUT = 8.0
 MAX_TIMEOUT = 30.0
 MAX_OUTPUT_CHARS = 1_000_000
@@ -69,6 +69,7 @@ NV_COMPONENTS = {
     "mariadb",
     "nethcti-middleware",
     "nethcti-server",
+    "nethcti-ui-restart",
     "nethcti-ui",
     "nethvoice-cdr-cleanup",
     "nethvoice-hotel-alarms",
@@ -95,26 +96,34 @@ NV_REQUIRED = {
     "nethcti-ui",
     "phonebook",
     "reports-api",
+    "reports-redis",
     "reports-ui",
     "tancredi",
 }
 NV_WIZARD_CONDITIONAL = {"nethcti-server", "nethcti-middleware"}
 NV_SATELLITE_RUNTIME = {"satellite", "satellite-mqtt"}
 NV_SATELLITE_DATABASE = {"satellite-pgsql"}
-NV_TIMER_DRIVEN_SERVICES = {"satellite-recordings-cleanup"}
 NV_TIMER_COMPONENTS = {
+    "nethcti-ui-restart",
     "nethvoice-cdr-cleanup",
+    "nethvoice-hotel-alarms",
     "phonebook-update",
     "reports-scheduler",
     "satellite-recordings-cleanup",
 }
+NV_TIMER_DRIVEN_SERVICES = NV_TIMER_COMPONENTS
+NV_REQUIRED_TIMERS_BY_VERSION = {
+    "1.7.7": frozenset(
+        {
+            "nethcti-ui-restart",
+            "nethvoice-cdr-cleanup",
+            "phonebook-update",
+            "reports-scheduler",
+        }
+    ),
+}
 NV_ON_DEMAND = {
     "get-certificate",
-    "nethvoice-cdr-cleanup",
-    "nethvoice-hotel-alarms",
-    "phonebook-update",
-    "reports-redis",
-    "reports-scheduler",
     "sftp",
     "watcher",
 }
@@ -539,7 +548,7 @@ class Collector:
             self.add_error(stage, "invalid_output", module_id)
         return value
 
-    def collect_runtime(self, module_id, kind, features):
+    def collect_runtime(self, module_id, kind, features, version=None):
         components = NV_COMPONENTS if kind == "nethvoice" else PROXY_COMPONENTS
         container_output = self.command(
             [
@@ -725,7 +734,7 @@ class Collector:
                         "load_state": load,
                         "active_state": active,
                         "sub_state": sub,
-                        "expectation": self.timer_expectation(name, features),
+                        "expectation": self.timer_expectation(name, features, version),
                     }
                     unit_file = values.get("UnitFileState", "")
                     if re.fullmatch(r"[a-z-]{1,24}", unit_file):
@@ -735,27 +744,28 @@ class Collector:
                         item["result"] = result
                     timers.append(item)
                     self.timer_findings(module_id, item)
-                timer_names = {item["name"] for item in timers}
-                cleanup_required = self.timer_expectation(
-                    "satellite-recordings-cleanup", features
-                ).startswith("required")
-                if cleanup_required:
-                    if "satellite-recordings-cleanup" not in timer_names:
+                timers_by_name = {item["name"]: item for item in timers}
+                services_by_name = {item["name"]: item for item in services}
+                for name in sorted(NV_TIMER_COMPONENTS):
+                    if not self.timer_expectation(name, features, version).startswith("required"):
+                        continue
+                    timer = timers_by_name.get(name)
+                    if timer is None or timer.get("load_state") != "loaded":
                         self.add_finding(
                             "error",
                             "required_timer_missing",
                             module_id,
-                            "satellite-recordings-cleanup",
+                            name,
                         )
-                    if (
-                        service_output is not None
-                        and "satellite-recordings-cleanup" not in service_names
+                    service = services_by_name.get(name)
+                    if service_output is not None and (
+                        service is None or service.get("load_state") != "loaded"
                     ):
                         self.add_finding(
                             "error",
                             "required_timer_service_missing",
                             module_id,
-                            "satellite-recordings-cleanup",
+                            name,
                         )
         timers.sort(key=lambda item: item["name"])
         return {
@@ -796,7 +806,11 @@ class Collector:
             return "conditional:on-demand"
         return "conditional:installed-version"
 
-    def timer_expectation(self, name, features):
+    def timer_expectation(self, name, features, version):
+        if name in NV_REQUIRED_TIMERS_BY_VERSION.get(version, frozenset()):
+            return "required:installed-version"
+        if name == "nethvoice-hotel-alarms" and features.get("nethvoice_hotel") is True:
+            return "required:enabled-feature"
         flags = [
             features.get("satellite_call_transcription"),
             features.get("satellite_voicemail_transcription"),
@@ -843,7 +857,11 @@ class Collector:
         active = item["active_state"]
         if active == "failed" or item.get("result") not in {None, "success"}:
             self.add_finding("error", "timer_failed", module_id, name)
-        elif item["expectation"].startswith("required") and active != "active":
+        elif (
+            item["expectation"].startswith("required")
+            and item.get("load_state") == "loaded"
+            and active != "active"
+        ):
             self.add_finding(
                 "error",
                 "required_timer_inactive",
@@ -852,25 +870,35 @@ class Collector:
                 {"active_state": active},
             )
 
-    def filter_nethvoice_config(self, raw):
+    def collect_nethvoice_config(self, module_id):
         config = {}
-        host = safe_hostname(raw.get("nethvoice_host"))
-        cti_host = safe_hostname(raw.get("nethcti_ui_host"))
-        if host:
-            config["nethvoice_host"] = host
-        if cti_host:
-            config["nethcti_ui_host"] = cti_host
-        lets_encrypt = safe_bool(raw.get("lets_encrypt"))
-        if lets_encrypt is not None:
-            config["lets_encrypt"] = lets_encrypt
-        timezone = raw.get("timezone")
-        if isinstance(timezone, str) and TIMEZONE_RE.fullmatch(timezone):
-            config["timezone"] = timezone
-        prefix = raw.get("reports_international_prefix")
-        if isinstance(prefix, str) and PREFIX_RE.fullmatch(prefix):
-            config["reports_international_prefix"] = prefix
-        user_domain = raw.get("user_domain")
-        config["user_domain_configured"] = isinstance(user_domain, str) and bool(user_domain)
+        specs = (
+            ("NETHVOICE_HOST", "nethvoice_host", safe_hostname, True),
+            ("NETHCTI_UI_HOST", "nethcti_ui_host", safe_hostname, False),
+            (
+                "TIMEZONE",
+                "timezone",
+                lambda value: value if TIMEZONE_RE.fullmatch(value) else None,
+                False,
+            ),
+            (
+                "REPORTS_INTERNATIONAL_PREFIX",
+                "reports_international_prefix",
+                lambda value: value if PREFIX_RE.fullmatch(value) else None,
+                False,
+            ),
+            ("USER_DOMAIN", "user_domain_configured", lambda value: bool(value), False),
+        )
+        for env_key, output_key, validator, required in specs:
+            value = self.env_value(
+                module_id,
+                env_key,
+                f"nethvoice.configuration.{output_key}",
+                validator,
+                required=required,
+            )
+            if value is not None:
+                config[output_key] = value
         return config
 
     def filter_proxy_config(self, raw):
@@ -1020,13 +1048,9 @@ class Collector:
             if field not in candidate:
                 self.add_error("module.image", f"missing_{field}", module_id)
 
-        raw_config = self.action_json(
-            module_id, actions, "get-configuration", "nethvoice.configuration", dict
-        )
-        if raw_config is not None:
-            record["configuration"] = self.filter_nethvoice_config(raw_config)
-            if "nethvoice_host" not in record["configuration"]:
-                self.add_error("nethvoice.configuration", "missing_nethvoice_host", module_id)
+        record["configuration"] = self.collect_nethvoice_config(module_id)
+        if "nethvoice_host" not in record["configuration"]:
+            self.add_error("nethvoice.configuration", "missing_nethvoice_host", module_id)
 
         proxy_ip = self.env_value(
             module_id, "PROXY_IP", "nethvoice.proxy_address", safe_ip, required=True
@@ -1038,6 +1062,7 @@ class Collector:
             record["configuration"]["proxy_address"] = proxy_ip
 
         feature_specs = (
+            ("NETHVOICE_HOTEL", "nethvoice_hotel"),
             ("SATELLITE_CALL_TRANSCRIPTION_ENABLED", "satellite_call_transcription"),
             ("SATELLITE_VOICEMAIL_TRANSCRIPTION_ENABLED", "satellite_voicemail_transcription"),
         )
@@ -1077,7 +1102,12 @@ class Collector:
             if not record["configuration_counts"]:
                 self.add_error("nethvoice.configuration_counts", "no_allowlisted_counts", module_id)
 
-        record["runtime"] = self.collect_runtime(module_id, "nethvoice", record["features"])
+        record["runtime"] = self.collect_runtime(
+            module_id,
+            "nethvoice",
+            record["features"],
+            candidate.get("version"),
+        )
         record["asterisk"] = self.collect_asterisk(module_id, record["runtime"]["containers"])
         record["_route"] = {
             "domain": record["configuration"].get("nethvoice_host"),
@@ -1159,7 +1189,12 @@ class Collector:
         raw_trunks = self.action_json(module_id, actions, "list-trunks", "proxy.trunks", list)
         if raw_trunks is not None:
             record["trunk_count"] = len(raw_trunks)
-        record["runtime"] = self.collect_runtime(module_id, "proxy", {})
+        record["runtime"] = self.collect_runtime(
+            module_id,
+            "proxy",
+            {},
+            candidate.get("version"),
+        )
         return record
 
     def build_topology(self, nethvoice_records, proxy_records):

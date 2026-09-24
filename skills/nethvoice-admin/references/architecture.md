@@ -4,7 +4,7 @@ Use this reference to build the topology and decide whether a service state is a
 
 ## Node-local topology
 
-NethVoice is a multi-container rootless NS8 module. Its telephony core is FreePBX/Asterisk with MariaDB; current releases also include the NethCTI client, server and middleware, Janus, Tancredi, phonebook, reports, and feature-dependent Satellite services.
+NethVoice is a multi-container rootless NS8 module. Its telephony core is FreePBX/Asterisk with MariaDB; current releases also include the NethCTI client, server and middleware, Janus, Tancredi, phonebook, the reports API/Redis/UI stack, and feature-dependent Satellite services.
 
 NethVoice Proxy is a separate rootless module containing Kamailio, RTPengine, PostgreSQL, and Redis. The supported deployment relationship is node-local: each NethVoice instance uses the proxy assigned to its own NS8 node. Do not pair a NethVoice instance with a convenient proxy on another node.
 
@@ -50,13 +50,14 @@ Discover installed units first. The table is interpretation guidance, not a serv
 | --- | --- | --- |
 | MariaDB and FreePBX/Asterisk | Running | Core telephony dependency |
 | Kamailio, RTPengine, proxy PostgreSQL/Redis | Running | Required for the configured node-local proxy |
-| NethCTI UI, Janus, Tancredi, phonebook, reports | Normally running | Confirm installed version, entitlement, and configured feature |
+| NethCTI UI, Janus, Tancredi, phonebook, reports API/Redis/UI | Normally running | Reports Redis is required by the reports API in the recorded 1.7.7 source |
 | NethCTI server and middleware | May be inactive before the NethVoice wizard reaches its completion gate | Do not restart-loop or label failed solely because inactive |
 | Satellite application and MQTT | Feature-dependent | Expected inactive/absent when transcription features are disabled |
 | Satellite PostgreSQL | Retained after Satellite initialization, including when transcription is later disabled | Middleware and users can require historical transcript data; do not stop it solely because current feature flags are off |
 | Satellite recordings cleanup service/timer | Timer-driven oneshot | The timer should drive cleanup when configured; the service is normally inactive between runs, so assess its timer and last result |
-| NethHotel alarm units | Feature-dependent | Expected inactive when NethHotel is disabled |
-| Update/cleanup/timer-triggered and certificate units | Often oneshot, timer-driven, or active/exited | Judge by unit type, last result, timer/path trigger, and installed source |
+| NethHotel alarm units | Feature-dependent | The alarm timer is required when NethHotel is enabled and expected inactive when it is disabled |
+| NethCTI UI restart, CDR cleanup, phonebook update, and reports scheduler timers | Enabled and active for a configured 1.7.7 instance | Derive the expectation from the installed version; inspect each timer and its backing oneshot result |
+| Other update/cleanup/timer-triggered and certificate units | Often oneshot, timer-driven, or active/exited | Judge by unit type, last result, timer/path trigger, and installed source |
 
 An inactive conditional unit is not an incident by itself. A loaded failed unit, rising restart count, unhealthy container, or mismatch between feature flags and runtime state is evidence requiring correlation with a bounded time window.
 

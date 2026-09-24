@@ -12,7 +12,7 @@ class SkillContractTests(unittest.TestCase):
         text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         frontmatter = text.split("---", 2)[1]
         self.assertIn("name: nethvoice-admin", frontmatter)
-        self.assertIn("version: 0.1.2", frontmatter)
+        self.assertIn("version: 0.1.3", frontmatter)
         self.assertIn("author: NethServer project contributors", frontmatter)
         self.assertIn("license: GPLv3", frontmatter)
         self.assertNotRegex(frontmatter, r"(?m)^model:")
