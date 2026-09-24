@@ -95,3 +95,36 @@ Use the **Feature** type. Use the feature template at https://github.com/NethSer
 
 > **Never report security vulnerabilities as public GitHub issues.**
 > Use the [GitHub Security Advisory](https://github.com/NethServer/dev/security/advisories/new) form or email `sviluppo@nethesis.it`.
+
+---
+
+## Project and milestone assignment
+
+After opening an issue, add it to the matching org-level GitHub Project, if possible:
+
+| Product | Project |
+|---|---|
+| NethServer | [github.com/orgs/NethServer/projects/8](https://github.com/orgs/NethServer/projects/8) |
+| NethVoice | [github.com/orgs/NethServer/projects/11](https://github.com/orgs/NethServer/projects/11) |
+| NethSecurity | [github.com/orgs/NethServer/projects/10](https://github.com/orgs/NethServer/projects/10) |
+
+```bash
+gh project item-add <project-number> --owner NethServer --url <issue-url>
+```
+
+NethServer/dev hosts both NethServer and NethVoice issues, so determine the product from
+the issue content before picking the project — NethVoice issues conventionally start the
+title with `NethVoice: `. If it is genuinely ambiguous, ask rather than guessing.
+
+For **NethServer** and **NethVoice** issues only, also set the Milestone to the current
+one for that product — NethSecurity issues are left without a milestone. The current
+milestone is the open one for that product with the nearest due date:
+
+```bash
+gh api repos/NethServer/dev/milestones --jq '.[] | select(.state=="open") | {title,due_on}'
+gh issue edit <issue-number> --repo NethServer/dev --milestone "<milestone title>"
+```
+
+Skip project or milestone assignment rather than failing the issue creation if you lack
+the permissions or cannot confidently determine either one, and say so when reporting the
+issue URL.
