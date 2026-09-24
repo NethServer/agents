@@ -26,7 +26,7 @@ Create an issue once the problem is confirmed and the work can be formally descr
 
 ## Issue types
 
-Choose the correct type when opening an issue:
+Choose the correct GitHub issue type when opening an issue, and do not use any label:
 
 | Type | When to use |
 |---|---|
@@ -45,35 +45,7 @@ QA testing targets the **parent issue**, not sub-issues.
 
 ## Writing a bug report
 
-Use the **Bug** type. Include all of the following:
-
-```markdown
-## Component and version
-
-<Name of the affected component and its version, e.g., "nethserver-mail 3.2.1">
-
-## Steps to reproduce
-
-1. <First step>
-2. <Second step>
-3. ...
-
-## Expected behavior
-
-<What should happen>
-
-## Actual behavior
-
-<What actually happens — describe the error clearly>
-
-## Suggested fix or workaround
-
-<Optional: any ideas on what may cause it or how to fix it>
-
-## Relevant logs or output
-
-<Paste relevant log lines, command output, or screenshots>
-```
+Use the **Bug** issue type (not the bug label). Use the bug template at https://github.com/NethServer/dev/blob/master/.github/ISSUE_TEMPLATE/bug_report.md
 
 **Tips**:
 - Be precise about the version — bugs are often version-specific.
@@ -84,24 +56,7 @@ Use the **Bug** type. Include all of the following:
 
 ## Writing a feature request
 
-Use the **Feature** type. Include all of the following:
-
-```markdown
-## Description
-
-<Describe the feature in plain language that anyone can understand.
-Use examples to illustrate the use case.>
-
-<Explain who benefits from this and why it matters.>
-
-## Alternative solutions
-
-<Describe any alternative approaches you considered and why you rejected them.>
-
-## References
-
-<Links to external documentation, related projects, or prior discussions.>
-```
+Use the **Feature** type. Use the feature template at https://github.com/NethServer/dev/blob/master/.github/ISSUE_TEMPLATE/feature_request.md
 
 **Tips**:
 - Avoid technical jargon; describe the feature from the user's perspective.
