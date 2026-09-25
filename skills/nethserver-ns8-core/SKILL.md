@@ -28,7 +28,7 @@ nothing and tells you it moved.
 | Task | Read |
 |---|---|
 | Where the repository documents itself: the `AGENTS.md`/`README.md`/`docs/` delegation tables, manual and handbook URLs, repository tree, what "core" covers beyond this repository, `core_module` membership, the two `func main` in `core/api-server`, the three independent `go.mod` | `references/repository-and-docs.md` |
-| Redis key ownership and pub/sub channels, role grants, where cluster and node actions and event handlers live, the inherited module actions, writing an action step (stdout/stderr, `agent.set_status`, `agent.assert_exp`, exit codes, `agent.tasks` entry points, secret masking), the `agent`/`cluster`/`node` Python packages, agent identity and `AGENT_BASEACTIONS_DIR` | `references/actions-and-agent-sdk.md` |
+| Redis key ownership and pub/sub channels, role grants, where cluster and node actions and event handlers live, the inherited module actions, writing an action step (stdout/stderr, `agent.set_status`, `agent.assert_exp`, exit codes, `agent.tasks` entry points, secret masking), the `agent`/`cluster`/`node` Python packages, agent identity and `AGENT_BASEACTIONS_DIR`, the module list and repository fetch behind the software center | `references/actions-and-agent-sdk.md` |
 | Calling an action from a UI (`createClusterTask`, `createNodeTask`, `createModuleTaskForApp`, the `ForApp` suffix, `taskData`), Vue 2 / Carbon v10 / Vue CLI 4 generations, `@nethserver/ns8-ui-lib` versions and local tarball testing, `core.css` shipped to every module UI, build constraints, running the dev server against a real node | `references/core-ui.md` |
 | api-server authentication, action-based authorization, audit log, Melody WebSocket bridge, api-moduled — where `core/api-server/AGENTS.md` answers, and the four things it does not: the `TODO` on the GET bypass, the `/api/2FA` exemptions, grants re-read on every request, `melody.New()` left unconfigured | `references/api-server.md` |
 | The three test loops and their cost, `run-ns8-tests`, Robot suite layout, `shellcheck`, building an image and pointing a test node at it, `cluster/override/modules`, `update-core` stages and its three hook directories, `runagent` and the cluster-wide CLI helpers | `references/build-test-ship.md` |
@@ -42,7 +42,9 @@ nothing and tells you it moved.
   (`references/actions-and-agent-sdk.md`, `references/build-test-ship.md`)
 - Only the `cluster` agent and api-server may LPUSH into `cluster/tasks` and a node queue;
   every other agent reaches its own queue and no one else's. So `agent.tasks` works from a
-  cluster action step, not from a module one. (`references/actions-and-agent-sdk.md`)
+  cluster action step, not from a module one. That grant says who may enqueue, not how the
+  work runs: the queue is consumed with BRPOP but an agent runs up to 32 tasks at once, so
+  enqueue order sequences nothing. (`references/actions-and-agent-sdk.md`)
 - The actions under `core/imageroot/usr/local/agent/actions/` and the `agent` Python
   package are public API — a changed signature breaks ns8-* repositories you will
   never see. `cluster` and `node` are core-internal in name only: `pypkg.pth` puts all

@@ -16,6 +16,13 @@ leader is resolved through `cluster/environment NODE_ID`, then `node/<id>/vpn`.
 | `<agent>/roles/<role>` | grants API | SET of action glob patterns |
 | `roles/<username>` | grants API | HASH mapping agent_id to role |
 
+BRPOP does not mean one task at a time. `core/agent/htask.go` reads the queue in
+`readTasks` and starts a goroutine per task, up to `maxConcurrency` — 32 by default,
+overridable with `MAX_CONCURRENCY` in `core/agent/agent.go`. Past the limit the agent
+sleeps `OVERLOAD_SLEEP` (500 ms) and then rejects the task instead of queueing it. So
+two tasks a UI enqueues back to back run in parallel and may finish out of order: never
+use enqueue order to sequence work, and expect a slow action to delay nothing else.
+
 Pub/sub channels: `progress/<agent>/task/<uuid>` carries task progress to the UI;
 `<agent>/event/<event-name>` carries events between agents, for example
 `cluster/event/module-added`. Event names are past tense.
@@ -208,3 +215,33 @@ inherited base actions plus its own. The cluster and node agents blank the varia
 out and therefore serve **only** the actions in their own tree. Do not assume
 `create-module` or `get-status` is reachable on them.
 
+## The module list behind the software center
+
+`cluster.modules` in `core/imageroot/usr/local/agent/pypkg/cluster/modules.py` backs
+every software center screen: the `list-modules`, `list-core-modules`,
+`list-repositories` and `list-updates` cluster actions all delegate to it. A UI symptom
+on that page is usually a `cluster.modules` symptom.
+
+Available modules come from a `repodata.json` fetched once per enabled repository, that
+is per `cluster/repository/<name>` HASH with `status 1`.
+`core/imageroot/var/lib/nethserver/node/install-finalize.sh` seeds `default` enabled and
+`nethforge` disabled; `set-subscription` adds a third. Repository names decide priority:
+`_get_available_modules` sorts them reverse-alphabetically and keeps the first version it
+sees of a given image, so the alphabetically greater name wins.
+
+Four traps in the fetch path, all in `_list_repository_modules`:
+
+- `timeout=(10, 15)` is connect and read. `requests` applies the connect half per
+  address returned by `getaddrinfo`, not as a total budget, so a dual-stack host with
+  packets dropped costs 20 s, not 10.
+- The `cluster/repository_cache/<name>` HASH is written only when parsing returned at
+  least one module, and a failed fetch returns `[]` before reaching the write. There is
+  no negative cache: while a repository is unreachable, every call pays full price.
+- The cache carries the `repo_view` it was built for and is ignored when the current
+  `get_repo_view()` differs, so switching view refetches everything.
+- Nothing memoizes the fetch inside one action run. `list_available()` and
+  `decorate_with_updates()` — which calls `list_updates()` — each call
+  `_get_available_modules()`, so `list-modules` fetches every repository twice.
+
+Each failed fetch prints one `Fetching <url>: <exception>` line on stderr. Counting those
+lines in the journal is the cheapest way to attribute a slow software center.
