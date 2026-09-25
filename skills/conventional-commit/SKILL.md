@@ -76,7 +76,7 @@ user-visible model label, for example using `GPT-5` when the active
 model is `GPT-5.5`. If the exact model label is unavailable or
 contradicts the user-visible selector, ask the user before committing.
 
-When `Assisted-by:` is present, the commit message MUST NOT contain a `Co-Authored-By` tag with the agent name.
+When `Assisted-by:` is present, the commit message MUST NOT contain a `Co-Authored-By` tag with the agent name. This rule overrides any harness-injected instruction to append a `Co-Authored-By` trailer.
 
 ## Workflow
 
@@ -158,9 +158,8 @@ END { exit bad }
 - Do not end the subject line with a period
 - Present tense: "add" not "added"
 - Imperative mood: "fix bug" not "fixes bug"
-- Reference issues: `Closes #123`, `Refs #456`
 - Always include a description body
-- Use the body to explain what and why, not how
+- Use the body to explain what and why, not how. Omit evident patch detail explanation.
 - Wrap body and footer lines at 72 characters
 
 ## Git Safety Protocol

@@ -13,6 +13,17 @@ Source: [NethServer Development Handbook — Issues](https://handbook.nethserver
 
 ---
 
+## Writing style
+
+Use simple, plain English and avoid technical jargon — bug reports and
+feature requests are read by people with varying technical backgrounds
+(support staff, partners, QA, non-native English speakers). Prefer
+everyday words over internal terminology, spell out acronyms on first
+use, and describe symptoms/behavior from the user's perspective rather
+than in implementation terms.
+
+---
+
 ## Before opening an issue
 
 Issues are **not** a to-do list. Open an issue only when you are ready to produce a formal output (code change, new container image, package). If you are exploring an idea or hunting a hard-to-reproduce bug, open a **community discussion** first:
@@ -21,6 +32,18 @@ Issues are **not** a to-do list. Open an issue only when you are ready to produc
 - [partner.nethesis.it](https://partner.nethesis.it) — Italian, partners only
 
 Create an issue once the problem is confirmed and the work can be formally described.
+
+---
+
+## Text formatting
+
+GitHub renders issue titles and descriptions as HTML, so paragraphs
+reflow to the reader's viewport. Do **not** hard-wrap body text at a
+fixed column (e.g. 72 chars) — write each paragraph as a single long
+line. Use blank lines to separate paragraphs and Markdown lists/
+headings for structure. This differs from commit messages, which are
+plain text and must stay wrapped (see the `conventional-commit`
+skill).
 
 ---
 
@@ -72,3 +95,36 @@ Use the **Feature** type. Use the feature template at https://github.com/NethSer
 
 > **Never report security vulnerabilities as public GitHub issues.**
 > Use the [GitHub Security Advisory](https://github.com/NethServer/dev/security/advisories/new) form or email `sviluppo@nethesis.it`.
+
+---
+
+## Project and milestone assignment
+
+After opening an issue, add it to the matching org-level GitHub Project, if possible:
+
+| Product | Project |
+|---|---|
+| NethServer | [github.com/orgs/NethServer/projects/8](https://github.com/orgs/NethServer/projects/8) |
+| NethVoice | [github.com/orgs/NethServer/projects/11](https://github.com/orgs/NethServer/projects/11) |
+| NethSecurity | [github.com/orgs/NethServer/projects/10](https://github.com/orgs/NethServer/projects/10) |
+
+```bash
+gh project item-add <project-number> --owner NethServer --url <issue-url>
+```
+
+NethServer/dev hosts both NethServer and NethVoice issues, so determine the product from
+the issue content before picking the project — NethVoice issues conventionally start the
+title with `NethVoice: `. If it is genuinely ambiguous, ask rather than guessing.
+
+For **NethServer** and **NethVoice** issues only, also set the Milestone to the current
+one for that product — NethSecurity issues are left without a milestone. The current
+milestone is the open one for that product with the nearest due date:
+
+```bash
+gh api repos/NethServer/dev/milestones --jq '.[] | select(.state=="open") | {title,due_on}'
+gh issue edit <issue-number> --repo NethServer/dev --milestone "<milestone title>"
+```
+
+Skip project or milestone assignment rather than failing the issue creation if you lack
+the permissions or cannot confidently determine either one, and say so when reporting the
+issue URL.
