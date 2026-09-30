@@ -24,6 +24,28 @@ than in implementation terms.
 
 ---
 
+## Sensitive data
+
+Issues are public. Before filing, obfuscate every real-world identity
+in the title, description, logs, screenshots, and attachments:
+
+| Real data | Replace with |
+|---|---|
+| Domain names, hostnames, FQDNs | `example.org`, `example.com`, `example.net` (e.g. `mail.example.org`) |
+| IPv4 addresses | `192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24` (private ranges like `10.0.0.0/8` may stay as they are) |
+| IPv6 addresses | `2001:db8::/32` |
+| People and user names | Generic first names: Alice, Bob, John, Anne… |
+| Company and customer names | Generic names, e.g. `ACME` |
+| Email addresses, phone numbers | `bob@example.org`, `+39 0000 000000` |
+| Passwords, tokens, keys, serial numbers | `***` or a placeholder like `<TOKEN>` |
+
+Keep the real names of third-party public services and vendors (AWS,
+Google, Microsoft Azure, Cloudflare, Let's Encrypt…) when they matter
+to the problem. Obfuscate consistently: the same real value always
+maps to the same placeholder, so the report stays readable.
+
+---
+
 ## Before opening an issue
 
 Issues are **not** a to-do list. Open an issue only when you are ready to produce a formal output (code change, new container image, package). If you are exploring an idea or hunting a hard-to-reproduce bug, open a **community discussion** first:

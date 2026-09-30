@@ -23,6 +23,30 @@ and its effect in terms a non-author can follow.
 
 ---
 
+## Sensitive data
+
+Pull requests are public. Before submitting, obfuscate every
+real-world identity in the title, description, test steps, logs, and
+screenshots:
+
+| Real data | Replace with |
+|---|---|
+| Domain names, hostnames, FQDNs | `example.org`, `example.com`, `example.net` (e.g. `mail.example.org`) |
+| IPv4 addresses | `192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24` (private ranges like `10.0.0.0/8` may stay as they are) |
+| IPv6 addresses | `2001:db8::/32` |
+| People and user names | Generic first names: Alice, Bob, John, Anne… |
+| Company and customer names | Generic names, e.g. `ACME` |
+| Email addresses, phone numbers | `bob@example.org`, `+39 0000 000000` |
+| Passwords, tokens, keys, serial numbers | `***` or a placeholder like `<TOKEN>` |
+
+Keep the real names of third-party public services and vendors (AWS,
+Google, Microsoft Azure, Cloudflare, Let's Encrypt…) when they matter
+to the change. Obfuscate consistently: the same real value always maps
+to the same placeholder. The same rule applies to code, test fixtures,
+and commit messages included in the PR.
+
+---
+
 ## Text formatting
 
 GitHub renders PR descriptions as HTML, so paragraphs reflow to the
