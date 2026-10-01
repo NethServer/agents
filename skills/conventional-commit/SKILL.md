@@ -1,6 +1,6 @@
 ---
 name: conventional-commit
-description: Use when the user asks to commit changes, create a git commit, stage files for a commit, or mentions "/commit".
+description: Use before creating or amending any git commit, including commits made as a side step of another task (drafting changes on a branch, saving work in progress) when the user never asked to commit. Also use when the user asks to commit changes, stage files for a commit, or mentions "/commit".
 model: sonnet
 ---
 
