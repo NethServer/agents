@@ -1,12 +1,11 @@
 # Resolve commit attribution
 
-Use these rules before composing `Assisted-by: HARNESS:MODEL`, then read
-only the lookup section for the active harness.
+Use the `HARNESS` and `MODEL` definitions in
+[SKILL.md](../SKILL.md#ai-agent-footers). Apply the source precedence below,
+then read only the lookup section for the active harness.
 
 ## Source precedence and fallback
 
-- Identify the harness from the running tool or framework, independently
-  of the model or provider. A Claude model in OpenCode uses `OpenCode`.
 - Prefer exact runtime metadata for the active invocation, after any model
   switch or skill/agent override. Otherwise use metadata tied to the
   identified current session, turn, and active branch as described below.
@@ -16,13 +15,11 @@ only the lookup section for the active harness.
   not a current identity declaration.
 - Generic self-descriptions such as "based on GPT-6", configuration defaults,
   previous commits, and available-model lists do not establish the active
-  model. A catalog can supply a display label only after the current model
-  ID has been established independently.
-- Prefer a complete display label explicitly associated with that exact
-  model ID. If it is absent or abbreviated (for example, `Sonnet` or `GPT-6`),
-  use the exact ID. Preserve versions, suffixes, casing, and provider-qualified
-  IDs. Do not manufacture a display label by capitalizing or expanding an ID,
-  or infer a version from a family alias such as `sonnet`.
+  model. A catalog can supply a display label only by matching an
+  independently established current model ID.
+- Preserve versions, suffixes, casing, and provider-qualified IDs. Do not
+  manufacture a display label by capitalizing or expanding an ID, or infer
+  a version from a family alias such as `sonnet`.
 - Reasoning effort and service tier are separate settings, not part of
   `MODEL`. Do not append them to the resolved identity.
 - Use existing, accessible metadata sources. Do not install integrations or
