@@ -1,6 +1,6 @@
 ---
 name: conventional-commit
-description: Use when the user asks to commit changes, create a git commit, stage files for a commit, or mentions "/commit".
+description: Use before creating, amending, or squashing any git commit, including one requested by another workflow (PR, release). Also use when the user asks to commit changes, stage files for a commit, or mentions "/commit".
 model: sonnet
 ---
 
@@ -164,6 +164,9 @@ END { exit bad }
 
 ## Git Safety Protocol
 
+- NEVER commit, amend, or squash on your own initiative: do it only
+  when the user explicitly asks, or when a workflow the user invoked
+  requires it
 - NEVER update git config
 - NEVER run destructive commands (--force, hard reset) without explicit request
 - NEVER skip hooks (--no-verify) unless user asks
