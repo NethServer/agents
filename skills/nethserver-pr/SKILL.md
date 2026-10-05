@@ -102,6 +102,25 @@ rule as a commit subject line. This eases the merge phase and keeps
 
 ---
 
+## Documentation impact
+
+When a new PR changes how the system behaves from the outside, or adds a
+feature that changes how people use it, ask the user whether the product
+manual needs an update — e.g. "Should I check the existing product
+documentation to align it with this PR?". Do not edit the manual unless
+the user says yes. Manuals live in these repos:
+
+| Product | User manual | Developer manual |
+|---|---|---|
+| NethServer 8 | `NethServer/ns8-docs` | `NethServer/ns8-core`, under `docs/` |
+| NethVoice | `NethServer/nethvoice-docs` (also `NethServer/ns8-docs`) | — |
+| NethSecurity | `NethServer/nethsecurity-docs` | `NethServer/nethsecurity`, under `docs/` |
+
+Consider the developer manual too when the change matters to developers,
+e.g. a new or changed API, action, event, or build step.
+
+---
+
 ## Managing an open pull request
 
 After opening the PR:
@@ -164,4 +183,5 @@ To convert a draft to a ready PR, set it to **"Ready for review"**.
 | NethSecurity main repo | Link as `#N` |
 | NethSecurity module repo | Link as `NethServer/nethsecurity#N` |
 | No reviewer named | Open the PR without one and report it to the author |
+| User-visible change or new feature | Ask whether the product manual needs an update |
 | CI fails | Fix before requesting review |
