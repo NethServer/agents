@@ -152,6 +152,7 @@ Pattern: `@carbon/icons-vue/es/<kebab-name>/<size>`. Variants use double dash: `
 > Wrong: `<cv-slider>` — Correct: `<NsSlider>`
 
 Source: `github.com/NethServer/ns8-ui-lib` — read `src/lib-components/<Name>.vue` for props.
+Live examples of most components: `https://nethserver.github.io/ns8-ui-lib/` (Storybook).
 
 `NsButton` `NsTextInput` `NsPasswordInput` `NsComboBox` `NsComboSearchBox` `NsMultiSelect`
 `NsToggle` `NsCheckbox` `NsSlider` `NsByteSlider` `NsTimePicker` `NsModal` `NsDangerDeleteModal`
