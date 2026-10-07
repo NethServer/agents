@@ -66,7 +66,10 @@ changes the code you write:
 
 **ns8-ui-lib is an external package, not a directory of this repository.** It lives at
 `NethServer/ns8-ui-lib`, and its components are the ones prefixed `Ns` — `NsButton`,
-`NsInlineNotification`. Two facts about it are easy to get wrong.
+`NsInlineNotification`. Its Storybook, published at
+`https://nethserver.github.io/ns8-ui-lib/` and started locally with `npm run storybook`
+in that repository, shows most components with their props. Two facts about it are easy
+to get wrong.
 
 The published version and the consumed version drift apart on purpose. Every
 consumer pins with a caret, and a caret never crosses a major, so a library major
@@ -135,14 +138,9 @@ podman run -ti -v $(pwd):/app:Z --network=host --name ns8-core --replace ns8-cor
 ```
 
 `--network=host` is not optional, hot reload does not work without it. Swapping the
-trailing `serve` for `build` or `storybook` runs those instead. Running the dev server
-and Storybook at the same time is the one combination that needs a different shape,
-because a second `yarn` in the same container fails — start `serve` as above, then
-attach to the running container:
-
-```bash
-podman exec -ti ns8-core yarn storybook
-```
+trailing `serve` for `build` runs a production build instead. The core UI has no
+Storybook: the one for the `Ns*` components is in ns8-ui-lib, published at
+`https://nethserver.github.io/ns8-ui-lib/`.
 
 A plain `yarn serve` on the workstation and a VS Code Dev Containers setup are the two
 other supported paths; `docs/ui/core.md` describes both.
