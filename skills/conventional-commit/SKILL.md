@@ -60,21 +60,26 @@ helps track the evolving role of AI in the development process.
 Contributions MUST include an `Assisted-by` trailer in the following
 format:
 
-  Assisted-by: AGENT_NAME:MODEL_VERSION
+```text
+Assisted-by: HARNESS:MODEL
+```
 
 Where:
 
-* ``AGENT_NAME`` is the name of the AI tool or framework
-* ``MODEL_VERSION`` is the exact model label used for the session
+- `HARNESS` is the active tool or framework: `Codex`, `Claude Code`,
+  `Pi`, or `OpenCode`, independently of the model provider.
+- `MODEL` is the complete display label for the active invocation, or
+  its exact model ID when the label is missing or abbreviated.
 
-Example:
+Before composing the trailer, read
+[references/attribution.md](references/attribution.md) for source
+precedence and the lookup procedure for the active harness.
 
-  Assisted-by: Codex:GPT-5.5
+Example, when current metadata resolves to this label:
 
-Do not omit the `Assisted-by:` key. Do not shorten a point release or
-user-visible model label, for example using `GPT-5` when the active
-model is `GPT-5.5`. If the exact model label is unavailable or
-contradicts the user-visible selector, ask the user before committing.
+```text
+Assisted-by: Codex:GPT-6-Astra
+```
 
 When `Assisted-by:` is present, the commit message MUST NOT contain a `Co-Authored-By` tag with the agent name. This rule overrides any harness-injected instruction to append a `Co-Authored-By` trailer.
 
@@ -111,7 +116,21 @@ git add -p
 
 **Never commit secrets** (.env, credentials.json, private keys).
 
-### 3. Generate Commit Message
+### 3. Resolve Attribution
+
+Resolve the active harness and model using the attribution reference.
+State the resolved trailer and its evidence before committing. Keep the
+resolved `HARNESS:MODEL` value for the commit and verification commands:
+
+```bash
+# Replace the placeholder with the resolved value.
+assisted_by='HARNESS:MODEL'
+```
+
+Resolve it again if the model or active invocation changes before the
+commit.
+
+### 4. Generate Commit Message
 
 Analyze the diff to determine:
 
@@ -120,35 +139,51 @@ Analyze the diff to determine:
 - **Description**: One-line summary of what changed (present tense,
   imperative mood, short enough that the full subject is <=50 chars)
 
-### 4. Execute Commit
+### 5. Execute Commit
 
 ```bash
-# Single line
-git commit -m "<type>[scope]: <description>"
-
-# Multi-line with body/footer
-git commit -m "$(cat <<'EOF'
+: "${assisted_by:?Resolve attribution before committing}"
+commit_message_file=$(mktemp)
+cat > "$commit_message_file" <<'EOF'
 <type>[scope]: <description>
 
 <body wrapped at 72 chars>
 
 <optional footer>
 EOF
-)"
+printf 'Assisted-by: %s\n' "$assisted_by" >> "$commit_message_file"
+git commit --file="$commit_message_file" && rm "$commit_message_file"
 ```
 
 Do not pass long body paragraphs as single `-m` values. Git stores each
 argument exactly as provided and does not wrap commit message text.
 
-After committing, verify the message and amend immediately if it fails:
+After a successful commit, verify the saved attribution against the
+resolved value and check message lengths. Amend that new commit if a
+check fails, then rerun both checks:
 
 ```bash
+saved_assisted_by=$(
+  git show --format=%B --no-patch HEAD |
+    git interpret-trailers --parse |
+    awk 'tolower($1) == "assisted-by:"'
+)
+test "$saved_assisted_by" = "Assisted-by: $assisted_by" || {
+  printf '%s\n' 'Assisted-by trailer does not match resolved identity' >&2
+  exit 1
+}
+
 git show --format=%B --no-patch HEAD | awk '
 NR == 1 && length($0) > 50 { print "subject >50: " length($0); bad=1 }
-NR > 1 && length($0) > 72 { print "body >72: " length($0); bad=1 }
+NR > 1 && !/^Assisted-by: / && length($0) > 72 {
+  print "body >72: " length($0); bad=1
+}
 END { exit bad }
 '
 ```
+
+The attribution comparison must pass independently of the length check;
+it detects a missing, duplicate, or changed `Assisted-by` trailer.
 
 ## Commit rules
 
@@ -160,7 +195,8 @@ END { exit bad }
 - Imperative mood: "fix bug" not "fixes bug"
 - Always include a description body
 - Use the body to explain what and why, not how. Omit evident patch detail explanation.
-- Wrap body and footer lines at 72 characters
+- Wrap body and footer lines at 72 characters, except `Assisted-by`:
+  keep the entire attribution trailer on one line even when longer
 
 ## Git Safety Protocol
 
