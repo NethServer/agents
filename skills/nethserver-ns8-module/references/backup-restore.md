@@ -11,6 +11,13 @@
 - Secrets generated at install time (`state/passwords.env`)
 - Any runtime state not reproducible from the image
 
+### Excluding files (state-exclude.conf)
+`imageroot/etc/state-exclude.conf` — paths to skip, same relative paths as `state-include.conf`, passed to restic as `--exclude-file`. Use it to drop files from an included volume, e.g. caches, temp files, or live DB files already saved by a dump in `module-dump-state`:
+```
+volumes/myapp-data/cache
+volumes/myapp-data/app.db*
+```
+
 ### Restore sequence
 `imageroot/actions/restore-module/` — numbered steps, `10restore` inherited (Restic).
 
