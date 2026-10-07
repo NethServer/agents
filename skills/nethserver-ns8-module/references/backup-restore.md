@@ -11,6 +11,17 @@
 - Secrets generated at install time (`state/passwords.env`)
 - Any runtime state not reproducible from the image
 
+### Excluding files (state-exclude.conf)
+`imageroot/etc/state-exclude.conf` lists paths to skip, with the same relative paths (`state/...`, `volumes/...`). `module-backup` passes it to restic as `--exclude-file`. Restic exclude syntax differs slightly from include syntax, see the [restic docs](https://restic.readthedocs.io/en/stable/040_backup.html#excluding-files).
+
+Use it when a whole volume is included but some files in it must not be copied raw. Example: a live SQLite database in WAL mode. Dump it in `module-dump-state` (e.g. `sqlite3 app.db "VACUUM INTO '...'"`), include the dump, and exclude the live files:
+```
+# state-exclude.conf
+volumes/myapp-data/app.db
+volumes/myapp-data/app.db-*
+```
+Prefer this over listing every other file of the volume in `state-include.conf`: a file added by a new upstream version would be silently left out, because restic skips include patterns that match nothing.
+
 ### Restore sequence
 `imageroot/actions/restore-module/` — numbered steps, `10restore` inherited (Restic).
 
