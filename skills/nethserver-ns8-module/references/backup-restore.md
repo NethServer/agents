@@ -12,10 +12,10 @@
 - Any runtime state not reproducible from the image
 
 ### Excluding files (state-exclude.conf)
-`imageroot/etc/state-exclude.conf` — paths to skip, passed to restic as `--exclude-file`. Use it to drop live DB files from an included volume and back up their dump instead. Example for SQLite (dump with `VACUUM INTO` in `module-dump-state`):
+`imageroot/etc/state-exclude.conf` — paths to skip, same relative paths as `state-include.conf`, passed to restic as `--exclude-file`. Use it to drop files from an included volume, e.g. caches, temp files, or live DB files already saved by a dump in `module-dump-state`:
 ```
-volumes/myapp-data/app.db
-volumes/myapp-data/app.db-*
+volumes/myapp-data/cache
+volumes/myapp-data/app.db*
 ```
 
 ### Restore sequence
