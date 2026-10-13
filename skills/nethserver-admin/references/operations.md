@@ -118,11 +118,34 @@ remove-module <module_id>                 # preserve data
 remove-module --no-preserve <module_id>   # erase module data; destructive
 ```
 
-Update one or more instances:
+Update one or more instances of the same module to a given image. Since Core 3.20.1 prefer the `update-module` command over `api-cli run update-module`; it refuses an image whose name differs from the instance's current image. Run it on the leader node:
 
 ```bash
-api-cli run update-module --data '{"module_url":"ghcr.io/<namespace>/<image>:<tag>","instances":["<module_id>"]}'
-api-cli run update-module --data '{"module_url":"ghcr.io/<namespace>/<image>:<tag>","instances":["<module_id>"],"force":true}'
+update-module ghcr.io/<namespace>/<image>:<tag> <module_id> [<module_id> ...]
+update-module ghcr.io/<namespace>/<image>:<tag> <module_id> --force   # re-pull and re-run even if the image is present
+```
+
+Update the core. Since Core 3.21.0 prefer the `update-core` command over `api-cli run update-core`. By default it updates every cluster node; `--nodes` leaves nodes on different core versions, so use it only when the task requires it:
+
+```bash
+update-core ghcr.io/nethserver/core:<tag>
+update-core ghcr.io/nethserver/core:<tag> --nodes <node_id> [<node_id> ...]
+```
+
+Both commands accept `--verbose` to print the action stderr on success, and exit with the action exit code. If `command -v update-module` or `command -v update-core` finds nothing, the core is older: fall back to `api-cli run`:
+
+```bash
+api-cli run update-module --data '{"module_url":"ghcr.io/<namespace>/<image>:<tag>","instances":["<module_id>"],"force":false}'
+api-cli run update-core --data '{"core_url":"ghcr.io/nethserver/core:<tag>","nodes":[1,2],"force":false}'
+```
+
+The `update-core` action requires `nodes`: list every cluster node ID unless the task targets specific nodes.
+
+To update instances to their latest available version, without choosing an image, there is no command; use the `update-modules` cluster action. Omitting both filters updates every app instance in the cluster:
+
+```bash
+api-cli run update-modules --data '{"instances":["<module_id>"]}'
+api-cli run update-modules --data '{"modules":["<module_name>"]}'
 ```
 
 Verify after install/update/remove:
