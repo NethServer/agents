@@ -61,6 +61,7 @@ After every install, update, configure, restart, remove, route, certificate, or 
 ## Common errors to avoid
 
 - Synthesizing undocumented `cluster/<action>` API action names instead of using the exact action names printed by `api-cli run list-actions`.
+- Using `api-cli run update-module` or `api-cli run update-core` when the `update-module` (Core 3.20.1+) or `update-core` (Core 3.21.0+) command is installed.
 - Running root `systemctl --user` or root Podman against rootless modules.
 - Hardcoding `/home/<module_id>`; custom home base paths and rootfull modules exist.
 - Trusting `get-status` for rootfull modules; inspect system units/logs directly.
