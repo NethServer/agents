@@ -100,24 +100,72 @@ NEW_VERSION="1.3.0"
 For testing releases, increment the `.N` suffix if a testing release for that version already exists:
 - `1.3.0-testing.1` → `1.3.0-testing.2` → ... → `1.3.0` (stable, when ready)
 
-### Step 4 — Tag and release
+### Step 4 — Install the `gh ns8` extension (once)
 
-#### NethServer 8 / NethVoice — use `gh ns8-release-module`
+NethServer 8 and NethVoice modules are released with the
+[NethServer/gh-ns8](https://github.com/NethServer/gh-ns8) GitHub CLI extension.
+It replaces the former `gh ns8-release-module` extension.
 
 ```bash
-# Install the extension (once)
-gh extension install NethServer/gh-ns8-release-module
-
-# Create a testing release (default)
-gh ns8-release-module --testing
-
-# Create a stable release (explicit only)
-gh ns8-release-module
+gh extension install NethServer/gh-ns8
 ```
 
-Refer to [NethServer/gh-ns8-release-module](https://github.com/NethServer/gh-ns8-release-module) for full options.
+Run the commands below from the repository root. Add `--repo owner/ns8-module` to target
+another repository.
 
-#### Manual tag (when gh extension is not applicable)
+### Step 5 — Check the repository status
+
+```bash
+gh ns8 module-release check
+```
+
+The output lists the PRs merged since the latest release and the linked issues, grouped as:
+
+| Group | Meaning |
+|---|---|
+| **Ready to release** | Verified issues whose PRs are all merged into `main` |
+| **To be released** | Verified issues with PRs still open — ready once they are merged |
+| **Release blockers** | Issues in progress or testing with PRs already merged into `main` |
+
+Issues in progress or testing whose PRs are still open do not block the release.
+
+A **stable** release can be created only when there are no release blockers. A testing
+release can be created at any time, but review the output anyway so the release notes are
+correct.
+
+### Step 6 — Create the release
+
+```bash
+# Testing release (default): the next -testing.N name is generated automatically
+gh ns8 module-release create --testing
+
+# Testing release with an explicit name
+gh ns8 module-release create --testing 1.3.0-testing.1
+
+# Stable release (explicit only), with the linked issues in the release notes
+gh ns8 module-release create --with-linked-issues 1.3.0
+```
+
+Some modules add extra content to the release notes, such as the `HEAD` of external
+components. Follow the "Release procedure" section of the module README when present.
+
+### Step 7 — After a stable release: clean up and notify
+
+```bash
+# Remove the testing pre-releases between the previous stable release and this one
+gh ns8 module-release clean 1.3.0
+
+# Comment every linked issue with the released version
+gh ns8 module-release comment 1.3.0
+```
+
+`comment` works for testing releases too: it adds a "Testing release" comment to the
+linked issues.
+
+After a stable release, open the issue links printed by `comment`, close the issues and
+remove the `verified` label.
+
+#### Manual tag (when the gh extension is not applicable)
 
 ```bash
 # Tag
@@ -146,15 +194,17 @@ Before promoting a testing release to stable, verify:
 ## Examples
 
 ```bash
-# Current latest tag: 2.1.0
+# Current latest release: 2.1.0
 # User asks: "release a new testing version with the new dashboard feature"
 
 # → Minor bump (new user-visible feature), testing by default
-git tag -a "2.2.0-testing.1" -m "Release 2.2.0-testing.1"
-git push origin "2.2.0-testing.1"
+gh ns8 module-release check
+gh ns8 module-release create --testing 2.2.0-testing.1
 
 # Later: "promote to stable"
-# → Stable release, only because user explicitly requested it
-git tag -a "2.2.0" -m "Release 2.2.0"
-git push origin "2.2.0"
+# → Stable release, only because the user explicitly requested it
+gh ns8 module-release check            # must show no release blockers
+gh ns8 module-release create --with-linked-issues 2.2.0
+gh ns8 module-release clean 2.2.0
+gh ns8 module-release comment 2.2.0
 ```
