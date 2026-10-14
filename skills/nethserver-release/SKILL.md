@@ -19,6 +19,24 @@ the rules below there.
 
 ---
 
+## ⚠️ Explicit approval before releasing
+
+**Never create a release without the explicit approval of the user.**
+
+A release is a public, hard-to-reverse action: it tags the repository, publishes the
+release notes and triggers the image build and publication workflows. Before running
+`gh ns8 module-release create` (or pushing a tag), always:
+
+1. Show the user the exact release name, type (testing or stable), target repository and
+   the `check` output summary.
+2. Ask for approval and wait for an explicit "yes" to that exact release.
+3. Stop if the answer is missing, ambiguous, or refers to a different version.
+
+A request to "prepare", "check" or "plan" a release is not an approval to create it.
+Approval for a testing release does not cover the stable one, and vice versa.
+
+---
+
 ## ⚠️ Default: testing release
 
 **Always produce a testing/pre-release by default.**
@@ -134,6 +152,9 @@ release can be created at any time, but review the output anyway so the release 
 correct.
 
 ### Step 6 — Create the release
+
+Do not run this step until the user has explicitly approved the exact release
+(see "Explicit approval before releasing").
 
 ```bash
 # Testing release (default): the next -testing.N name is generated automatically
