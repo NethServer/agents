@@ -1,3 +1,5 @@
+import ipaddress
+import json
 import re
 import unittest
 from pathlib import Path
@@ -8,11 +10,27 @@ REPOSITORY = SKILL_DIR.parents[1]
 
 
 class SkillContractTests(unittest.TestCase):
+    def test_sip_examples_use_anonymized_infrastructure(self):
+        references = SKILL_DIR / "references"
+        report = json.loads((references / "automated-sip-report.example.json").read_text())
+        self.assertEqual(report["target"], {"host": "test-node.example.org", "module": "nethvoice1"})
+        allowed_domains = ("example.org", "example.com", "example.net", "github.com", "ghcr.io")
+        for path in sorted(references.glob("automated-sip-*")):
+            for number, line in enumerate(path.read_text().splitlines(), 1):
+                location = f"{path.name}:{number}"
+                for value in re.findall(r"(?<![\w.])(?:\d{1,3}\.){3}\d{1,3}(?![\w.])", line):
+                    self.assertFalse(ipaddress.ip_address(value).is_global,
+                                     f"public address in {location}")
+                for host in re.findall(r"\b(?:[A-Za-z0-9][A-Za-z0-9-]*\.)+(?:com|org|net|io|it|local|lan|internal|test|invalid)\b", line):
+                    self.assertTrue(any(host.lower() == domain or host.lower().endswith("." + domain)
+                                        for domain in allowed_domains),
+                                    f"unexpected infrastructure domain in {location}")
+
     def test_router_metadata_and_forbidden_artifacts(self):
         text = (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
         frontmatter = text.split("---", 2)[1]
         self.assertIn("name: nethvoice-admin", frontmatter)
-        self.assertIn("version: 0.1.2", frontmatter)
+        self.assertIn("version: 0.2.0", frontmatter)
         self.assertIn("author: NethServer project contributors", frontmatter)
         self.assertIn("license: GPLv3", frontmatter)
         self.assertNotRegex(frontmatter, r"(?m)^model:")
@@ -44,7 +62,7 @@ class SkillContractTests(unittest.TestCase):
         readme = (REPOSITORY / "README.md").read_text(encoding="utf-8")
         self.assertIn("version: 1.3.0", parent)
         self.assertIn("Activate `nethvoice-admin`", quick_entry)
-        self.assertIn("/nethvoice-admin", readme)
+        self.assertRegex(readme, r"(?m)^- `nethvoice-admin` —")
         self.assertIn("Administration and Development", readme)
         external_collector = (
             REPOSITORY

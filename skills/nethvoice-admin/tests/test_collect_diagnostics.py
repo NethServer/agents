@@ -178,7 +178,7 @@ class FakeRunner:
                 actions = (
                     ["list-actions", "get-configuration", "list-routes", "list-trunks"]
                     if is_proxy
-                    else ["list-actions", "get-configuration", "get-ports-list", "get-facts"]
+                    else ["list-actions", "get-ports-list", "get-facts"]
                 )
                 return self.complete(argv, json.dumps(actions))
             if action == "get-configuration" and is_proxy:
@@ -192,22 +192,6 @@ class FakeRunner:
                             "service_network": {"address": "10.5.4.1", "netmask": "255.255.255.0"},
                             "local_networks": ["192.0.2.0/24"],
                             "password": CANARY,
-                        }
-                    ),
-                )
-            if action == "get-configuration":
-                return self.complete(
-                    argv,
-                    json.dumps(
-                        {
-                            "nethvoice_host": self.nethvoice_host(module_id),
-                            "nethcti_ui_host": f"cti{self.suffix(module_id)}.example.test",
-                            "lets_encrypt": True,
-                            "timezone": "Europe/Rome",
-                            "user_domain": "customers.example.test",
-                            "reports_international_prefix": "+39",
-                            "subscription_systemid": CANARY,
-                            "api_key": CANARY,
                         }
                     ),
                 )
@@ -242,8 +226,14 @@ class FakeRunner:
             is_proxy = any(row["id"] == module_id for row in self.proxies)
             if argv[3] == "printenv":
                 values = {
+                    "NETHVOICE_HOST": self.nethvoice_host(module_id),
+                    "NETHCTI_UI_HOST": f"cti{self.suffix(module_id)}.example.test",
+                    "TIMEZONE": "Europe/Rome",
+                    "USER_DOMAIN": "customers.example.test",
+                    "REPORTS_INTERNATIONAL_PREFIX": "+39",
                     "PROXY_IP": "10.5.4.1",
                     "ASTERISK_SIP_PORT": self.sip_port(module_id),
+                    "NETHVOICE_HOTEL": "false",
                     "SATELLITE_CALL_TRANSCRIPTION_ENABLED": "false",
                     "SATELLITE_VOICEMAIL_TRANSCRIPTION_ENABLED": "false",
                 }
@@ -268,6 +258,7 @@ class FakeRunner:
                             "tancredi",
                             "phonebook",
                             "reports-api",
+                            "reports-redis",
                             "reports-ui",
                             "satellite-pgsql",
                         )
@@ -276,7 +267,9 @@ class FakeRunner:
             if argv[3] == "systemctl":
                 if "--type=timer" in argv:
                     names = (
+                        "nethcti-ui-restart",
                         "nethvoice-cdr-cleanup",
+                        "nethvoice-hotel-alarms",
                         "phonebook-update",
                         "reports-scheduler",
                         "satellite-recordings-cleanup",
@@ -286,12 +279,24 @@ class FakeRunner:
                         if name in self.omit_timers:
                             continue
                         state = self.timer_overrides.get(name, {})
+                        feature_disabled = (
+                            name == "nethvoice-hotel-alarms"
+                            and self.env_overrides.get("NETHVOICE_HOTEL", "false").lower() != "true"
+                        ) or (
+                            name == "satellite-recordings-cleanup"
+                            and self.env_overrides.get(
+                                "SATELLITE_CALL_TRANSCRIPTION_ENABLED", "false"
+                            ).lower() != "true"
+                            and self.env_overrides.get(
+                                "SATELLITE_VOICEMAIL_TRANSCRIPTION_ENABLED", "false"
+                            ).lower() != "true"
+                        )
                         blocks.append(
                             f"Result={state.get('result', 'success')}\nId={name}.timer\n"
                             f"LoadState={state.get('load_state', 'loaded')}\n"
-                            f"ActiveState={state.get('active_state', 'active')}\n"
-                            f"SubState={state.get('sub_state', 'waiting')}\n"
-                            f"UnitFileState={state.get('unit_file_state', 'enabled')}"
+                            f"ActiveState={state.get('active_state', 'inactive' if feature_disabled else 'active')}\n"
+                            f"SubState={state.get('sub_state', 'dead' if feature_disabled else 'waiting')}\n"
+                            f"UnitFileState={state.get('unit_file_state', 'disabled' if feature_disabled else 'enabled')}"
                         )
                     return self.complete(argv, "\n\n".join(blocks) + "\n")
 
@@ -303,7 +308,13 @@ class FakeRunner:
                     "tancredi",
                     "phonebook",
                     "reports-api",
+                    "reports-redis",
+                    "reports-scheduler",
                     "reports-ui",
+                    "nethcti-ui-restart",
+                    "nethvoice-cdr-cleanup",
+                    "nethvoice-hotel-alarms",
+                    "phonebook-update",
                     "nethcti-server",
                     "nethcti-middleware",
                     "satellite",
@@ -318,6 +329,11 @@ class FakeRunner:
                     conditional_inactive = name in {
                         "nethcti-server",
                         "nethcti-middleware",
+                        "nethcti-ui-restart",
+                        "nethvoice-cdr-cleanup",
+                        "nethvoice-hotel-alarms",
+                        "phonebook-update",
+                        "reports-scheduler",
                         "satellite",
                         "satellite-mqtt",
                         "satellite-recordings-cleanup",
@@ -364,8 +380,8 @@ class CollectorBehaviorTests(unittest.TestCase):
 
         self.assertEqual(code, 0)
         self.assertEqual(report["status"], "complete")
-        self.assertEqual(report["schema_version"], "1.1.0")
-        self.assertEqual(report["collector_version"], "0.1.1")
+        self.assertEqual(report["schema_version"], "1.2.0")
+        self.assertEqual(report["collector_version"], "0.1.2")
         self.assertEqual(report["selected"]["nethvoice"][0]["id"], "nethvoice43")
         self.assertEqual(report["selected"]["proxy"][0]["id"], "nethvoice-proxy1")
         self.assertEqual(report["modules"]["nethvoice"][0]["asterisk"]["active_calls"], 0)
@@ -467,24 +483,50 @@ class CollectorBehaviorTests(unittest.TestCase):
         self.assertEqual(serialized.count('"schema_version"'), 1)
         self.assertEqual(json.loads(serialized)["status"], "complete")
 
-    def test_malformed_action_output_is_partial_without_raw_output(self):
+    def test_invalid_targeted_configuration_value_is_partial_without_raw_output(self):
         runner = FakeRunner()
-        key = (
-            "api-cli",
-            "run",
-            "module/nethvoice43/get-configuration",
-            "--data",
-            "{}",
-        )
-        runner.malformed[key] = f"not-json-{CANARY}"
+        runner.env_overrides["NETHVOICE_HOST"] = CANARY
         code, report, serialized = invoke(runner)
 
         self.assertEqual(code, 1)
         self.assertIn(
-            {"stage": "nethvoice.configuration", "code": "invalid_json", "module_id": "nethvoice43"},
+            {
+                "stage": "nethvoice.configuration.nethvoice_host",
+                "code": "invalid_output",
+                "module_id": "nethvoice43",
+            },
             report["errors"],
         )
         self.assertNotIn(CANARY, serialized)
+
+    def test_nethvoice_configuration_uses_only_targeted_non_secret_environment_values(self):
+        runner = FakeRunner()
+        code, report, serialized = invoke(runner)
+
+        self.assertEqual(code, 0)
+        calls = {argv for argv, _timeout in runner.calls}
+        self.assertNotIn(
+            (
+                "api-cli",
+                "run",
+                "module/nethvoice43/get-configuration",
+                "--data",
+                "{}",
+            ),
+            calls,
+        )
+        for key in (
+            "NETHVOICE_HOST",
+            "NETHCTI_UI_HOST",
+            "TIMEZONE",
+            "USER_DOMAIN",
+            "REPORTS_INTERNATIONAL_PREFIX",
+        ):
+            self.assertIn(("runagent", "-m", "nethvoice43", "printenv", key), calls)
+        self.assertNotIn("password", serialized.lower())
+        self.assertTrue(
+            report["modules"]["nethvoice"][0]["configuration"]["user_domain_configured"]
+        )
 
     def test_inactive_wizard_and_satellite_services_are_conditional(self):
         code, report, _ = invoke(FakeRunner())
@@ -542,6 +584,76 @@ class CollectorBehaviorTests(unittest.TestCase):
         ]
         self.assertEqual(len(service_calls), 1)
         self.assertIn("--all", service_calls[0])
+
+    def test_reports_redis_is_required(self):
+        runner = FakeRunner()
+        runner.service_overrides["reports-redis"] = {
+            "active_state": "inactive",
+            "sub_state": "dead",
+        }
+
+        _code, report, _ = invoke(runner)
+
+        services = {
+            item["name"]: item
+            for item in report["modules"]["nethvoice"][0]["runtime"]["services"]
+        }
+        self.assertEqual(services["reports-redis"]["expectation"], "required")
+        self.assertIn(
+            ("required_service_inactive", "reports-redis"),
+            {(item["code"], item.get("component")) for item in report["findings"]},
+        )
+
+        runner = FakeRunner()
+        runner.omit_services.add("reports-redis")
+        _code, report, _ = invoke(runner)
+        self.assertIn(
+            ("required_service_missing", "reports-redis"),
+            {(item["code"], item.get("component")) for item in report["findings"]},
+        )
+
+    def test_installed_version_required_timers_are_assessed(self):
+        code, report, _ = invoke(FakeRunner())
+
+        self.assertEqual(code, 0)
+        timers = {
+            item["name"]: item
+            for item in report["modules"]["nethvoice"][0]["runtime"]["timers"]
+        }
+        for name in collector.NV_REQUIRED_TIMERS_BY_VERSION["1.7.7"]:
+            self.assertEqual(timers[name]["expectation"], "required:installed-version")
+
+        runner = FakeRunner()
+        runner.omit_timers.add("reports-scheduler")
+        runner.omit_services.add("nethcti-ui-restart")
+        _code, report, _ = invoke(runner)
+        findings = {(item["code"], item.get("component")) for item in report["findings"]}
+        self.assertIn(("required_timer_missing", "reports-scheduler"), findings)
+        self.assertIn(("required_timer_service_missing", "nethcti-ui-restart"), findings)
+
+        runner = FakeRunner()
+        runner.timer_overrides["phonebook-update"] = {
+            "active_state": "inactive",
+            "sub_state": "dead",
+        }
+        _code, report, _ = invoke(runner)
+        self.assertIn(
+            ("required_timer_inactive", "phonebook-update"),
+            {(item["code"], item.get("component")) for item in report["findings"]},
+        )
+
+    def test_nethvoice_hotel_alarm_timer_is_required_when_enabled(self):
+        runner = FakeRunner()
+        runner.env_overrides["NETHVOICE_HOTEL"] = "true"
+        runner.omit_timers.add("nethvoice-hotel-alarms")
+
+        _code, report, _ = invoke(runner)
+
+        self.assertTrue(report["modules"]["nethvoice"][0]["features"]["nethvoice_hotel"])
+        self.assertIn(
+            ("required_timer_missing", "nethvoice-hotel-alarms"),
+            {(item["code"], item.get("component")) for item in report["findings"]},
+        )
 
     def test_satellite_cleanup_oneshot_uses_timer_and_last_result(self):
         runner = FakeRunner()
@@ -628,14 +740,7 @@ class CollectorBehaviorTests(unittest.TestCase):
 
     def test_incomplete_nethvoice_identity_cannot_label_route_stale(self):
         runner = FakeRunner()
-        key = (
-            "api-cli",
-            "run",
-            "module/nethvoice43/get-configuration",
-            "--data",
-            "{}",
-        )
-        runner.malformed[key] = "{}"
+        runner.env_overrides["NETHVOICE_HOST"] = CANARY
 
         code, report, _ = invoke(runner)
 
