@@ -62,7 +62,7 @@ class SkillContractTests(unittest.TestCase):
         readme = (REPOSITORY / "README.md").read_text(encoding="utf-8")
         self.assertIn("version: 1.3.0", parent)
         self.assertIn("Activate `nethvoice-admin`", quick_entry)
-        self.assertIn("/nethvoice-admin", readme)
+        self.assertRegex(readme, r"(?m)^- `nethvoice-admin` —")
         self.assertIn("Administration and Development", readme)
         external_collector = (
             REPOSITORY
