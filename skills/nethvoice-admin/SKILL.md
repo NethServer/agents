@@ -1,9 +1,9 @@
 ---
 name: nethvoice-admin
-description: Use when a production NS8 task concerns NethVoice, ns8-nethvoice, ns8-nethvoice-proxy, NethCTI, or their SIP/RTP path.
+description: Administer NethVoice, ns8-nethvoice-proxy, NethCTI and their SIP/RTP path on NS8, or run controlled SIP and queue regression tests in an explicitly authorized test instance.
 license: GPLv3
 metadata:
-  version: 0.1.3
+  version: 0.2.0
   author: NethServer project contributors
   hermes:
     tags: [nethvoice, ns8, production, voip, sip, rtp, asterisk, freepbx, kamailio, nethcti]
@@ -49,8 +49,11 @@ Record the installed versions and the source revision consulted. Never guess an 
 | Symptom-led diagnosis for registration, trunks, calls, audio/RTP, WebRTC, CTI, Janus, Tancredi, reports, Satellite, LDAP, databases, certificates, or NAT; bounded logs | `references/diagnostics.md` |
 | Configuration, upgrade, backup/restore, certificate or service recovery, rollback, active-call gates, and all break-glass work | `references/repair-and-lifecycle.md` |
 | Any logs, databases, traces, recordings, transcripts, credentials, API keys, integrations, or customer-identifying evidence | `references/sensitive-data.md` |
+| Authorized development/testing only: real SIP clients, manual answer, no-answer, busy, queue routing assertions, fixture lifecycle and JSON reports | `references/automated-sip-tests.md` |
 
 Use `scripts/collect_diagnostics.py` for a passive, aggregate-first local snapshot when appropriate. It is not a repair tool and is not a substitute for installed action/schema discovery.
+
+Active tests require explicit authorization for the named test instance and the calls/configuration/reloads involved. Authorization already given for the current task remains valid; do not request it again. Run the test harness only after discovering the installed topology and API. Never infer testing authorization from a diagnosis request or run it against production by default.
 
 ## Required completion
 

@@ -1,0 +1,464 @@
+{
+  "schema": 1,
+  "target": {
+    "host": "makako.makako.sf.nethserver.net",
+    "module": "nethvoice72"
+  },
+  "asterisk": "Asterisk 22.10.0 built by root @ e425d4417705 on a x86_64 running Linux on 2026-10-20 13:23:48 UTC",
+  "source_sha256": "3c3a6547fc9d8b613119ab0e64fb6942098633d5b2d6cddf151ead82c095b4cc",
+  "started_utc": "2026-10-21T10:26:42.463767+00:00",
+  "ended_utc": "2026-10-21T10:27:29.614757+00:00",
+  "configuration": {
+    "strategy": "linear",
+    "ring_timeout": 4,
+    "retry": 1,
+    "ringinuse": false,
+    "autopause": "no",
+    "lazy": false,
+    "penalties": [
+      0,
+      0
+    ]
+  },
+  "status": "PASS",
+  "counts": {
+    "PASS": 11,
+    "SKIP": 1
+  },
+  "scenarios": [
+    {
+      "name": "setup",
+      "status": "PASS",
+      "expected": "three real SIP registrations",
+      "actual": "three real SIP registrations"
+    },
+    {
+      "name": "direct-caller-A-1",
+      "status": "PASS",
+      "expected": "ring, manual answer, bridge and hangup",
+      "actual": "ring, manual answer, bridge and hangup"
+    },
+    {
+      "name": "direct-A-caller-1",
+      "status": "PASS",
+      "expected": "ring, manual answer, bridge and hangup",
+      "actual": "ring, manual answer, bridge and hangup"
+    },
+    {
+      "name": "direct-caller-B-1",
+      "status": "PASS",
+      "expected": "ring, manual answer, bridge and hangup",
+      "actual": "ring, manual answer, bridge and hangup"
+    },
+    {
+      "name": "direct-B-caller-1",
+      "status": "PASS",
+      "expected": "ring, manual answer, bridge and hangup",
+      "actual": "ring, manual answer, bridge and hangup"
+    },
+    {
+      "name": "no-answer-1",
+      "status": "PASS",
+      "expected": "real ringing followed by PBX NOANSWER",
+      "actual": "real ringing followed by PBX NOANSWER"
+    },
+    {
+      "name": "busy-1",
+      "status": "PASS",
+      "expected": "callee rejects 486 and Asterisk reports BUSY",
+      "actual": "callee rejects 486 and Asterisk reports BUSY"
+    },
+    {
+      "name": "queue-controls-1",
+      "status": "PASS",
+      "expected": "add, pause, penalty, unpause, remove members",
+      "actual": "add, pause, penalty, unpause, remove members"
+    },
+    {
+      "name": "queue-sequence-1",
+      "status": "PASS",
+      "expected": "A -> no answer -> B -> answer",
+      "actual": "A -> no answer -> B -> answer"
+    },
+    {
+      "name": "queue-live-behavior-1",
+      "status": "PASS",
+      "expected": "change B to answer while A rings; A -> B",
+      "actual": "change B to answer while A rings; A -> B"
+    },
+    {
+      "name": "lazy-members",
+      "status": "SKIP",
+      "expected": "paired Lazy Members on/off comparison",
+      "actual": "installed FreePBX API has no Lazy Members setter; strategy baseline only"
+    },
+    {
+      "name": "cleanup",
+      "status": "PASS",
+      "expected": "no owned clients, calls or fixture configuration",
+      "actual": "no owned clients, calls or fixture configuration"
+    }
+  ],
+  "queue_example": {
+    "expected": "A -> no answer -> B -> answer",
+    "actual": [
+      "A",
+      "B"
+    ],
+    "status": "PASS",
+    "sip": {
+      "caller": [
+        {
+          "kind": "call",
+          "elapsed_seconds": 0.874,
+          "state": "CALLING",
+          "code": null,
+          "generation": 7
+        },
+        {
+          "kind": "call",
+          "elapsed_seconds": 0.962,
+          "state": "CONNECTING",
+          "code": null,
+          "generation": 7
+        },
+        {
+          "kind": "call",
+          "elapsed_seconds": 0.972,
+          "state": "CONFIRMED",
+          "code": null,
+          "generation": 7
+        },
+        {
+          "kind": "call",
+          "elapsed_seconds": 6.064,
+          "state": "DISCONNECTED",
+          "code": 200,
+          "generation": 7
+        }
+      ],
+      "A": [
+        {
+          "kind": "invite",
+          "elapsed_seconds": 1.025,
+          "generation": 4
+        },
+        {
+          "kind": "call",
+          "elapsed_seconds": 1.025,
+          "state": "EARLY",
+          "code": null,
+          "generation": 4
+        },
+        {
+          "kind": "call",
+          "elapsed_seconds": 5.015,
+          "state": "DISCONNECTED",
+          "code": 487,
+          "generation": 4
+        }
+      ],
+      "B": [
+        {
+          "kind": "invite",
+          "elapsed_seconds": 6.043,
+          "generation": 4
+        },
+        {
+          "kind": "call",
+          "elapsed_seconds": 6.045,
+          "state": "EARLY",
+          "code": null,
+          "generation": 4
+        },
+        {
+          "kind": "call",
+          "elapsed_seconds": 6.048,
+          "state": "CONNECTING",
+          "code": null,
+          "generation": 4
+        },
+        {
+          "kind": "call",
+          "elapsed_seconds": 6.058,
+          "state": "CONFIRMED",
+          "code": null,
+          "generation": 4
+        },
+        {
+          "kind": "call",
+          "elapsed_seconds": 6.106,
+          "state": "DISCONNECTED",
+          "code": 200,
+          "generation": 4
+        }
+      ]
+    },
+    "ami": [
+      {
+        "event": "QueueCallerJoin",
+        "elapsed_seconds": 0.996,
+        "uniqueid": "call-1",
+        "linkedid": "call-1"
+      },
+      {
+        "event": "AgentCalled",
+        "elapsed_seconds": 1.008,
+        "uniqueid": "call-1",
+        "linkedid": "call-1",
+        "destuniqueid": "call-2",
+        "destlinkedid": "call-1",
+        "MemberName": "A"
+      },
+      {
+        "event": "AgentRingNoAnswer",
+        "elapsed_seconds": 5.007,
+        "uniqueid": "call-1",
+        "linkedid": "call-1",
+        "destuniqueid": "call-2",
+        "destlinkedid": "call-1",
+        "MemberName": "A",
+        "RingTime": "4000"
+      },
+      {
+        "event": "DialEnd",
+        "elapsed_seconds": 5.01,
+        "uniqueid": "call-1",
+        "linkedid": "call-1",
+        "destuniqueid": "call-2",
+        "destlinkedid": "call-1",
+        "DialStatus": "NOANSWER"
+      },
+      {
+        "event": "DialEnd",
+        "elapsed_seconds": 5.01,
+        "uniqueid": "call-1",
+        "linkedid": "call-1",
+        "destuniqueid": "call-2",
+        "destlinkedid": "call-1",
+        "DialStatus": "CANCEL"
+      },
+      {
+        "event": "AgentCalled",
+        "elapsed_seconds": 6.017,
+        "uniqueid": "call-1",
+        "linkedid": "call-1",
+        "destuniqueid": "call-3",
+        "destlinkedid": "call-1",
+        "MemberName": "B"
+      },
+      {
+        "event": "DialEnd",
+        "elapsed_seconds": 6.057,
+        "uniqueid": "call-1",
+        "linkedid": "call-1",
+        "destuniqueid": "call-3",
+        "destlinkedid": "call-1",
+        "DialStatus": "ANSWER"
+      },
+      {
+        "event": "AgentConnect",
+        "elapsed_seconds": 6.062,
+        "uniqueid": "call-1",
+        "linkedid": "call-1",
+        "destuniqueid": "call-3",
+        "destlinkedid": "call-1",
+        "MemberName": "B",
+        "RingTime": "0"
+      }
+    ],
+    "queue_log": [
+      {
+        "event": "ENTERQUEUE",
+        "member": "NONE",
+        "callid": "call-1"
+      },
+      {
+        "event": "RINGNOANSWER",
+        "member": "A",
+        "callid": "call-1"
+      },
+      {
+        "event": "CONNECT",
+        "member": "B",
+        "callid": "call-1"
+      },
+      {
+        "event": "COMPLETECALLER",
+        "member": "B",
+        "callid": "call-1"
+      }
+    ]
+  },
+  "live_runs": [
+    {
+      "run": "report-1.json",
+      "sha256": "656b91cca3f909c1c5c3329cea002fb17c3407bbd97ce371ab7a044c126b656c",
+      "status": "FAIL",
+      "counts": {
+        "FAIL": 2
+      }
+    },
+    {
+      "run": "report-2.json",
+      "sha256": "0c9525af530bbff98064a881068f290dad775be6a6227a5db256e5a66ff9b2f6",
+      "status": "FAIL",
+      "counts": {
+        "FAIL": 1,
+        "PASS": 1
+      }
+    },
+    {
+      "run": "report-3.json",
+      "sha256": "2d560e4742f0ce9946e32ce52969bb0c9edfb76f600ecc371748f3e60195bcc0",
+      "status": "PASS",
+      "counts": {
+        "PASS": 10,
+        "SKIP": 1
+      }
+    },
+    {
+      "run": "report-4.json",
+      "sha256": "8cfd0fded7a6b2171912bc8e5313c49f351328dc88a872b770dd8e64512a1d63",
+      "status": "PASS",
+      "counts": {
+        "PASS": 29,
+        "SKIP": 1
+      }
+    },
+    {
+      "run": "report-5.json",
+      "sha256": "750182d7df09a4dab52c4f3800100097caf0050ae1dadc218a92fef52c6e033e",
+      "status": "PASS",
+      "counts": {
+        "PASS": 20,
+        "SKIP": 1
+      }
+    },
+    {
+      "run": "report-6.json",
+      "sha256": "3c3a6547fc9d8b613119ab0e64fb6942098633d5b2d6cddf151ead82c095b4cc",
+      "status": "PASS",
+      "counts": {
+        "PASS": 11,
+        "SKIP": 1
+      }
+    },
+    {
+      "run": "report-daemon.json",
+      "sha256": "3dbcba1bdb197ef32818867951a9a7333fcb5032755a4e6a61259cac51ef8c52",
+      "status": "FAIL",
+      "counts": {
+        "PASS": 3,
+        "FAIL": 1
+      }
+    },
+    {
+      "run": "report-daemon-final.json",
+      "sha256": "a653a47a22bd1a7cbf56a20a8ab33553bd867a3282a6aa34623fa0108dcc2603",
+      "status": "PASS",
+      "counts": {
+        "PASS": 9
+      }
+    }
+  ],
+  "daemon_scenarios": [
+    {
+      "name": "cli-start-three",
+      "status": "PASS",
+      "expected": "three independent registered endpoint daemons",
+      "actual": "three independent registered endpoint daemons",
+      "evidence": {
+        "registered": 3
+      }
+    },
+    {
+      "name": "control-isolation",
+      "status": "PASS",
+      "expected": "localhost listeners and token authentication",
+      "actual": "localhost listeners and token authentication",
+      "evidence": {
+        "localhost_control_ports": [
+          23231,
+          23232,
+          23233
+        ],
+        "invalid_token_rejected": true
+      }
+    },
+    {
+      "name": "cli-answer-hangup",
+      "status": "PASS",
+      "expected": "manual ringing, answer and hangup through control API",
+      "actual": "manual ringing, answer and hangup through control API",
+      "evidence": {}
+    },
+    {
+      "name": "cli-no-answer",
+      "status": "PASS",
+      "expected": "ring normally until PBX timeout",
+      "actual": "ring normally until PBX timeout",
+      "evidence": {}
+    },
+    {
+      "name": "cli-busy",
+      "status": "PASS",
+      "expected": "manual SIP 486 rejection",
+      "actual": "manual SIP 486 rejection",
+      "evidence": {}
+    },
+    {
+      "name": "cli-unregister-register",
+      "status": "PASS",
+      "expected": "real unregister then register",
+      "actual": "real unregister then register",
+      "evidence": {}
+    },
+    {
+      "name": "audio-port-discovery",
+      "status": "PASS",
+      "expected": "observed conference port IDs",
+      "actual": "observed conference port IDs",
+      "evidence": {
+        "events": [
+          {
+            "seq": 15,
+            "time": 1792578319.8566828,
+            "endpoint": "endpoint",
+            "kind": "audio-ports",
+            "ports": [
+              {
+                "id": 0,
+                "role": "device-or-tone"
+              },
+              {
+                "id": 1,
+                "role": "device-or-tone"
+              },
+              {
+                "id": 2,
+                "role": "device-or-tone"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "sigterm-cleanup",
+      "status": "PASS",
+      "expected": "SIGTERM removes client, registration and control state",
+      "actual": "SIGTERM removes client, registration and control state",
+      "evidence": {
+        "state_removed": true
+      }
+    },
+    {
+      "name": "cli-stop-cleanup",
+      "status": "PASS",
+      "expected": "clients stopped and fixture removed",
+      "actual": "clients stopped and fixture removed",
+      "evidence": {}
+    }
+  ]
+}
