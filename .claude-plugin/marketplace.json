@@ -12,6 +12,12 @@
       "description": "Coding agent skills tailored to NethServer development guidelines",
       "source": "./",
       "category": "development"
+    },
+    {
+      "name": "nethesis-design",
+      "description": "Coding agent skills for user interfaces that follow the Nethesis Design System",
+      "source": "./plugins/nethesis-design",
+      "category": "development"
     }
   ]
 }
