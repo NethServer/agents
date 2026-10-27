@@ -17,14 +17,20 @@ confirmation modal or the table page.
 
 - **Loading**: `NeSkeleton` in place of the content that is loading.
 - **Nothing to show**: `NeEmptyState`, with a title, a description and, when there is a next
-  step, an action.
-- **An error in a page or a form**: `NeInlineNotification`. A result the user should notice
+  step, an action. Follow the *Empty state* pattern
+  ([Storybook](https://nethesis.github.io/vue-components/?path=/story/patterns-empty-state--no-items),
+  [source](https://raw.githubusercontent.com/nethesis/vue-components/main/stories/PatternEmptyState.stories.ts)).
+- **An error in a page or a form**: `NeInlineNotification`. Follow the *Inline error
+  notification* pattern
+  ([Storybook](https://nethesis.github.io/vue-components/?path=/story/patterns-inline-error-notification--network-error),
+  [source](https://raw.githubusercontent.com/nethesis/vue-components/main/stories/PatternInlineErrorNotification.stories.ts)). A result the user should notice
   after an action: a toast notification.
 - **A status** (enabled, expired, online…): `NeBadgeV2`.
 - **Form fields** (`NeTextInput`, `NeCombobox`…): always bind `label` and `id`, and show
   validation errors through `invalidMessage`, not with separate text.
 - **Buttons that start an action**: `NeButton` with the `kind` its story uses for that role, and
-  `loading` bound while the action runs.
+  `loading` bound while the action runs. Only one `primary` button per view or dialog: the
+  others are `secondary` or `tertiary`.
 - **After closing a modal or a drawer**: show the toast once the closing animation has ended,
   about 500 ms later, or it appears while the dialog is still moving.
 

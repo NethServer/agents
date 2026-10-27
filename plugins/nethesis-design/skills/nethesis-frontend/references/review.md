@@ -29,7 +29,8 @@ Storybook index (`references/components.md`).
 ## What to check
 
 - **Components**: custom markup where a component or a pattern exists; classes that override a
-  component instead of using its props; deprecated components.
+  component instead of using its props; deprecated components; more than one `primary` button
+  in a view or dialog.
 - **Colors**: hex or arbitrary values; Tailwind palette classes where the project defines a
   semantic color for that role; palette names instead of `primary-*`; colors without a dark
   theme value (`references/colors.md`).
