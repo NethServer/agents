@@ -1,0 +1,36 @@
+# Interface text and translations
+
+The rules for interface text are in the writing guidelines and the glossary of the Nethesis
+Design System. Read them; do not rely on memory, and do not copy their rules into the code or
+into comments.
+
+```
+https://nethesis.github.io/design-system/writing-guidelines.md
+https://nethesis.github.io/design-system/glossary.json
+```
+
+- **Writing guidelines** (markdown): read the sections for the elements you write, such as
+  "Buttons and actions", "Forms", "Empty states", "Modals", "Notifications". When a rule comes
+  from a vue-components pattern, the pattern's texts are the reference.
+- **Glossary** (JSON): `terms` lists the approved terms with their definition, the products
+  they apply to, the Italian translation (`it`) and the terms to avoid (`avoid.en`, `avoid.it`).
+  `untranslatable: true` means the term stays in English in Italian too. Before you use a term
+  for an object or an action, look it up, and never use a term listed under `avoid`.
+
+## i18n files
+
+No user-facing string goes in a template or a script as literal text: add a key to the project's
+i18n files and use it through `vue-i18n` (`t()` or `$t()`).
+
+- Find the files and the key naming in the project (for example `src/i18n/en/translation.json`
+  or `src/i18n/en.json`), and follow the existing structure.
+- Always add the English text.
+- Italian: check the history of the Italian file (`git log -- <file>`). If Weblate updates it
+  (commits by "Weblate"), do not edit it: translators will. If developers edit it, add the
+  Italian text too, with the translations of the glossary and the Italian rules of the writing
+  guidelines.
+
+## NethServer 8
+
+Only these two sources apply to NethServer 8 interfaces, which otherwise follow the Carbon
+Design System. The rest of this skill does not.
