@@ -13,6 +13,21 @@ confirmation modal or the table page.
    components (same spacing, radius, ring and semantic colors), and say in your answer which
    part is custom.
 
+## Common cases
+
+- **Loading**: `NeSkeleton` in place of the content that is loading.
+- **Nothing to show**: `NeEmptyState`, with a title, a description and, when there is a next
+  step, an action.
+- **An error in a page or a form**: `NeInlineNotification`. A result the user should notice
+  after an action: a toast notification.
+- **A status** (enabled, expired, online…): `NeBadgeV2`.
+- **Form fields** (`NeTextInput`, `NeCombobox`…): always bind `label` and `id`, and show
+  validation errors through `invalidMessage`, not with separate text.
+- **Buttons that start an action**: `NeButton` with the `kind` its story uses for that role, and
+  `loading` bound while the action runs.
+- **After closing a modal or a drawer**: show the toast once the closing animation has ended,
+  about 500 ms later, or it appears while the dialog is still moving.
+
 ## Finding what exists
 
 The Storybook pages cannot be read, but its index can:

@@ -15,6 +15,10 @@ grep -rnE 'font-(semibold|bold|extrabold|black)\b' src --include=*.vue
 grep -rnE '#[0-9a-fA-F]{3,8}\b|(bg|text|border|ring|fill|stroke)-\[#' src --include=*.vue
 # raw elements that usually have a component
 grep -rnE '<(button|input|select|textarea|table)\b' src --include=*.vue
+# styles outside Tailwind classes, and arbitrary values
+grep -rnE '\bstyle="|\b[a-z-]+-\[[0-9.]+(px|rem)\]' src --include=*.vue
+# whole icon packs instead of single icons
+grep -rnE "import \{ (fas|far|fab|fal) \}|library\.add\(" src --include=*.vue --include=*.ts
 # deprecated components
 grep -rnE '\b(NeBadge|NeDropdownFilter|NeToastNotification)\b' src --include=*.vue
 ```
@@ -31,8 +35,9 @@ Storybook index (`references/components.md`).
   theme value (`references/colors.md`).
 - **Typography**: weights other than `font-normal` and `font-medium`; sizes outside the text
   styles of `foundations.json`.
-- **Icons**: icons not from Font Awesome Solid or the Nethesis packages; decorative icons without
-  `aria-hidden="true"`; icon-only buttons without an accessible label and a tooltip.
+- **Icons**: icons not from Font Awesome Solid or the Nethesis packages; whole icon packs
+  imported; decorative icons without `aria-hidden="true"`; icon-only buttons without an
+  accessible label and a tooltip.
 - **Text**: literal strings instead of i18n keys; texts that break the writing guidelines; terms
   the glossary lists under `avoid` (`references/text.md`).
 - **Accessibility**: form fields without a label, interactive elements that cannot be reached or
@@ -42,6 +47,9 @@ Storybook index (`references/components.md`).
 
 Group the problems by file, most serious first. For each one give:
 
+- the severity: **critical** (broken or inaccessible for some users), **high** (wrong component,
+  color or text the user sees), **medium** (inconsistent with the design system, but works),
+  **low** (style or naming);
 - `path:line`;
 - the problem, in one sentence;
 - the rule it breaks, with a link to its source (the Storybook story, the section of the writing

@@ -48,9 +48,11 @@ no content. Read the plain files the reference files point to.
   dark theme. No hex values or arbitrary colors in templates. (`references/colors.md`)
 - Text uses only two weights of Poppins: `font-normal` and `font-medium`. Never `font-semibold`
   or `font-bold`.
-- Icons: `FontAwesomeIcon` with the free Solid icons; a Nethesis custom icon only when Font
-  Awesome has none. An icon next to a text label gets `aria-hidden="true"`; an icon without text
-  needs an accessible label and a tooltip.
+- Icons: `FontAwesomeIcon` with the free Solid icons, each imported by name (never a whole
+  icon pack); a Nethesis custom icon only when Font Awesome has none. An icon next to a text
+  label gets `aria-hidden="true"`; an icon without text needs an accessible label and a tooltip.
+- Style with Tailwind classes on the spacing scale (`p-4`, `gap-6`): no `style` attributes, and
+  no arbitrary values (`w-[137px]`) unless nothing else works.
 - Every user-facing string goes in the i18n files, written by the writing guidelines with the
   terms of the glossary. (`references/text.md`)
 - Interactive elements must work with the keyboard and keep a visible focus ring. Form fields
