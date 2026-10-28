@@ -1,6 +1,6 @@
 ---
 name: nethesis-frontend
-description: 'Use when writing, changing or reviewing the frontend of a Nethesis product built with Vue 3, Tailwind CSS and @nethesis/vue-components (My Nethesis, NethSecurity, NethVoice and others): pages, components, forms, tables, modals, notifications, colors, dark theme, interface text and translations, also from a Figma link, a mockup image or a description. Also use to check that a page, a component or a whole project follows the Nethesis Design System. Not for NethServer 8 modules (Vue 2 with Carbon and ns8-ui-lib).'
+description: 'Use when writing, changing or reviewing the frontend of a Nethesis product built with Vue 3, Tailwind CSS and @nethesis/vue-components (My Nethesis, NethSecurity, NethVoice and others): pages, components, forms, tables, modals, notifications, colors, dark theme, interface text and translations, also from a Figma link, a mockup image or a description. Also use to check that a page, a component or a whole project follows the Nethesis Design System, and when adding or changing a component of @nethesis/vue-components itself. Not for NethServer 8 modules (Vue 2 with Carbon and ns8-ui-lib).'
 ---
 
 # Nethesis frontend
@@ -15,6 +15,10 @@ Check `package.json` first. This skill applies when the project uses Vue 3, Tail
 `@nethserver/ns8-ui-lib`, it is a NethServer 8 interface, which follows the Carbon Design
 System: say so, and apply only the writing guidelines and the glossary to its text
 (`references/text.md`), nothing else from this skill.
+
+If the project is `@nethesis/vue-components` itself (the `name` in `package.json`), the design
+rules of this skill apply to its components too. Follow its `AGENTS.md` and `CONTRIBUTING.md`
+for the rest: no hard-coded text, exports, stories with their description, deprecations.
 
 ## Sources, in this order
 
