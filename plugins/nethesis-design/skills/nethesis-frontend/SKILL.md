@@ -47,7 +47,8 @@ no content. Read the plain files the reference files point to.
 
 - Use a pattern or a component of `@nethesis/vue-components` before writing your own markup.
   Change it through its props and slots, not by overriding its classes. (`references/components.md`)
-- Never use a deprecated component (marked `[Deprecated]` in the Storybook) in new code.
+- Never use a deprecated component, prop or function in new code: `deprecated` in
+  `components.json`, `@deprecated` in the installed package.
   (`references/components.md`)
 - Colors come from the semantic tokens of the project's main CSS file, in both the light and the
   dark theme. No hex values or arbitrary colors in templates. (`references/colors.md`)

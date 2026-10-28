@@ -19,12 +19,15 @@ grep -rnE '<(button|input|select|textarea|table)\b' src --include=*.vue
 grep -rnE '\bstyle="|\b[a-z-]+-\[[0-9.]+(px|rem)\]' src --include=*.vue
 # whole icon packs instead of single icons
 grep -rnE "import \{ (fas|far|fab|fal) \}|library\.add\(" src --include=*.vue --include=*.ts
-# deprecated components
-grep -rnE '\b(NeBadge|NeDropdownFilter|NeToastNotification)\b' src --include=*.vue
+# deprecated components, from components.json (references/components.md)
+deprecated=$(curl -s https://nethesis.github.io/vue-components/components.json |
+  jq -r '[.components[] | select(.deprecated) | .name] | join("|")')
+grep -rnE "\b($deprecated)\b" src --include=*.vue --include=*.ts
+# deprecated props, types and functions of the installed version
+grep -rn @deprecated node_modules/@nethesis/vue-components/dist --include=*.d.ts
 ```
 
-The last pattern matches the names without `V2`; update it from the `[Deprecated]` titles in the
-Storybook index (`references/components.md`).
+Search the project for each name the last command finds.
 
 ## What to check
 
@@ -55,8 +58,9 @@ Group the problems by file, most serious first. For each one give:
 - `path:line`;
 - the problem, in one sentence;
 - the rule it breaks, with a link to its source (the Storybook story, the section of the writing
-  guidelines, the glossary term, the color token, the icon meaning). Glossary terms and icon
-  meanings have their own `link` in `glossary.json` and `icons.json`;
+  guidelines, the glossary term, the color token, the icon meaning). Components and patterns,
+  glossary terms and icon meanings have their own `link` in `components.json`, `glossary.json`
+  and `icons.json`;
 - the fix, as a short code change when it is obvious.
 
 End with what you did not check, if anything.

@@ -36,31 +36,35 @@ confirmation modal or the table page.
 
 ## Finding what exists
 
-The Storybook pages cannot be read, but its index can:
+The Storybook pages cannot be read. Read the list of its components and patterns instead:
 
 ```
-https://nethesis.github.io/vue-components/index.json
+https://nethesis.github.io/vue-components/components.json
 ```
 
-Each entry of `entries` has a `title` (`Patterns/Delete item modal`, `Components/NeButton`,
-`Components/NeBadge [Deprecated]`), a `type` (`docs` or `story`) and an `importPath`, the source
-file of the stories in the vue-components repository. Read that file for the usage: the
-template, the props passed in each story and the texts.
+Fetch it with `curl -s` and filter it with `jq`, for example
+`jq -r '.components[] | "\(.name): \(.description)"'`. Each entry of `components` and
+`patterns` has:
 
-```
-https://raw.githubusercontent.com/nethesis/vue-components/main/stories/NeButton.stories.ts
-https://raw.githubusercontent.com/nethesis/vue-components/main/stories/PatternTablePage.stories.ts
-```
+- `description`: what it is for, and which component to use in the cases it does not cover.
+  Choose by the description, not by the name.
+- `deprecated` and `replacedBy`: never use a deprecated component; use its `replacedBy`.
+- `parts`: components documented with this one (`NeTableHead`, `NeTableRow`… with `NeTable`).
+- `storiesSource`: the code of its stories. Read it before using the component or the pattern:
+  the template, the props passed in each story and the texts.
+- `componentSource`: the code of the component, when the stories are not enough.
+- `link` and `stories[].link`: its Storybook pages, to cite in a review.
 
-- Components marked `[Deprecated]` have a newer version, usually with the `V2` suffix
-  (`NeBadgeV2`, `NeDropdownFilterV2`, `NeToastNotificationV2`). Use the new one.
-- The source of a component, when the stories are not enough:
-  `https://raw.githubusercontent.com/nethesis/vue-components/main/src/components/<Name>.vue`.
+Deprecated props, types and functions are not in `components.json`: the installed package marks
+them with `@deprecated`, with their replacement
+(`grep -rn @deprecated node_modules/@nethesis/vue-components/dist --include=*.d.ts`). The
+`multiple` prop of `NeCombobox` is one: use `NeMultiselectCombobox`.
 
 ## The installed version
 
-The Storybook shows the latest version; the project may have an older one. Before using a
-component, a prop or an event, check the installed version:
+The Storybook and `components.json` are built from the main branch of vue-components: their
+`version` is the latest release, and they may include changes not released yet. The project may
+have an older version. Before using a component, a prop or an event, check the installed version:
 
 - `node_modules/@nethesis/vue-components/package.json` for the version;
 - `node_modules/@nethesis/vue-components/dist/main.d.ts` for what the package exports;
