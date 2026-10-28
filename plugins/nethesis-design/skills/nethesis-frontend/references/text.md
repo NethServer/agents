@@ -25,12 +25,7 @@ i18n files and use it through `vue-i18n` (`t()` or `$t()`).
 - Find the files and the key naming in the project (for example `src/i18n/en/translation.json`
   or `src/i18n/en.json`), and follow the existing structure.
 - Always add the English text.
-- Italian: check the history of the Italian file (`git log -- <file>`). If Weblate updates it
-  (commits by "Weblate"), do not edit it: translators will. If developers edit it, add the
-  Italian text too, with the translations of the glossary and the Italian rules of the writing
-  guidelines.
-
-## NethServer 8
-
-Only these two sources apply to NethServer 8 interfaces, which otherwise follow the Carbon
-Design System. The rest of this skill does not.
+- Italian: check who edits the Italian file (`git log --format=%an -- <file>`). If developers
+  do, even when Weblate edits it too, add the Italian text, with the translations of the glossary
+  and the Italian rules of the writing guidelines. If only Weblate does, do not edit it:
+  translators will. Leave the other languages to Weblate.

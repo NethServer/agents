@@ -17,8 +17,8 @@ grep -rnE '#[0-9a-fA-F]{3,8}\b|(bg|text|border|ring|fill|stroke)-\[#' src --incl
 grep -rnE '<(button|input|select|textarea|table)\b' src --include=*.vue
 # styles outside Tailwind classes, and arbitrary values
 grep -rnE '\bstyle="|\b[a-z-]+-\[[0-9.]+(px|rem)\]' src --include=*.vue
-# whole icon packs instead of single icons
-grep -rnE "import \{ (fas|far|fab|fal) \}|library\.add\(" src --include=*.vue --include=*.ts
+# icons not imported one by one: whole packs, library.add(), icons named by string
+grep -rnE "import \{ (fas|far|fab|fal) \}|library\.add\(|['\"]fa[srlb]['\"], *['\"][a-z0-9-]+['\"]|['\"]fa-(solid|regular|light|brands) fa-" src --include=*.vue --include=*.ts
 # deprecated components, from components.json (references/components.md)
 deprecated=$(curl -s https://nethesis.github.io/vue-components/components.json |
   jq -r '[.components[] | select(.deprecated) | .name] | join("|")')
@@ -28,6 +28,9 @@ grep -rn @deprecated node_modules/@nethesis/vue-components/dist --include=*.d.ts
 ```
 
 Search the project for each name the last command finds.
+
+When a whole project uses the same pattern, such as icons named by string in every file, report
+it once for the project with a few examples, not line by line.
 
 ## What to check
 
@@ -39,8 +42,8 @@ Search the project for each name the last command finds.
   theme value (`references/colors.md`).
 - **Typography**: weights other than `font-normal` and `font-medium`; sizes outside the text
   styles of `foundations.json`.
-- **Icons**: icons not from Font Awesome Solid or the Nethesis packages; whole icon packs
-  imported; an icon that differs from the one `icons.json` gives for that meaning, or that it
+- **Icons**: icons not from Font Awesome Solid or the Nethesis packages; icons not imported
+  one by one (whole packs, `library.add()`, names as strings); an icon that differs from the one `icons.json` gives for that meaning, or that it
   lists under `avoid`; custom icons listed under `customIconsWithoutMeaning`; decorative icons
   without `aria-hidden="true"`; icon-only buttons without an accessible label and a tooltip.
 - **Text**: literal strings instead of i18n keys; texts that break the writing guidelines; terms
@@ -57,10 +60,13 @@ Group the problems by file, most serious first. For each one give:
   **low** (style or naming);
 - `path:line`;
 - the problem, in one sentence;
-- the rule it breaks, with a link to its source (the Storybook story, the section of the writing
-  guidelines, the glossary term, the color token, the icon meaning). Components and patterns,
-  glossary terms and icon meanings have their own `link` in `components.json`, `glossary.json`
-  and `icons.json`;
+- the rule it breaks, with a link to its source. Components and patterns, glossary terms and
+  icon meanings have their own `link` in `components.json`, `glossary.json` and `icons.json`.
+  A section of the writing guidelines is
+  `https://nethesis.github.io/design-system/?page=writing-guidelines#<heading>`, a color token
+  `https://nethesis.github.io/design-system/?page=colors#token-<name>`, both written lowercase
+  with hyphens (`#buttons-and-actions`, `#token-text-secondary-neutral`). For a rule that comes
+  only from this skill, cite the skill;
 - the fix, as a short code change when it is obvious.
 
 End with what you did not check, if anything.

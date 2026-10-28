@@ -9,9 +9,11 @@ Use the Figma MCP server, if it is available, on the node in the link only.
 
 - The link has the file key and the node: `figma.com/design/<fileKey>/<name>?node-id=1-2`
   means node `1:2`.
-- Read that node with one call (`get_design_context`; add `get_screenshot` only if the structure
-  is unclear). Do not browse the rest of the file, its pages or its components: the Figma plan
-  allows few calls a month, shared by the whole team.
+- Read that node only: `create_session` with the file key, which the server requires first,
+  then one `get_design_context` on the node; add `get_screenshot` only if the structure is
+  unclear. Do not browse the rest of the file, its pages or its components, and do not search
+  the design system or Code Connect: the Figma plan allows few calls a month, shared by the
+  whole team.
 - If the Figma server is not available, or the link has no `node-id`, ask for an image of the
   frame instead.
 

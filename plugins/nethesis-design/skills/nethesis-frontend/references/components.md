@@ -15,24 +15,41 @@ confirmation modal or the table page.
 
 ## Common cases
 
-- **Loading**: `NeSkeleton` in place of the content that is loading.
+The patterns named below are in the `patterns` of `components.json` (see "Finding what exists"),
+with their Storybook links and the code of their stories.
+
+- **Loading**: `NeSkeleton` in place of the content that is loading; for a table, the `loading`
+  prop of `NeTable`.
 - **Nothing to show**: `NeEmptyState`, with a title, a description and, when there is a next
-  step, an action. Follow the *Empty state* pattern
-  ([Storybook](https://nethesis.github.io/vue-components/?path=/story/patterns-empty-state--no-items),
-  [source](https://raw.githubusercontent.com/nethesis/vue-components/main/stories/PatternEmptyState.stories.ts)).
+  step, an action. Follow the *Empty state* pattern.
 - **An error in a page or a form**: `NeInlineNotification`. Follow the *Inline error
-  notification* pattern
-  ([Storybook](https://nethesis.github.io/vue-components/?path=/story/patterns-inline-error-notification--network-error),
-  [source](https://raw.githubusercontent.com/nethesis/vue-components/main/stories/PatternInlineErrorNotification.stories.ts)). A result the user should notice
-  after an action: a toast notification.
+  notification* pattern.
+- **The result of an action** the user should notice, such as an object created or deleted: a
+  toast, `NeToastNotificationV2`. Follow the *Success toast notification* pattern. After closing
+  a modal or a drawer, show the toast once the closing animation has ended, about 500 ms later,
+  or it appears while the dialog is still moving.
+- **Deleting**: follow the *Delete item modal* pattern; its *Type to confirm* story is for
+  deletions that lose a lot of data.
 - **A status** (enabled, expired, online…): `NeBadgeV2`.
-- **Form fields** (`NeTextInput`, `NeCombobox`…): always bind `label` and `id`, and show
-  validation errors through `invalidMessage`, not with separate text.
 - **Buttons that start an action**: `NeButton` with the `kind` its story uses for that role, and
   `loading` bound while the action runs. Only one `primary` button per view or dialog: the
-  others are `secondary` or `tertiary`.
-- **After closing a modal or a drawer**: show the toast once the closing animation has ended,
-  about 500 ms later, or it appears while the dialog is still moving.
+  others are `secondary` or `tertiary`. A button that confirms a destructive action is `danger`,
+  in place of the `primary`.
+- **Tables on small screens**: `NeTable` shows each row as a card below its `cardBreakpoint`.
+  Follow the *Table page* pattern for a page that lists objects. Write the rest of the layout
+  mobile first, with the Tailwind breakpoints (`sm:`, `md:`, `lg:`…).
+
+## Forms
+
+- Every field has a `label`. Show validation errors through `invalidMessage`, not with separate
+  text, and helper text through `helperText`.
+- Validate with the library and the helpers the project already uses (valibot in My Nethesis
+  and NethSecurity): find an existing form and follow it.
+- An error that is not about one field, such as a failed save, goes in an
+  `NeInlineNotification` (*Inline error notification* pattern).
+- For a new password, follow the *New password form* pattern.
+- The texts of labels, helper texts and validation messages follow the "Forms" section of the
+  writing guidelines (`references/text.md`).
 
 ## Finding what exists
 
@@ -74,7 +91,7 @@ have an older version. Before using a component, a prop or an event, check the i
 If the project's version lacks a component or a prop that the task needs, say so and suggest
 updating the dependency instead of rebuilding it.
 
-## Usage
+## Usage and setup
 
 ```vue
 <script setup lang="ts">
@@ -85,3 +102,7 @@ import { NeButton, NeTextInput } from '@nethesis/vue-components'
 The project's main CSS file imports `@nethesis/vue-components/theme.css` and declares
 `@source` on the package; both are needed for the components to be styled. Dark theme uses the
 `.dark` class on an ancestor (`@custom-variant dark`), and every component supports it.
+
+To set up a new project, follow the Installation, Fontawesome and Font sections of the README of
+vue-components (https://github.com/nethesis/vue-components#installation): the theme and
+`@source`, the Font Awesome CSS in a layer below Tailwind, and Poppins Regular and Medium.

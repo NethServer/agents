@@ -26,8 +26,9 @@ The `nethesis-design` plugin, under `plugins/nethesis-design/`, holds the skills
 interfaces that follow the [Nethesis Design System](https://nethesis.github.io/design-system/).
 It is a separate plugin, so you can install it without the NethServer skills:
 
-- `nethesis-frontend` — write and review Vue 3 frontends built with Tailwind CSS and
-  `@nethesis/vue-components` (not NethServer 8)
+- `nethesis-frontend` — write and review frontends: Vue 3 projects built with Tailwind CSS and
+  `@nethesis/vue-components` fully; text, icons, colors and typography for other stacks; only
+  text for NethServer 8 modules built with Carbon
 
 ## Skill structure and context cost
 
@@ -86,6 +87,8 @@ This repository is a Claude Code plugin marketplace. In your Claude Code session
 ```
 
 For the Nethesis Design System skills, also run `/plugin install nethesis-design@nethserver`.
+This is the only way to install them for now: the Codex and Pi steps below install the
+`nethserver-skills` only.
 
 No plugin `version` is pinned, so every push to the default branch counts as a new version.
 Claude Code refreshes installed marketplaces in the background (this is a public repo, so the
