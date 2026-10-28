@@ -23,7 +23,8 @@ System: say so, and apply only the writing guidelines and the glossary to its te
 2. **Writing guidelines and glossary** of the Nethesis Design System. `references/text.md`
 3. **Colors and foundations**, only when the task needs them: a color that is not in the
    project yet, a text style, an icon size, a shadow. `references/colors.md`, and
-   https://nethesis.github.io/design-system/foundations.json for the rest.
+   https://nethesis.github.io/design-system/foundations.json for the rest. Icons:
+   https://nethesis.github.io/design-system/icons.json.
 
 The Storybook and the design system site are built in the browser: fetching their pages returns
 no content. Read the plain files the reference files point to.
@@ -49,8 +50,11 @@ no content. Read the plain files the reference files point to.
 - Text uses only two weights of Poppins: `font-normal` and `font-medium`. Never `font-semibold`
   or `font-bold`.
 - Icons: `FontAwesomeIcon` with the free Solid icons, each imported by name (never a whole
-  icon pack); a Nethesis custom icon only when Font Awesome has none. An icon next to a text
-  label gets `aria-hidden="true"`; an icon without text needs an accessible label and a tooltip.
+  icon pack); a Nethesis custom icon only when Font Awesome has none. Take the icon for each
+  meaning (create, edit, delete, download, status…) from
+  https://nethesis.github.io/design-system/icons.json, never an icon it lists under `avoid`.
+  An icon next to a text label gets `aria-hidden="true"`; an icon without text needs an
+  accessible label and a tooltip.
 - Style with Tailwind classes on the spacing scale (`p-4`, `gap-6`): no `style` attributes, and
   no arbitrary values (`w-[137px]`) unless nothing else works.
 - Every user-facing string goes in the i18n files, written by the writing guidelines with the
