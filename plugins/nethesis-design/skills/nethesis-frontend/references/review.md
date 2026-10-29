@@ -60,13 +60,12 @@ Group the problems by file, most serious first. For each one give:
   **low** (style or naming);
 - `path:line`;
 - the problem, in one sentence;
-- the rule it breaks, with a link to its source. Components and patterns, glossary terms and
-  icon meanings have their own `link` in `components.json`, `glossary.json` and `icons.json`.
-  A section of the writing guidelines is
-  `https://nethesis.github.io/design-system/?page=writing-guidelines#<heading>`, a color token
-  `https://nethesis.github.io/design-system/?page=colors#token-<name>`, both written lowercase
-  with hyphens (`#buttons-and-actions`, `#token-text-secondary-neutral`). For a rule that comes
-  only from this skill, cite the skill;
+- the rule it breaks, with a link to its source. Components and patterns, glossary terms, icon
+  meanings and color tokens have their own `link` in `components.json`, `glossary.json`,
+  `icons.json` and `colors.json`. A section of the writing guidelines is
+  `https://nethesis.github.io/design-system/?page=writing-guidelines#<heading>`, with the heading
+  written lowercase with hyphens (`#buttons-and-actions`). For a rule that comes only from this
+  skill, cite the skill;
 - the fix, as a short code change when it is obvious.
 
 End with what you did not check, if anything.

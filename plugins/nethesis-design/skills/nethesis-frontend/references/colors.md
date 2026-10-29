@@ -38,11 +38,11 @@ https://nethesis.github.io/design-system/colors.json
 ```
 
 Each token in `groups[].tokens[]` has `name`, `description`, `light` and `dark` (each with the
-Figma `ref`, the `hex` value and the `tailwind` color) and `classes`, the Tailwind classes for
-both themes (`text-gray-700 dark:text-gray-200`). For tokens used with more than one utility,
-such as the product primary ones, `classes` has only the colors (`primary-700 · dark:
-primary-500`): add the utility (`text-`, `bg-`, `border-`…). `classes` is null when a value has
-no Tailwind color. The file is large: filter it with `jq` for the token you need, for example
+Figma `ref`, the `hex` value and the `tailwind` color to use in code, `primary-*` for the product
+palette), `classes`, the Tailwind classes for both themes (`text-gray-700 dark:text-gray-200`),
+and `link`, the token in the Colors page. `classes` is null when the utility depends on the
+component, as for the product primary tokens: build the classes from the two `tailwind` colors
+(`bg-primary-700 dark:bg-primary-500`). The file is large: filter it with `jq` for the token you need, for example
 `jq '.groups[].tokens[] | select(.name == "Text/Secondary neutral")'`.
 
 1. Find the token for the role: from the Figma mockup (its variables use these names), or by
