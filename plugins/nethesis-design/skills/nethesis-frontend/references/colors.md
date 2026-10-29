@@ -27,6 +27,14 @@ Read it before choosing a color.
   A semantic class (`bg-elevation-2`) needs no `dark:` variant: the variable changes with the
   theme. Prefer it to a pair of Tailwind classes whenever the project defines it.
 
+  Some projects define them as utilities instead, as NethSecurity does:
+
+  ```css
+  @utility text-tertiary-neutral {
+    @apply text-gray-600 dark:text-gray-400;
+  }
+  ```
+
 ## Choosing a color
 
 The colors of the design system are its semantic tokens, such as `Text/Secondary neutral`,
@@ -42,16 +50,18 @@ Figma `ref`, the `hex` value and the `tailwind` color to use in code, `primary-*
 palette), `classes`, the Tailwind classes for both themes (`text-gray-700 dark:text-gray-200`),
 and `link`, the token in the Colors page. `classes` is null when the utility depends on the
 component, as for the product primary tokens: build the classes from the two `tailwind` colors
-(`bg-primary-700 dark:bg-primary-500`). The file is large: filter it with `jq` for the token you need, for example
-`jq '.groups[].tokens[] | select(.name == "Text/Secondary neutral")'`.
+(`bg-primary-700 dark:bg-primary-500`). The file is large: filter it with `jq` for the token
+you need, for example `jq '.groups[].tokens[] | select(.name == "Text/Secondary neutral")'`.
 
 1. Find the token for the role: from the Figma mockup (its variables use these names), or by
    group and description.
 2. If the project's main CSS file already defines a semantic color with the same light and dark
    values, use it, whatever its name.
-3. Otherwise add the token to the main CSS file in the three places above, following the names
-   already there (Figma `Elevation/L2` became `--elevation-2` in My Nethesis). If the file has no
-   semantic colors yet, create the three blocks, after the `@theme` block of the primary palette.
+3. Otherwise add the token to the main CSS file in the form the file already uses, following the
+   names already there (Figma `Elevation/L2` became `--elevation-2` in My Nethesis,
+   `Text/Tertiary neutral` became `text-tertiary-neutral` in NethSecurity). If the file has no
+   semantic colors yet, create the three blocks above, after the `@theme` block of the primary
+   palette.
 4. Use `classes` from `colors.json` directly only for a one-off color that is not worth a token.
 
 Never write hex values, `rgb()` or arbitrary colors (`text-[#374151]`) in templates.

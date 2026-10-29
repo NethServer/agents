@@ -74,7 +74,8 @@ Fetch it with `curl -s` and filter it with `jq`, for example
 
 Deprecated props, types and functions are not in `components.json`: the installed package marks
 them with `@deprecated`, with their replacement
-(`grep -rn @deprecated node_modules/@nethesis/vue-components/dist --include=*.d.ts`). The
+(`grep -rn -A3 @deprecated node_modules/@nethesis/vue-components/dist --include=*.d.ts`: the name
+is on the lines after the comment). The
 `multiple` prop of `NeCombobox` is one: use `NeMultiselectCombobox`.
 
 ## The installed version

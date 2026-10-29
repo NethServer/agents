@@ -10,10 +10,12 @@ https://nethesis.github.io/design-system/glossary.json
 ```
 
 - **Writing guidelines** (markdown): read the sections for the elements you write, such as
-  "Buttons and actions", "Forms", "Empty states", "Modals", "Notifications". When a rule comes
-  from a vue-components pattern, the pattern's texts are the reference.
-- **Glossary** (JSON): `terms` lists the approved terms with their definition, the products
-  they apply to, the Italian translation (`it`) and the terms to avoid (`avoid.en`, `avoid.it`).
+  "Buttons and actions", "Forms", "Empty states", "Modals", "Notifications". The texts of the
+  vue-components patterns are examples of these rules: when a pattern disagrees with the
+  guidelines or the glossary, they win.
+- **Glossary** (JSON): `terms` lists the approved terms (`en`) with their definition, the
+  products they apply to, the Italian translation (`it`) and the terms to avoid (`avoid.en`,
+  `avoid.it`).
   `untranslatable: true` means the term stays in English in Italian too. Before you use a term
   for an object or an action, look it up, and never use a term listed under `avoid`.
 
