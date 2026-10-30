@@ -6,6 +6,11 @@ Each project defines its colors in its main CSS file, the one that imports Tailw
 example `frontend/src/assets/main.css` in My Nethesis, `src/assets/main.css` in NethSecurity).
 Read it before choosing a color.
 
+A project built with another stack, or with Tailwind CSS 3 (`tailwind.config.js`), has its own
+theme: use its colors, find the token of each role in `colors.json` as below, and report the
+colors whose values differ from the token's. vue-components itself has no semantic colors: see
+`references/library.md`.
+
 - **Primary palette**: `@theme` maps `--color-primary-50` … `--color-primary-950` to the palette
   of the product (sky for My Nethesis, cyan for NethSecurity, emerald for NethVoice). Use
   `primary-*` classes, never the palette name: `text-primary-700`, not `text-sky-700`.

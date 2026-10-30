@@ -1,6 +1,6 @@
 ---
 name: nethesis-frontend
-description: 'Use when writing, changing or reviewing the frontend of a Nethesis product, or checking that a page, a component or a whole project follows the Nethesis Design System: pages, components, forms, tables, modals, notifications, colors, dark theme, icons, interface text and translations, also from a Figma link, a mockup image or a description. Covers Vue 3 projects with Tailwind CSS and @nethesis/vue-components (My Nethesis, NethSecurity, the NethServer 8 user manager), changes to @nethesis/vue-components itself, and, for text, icons, colors and typography only, frontends built with other stacks, such as the React app of NethVoice CTI. For NethServer 8 modules built with Vue 2 and Carbon, only the text rules apply.'
+description: 'Use when writing, changing or reviewing the frontend of a Nethesis product, or checking that a page, a component or a whole project follows the Nethesis Design System: pages, components, forms, tables, modals, notifications, colors, dark theme, icons, interface text and translations, also from a Figma link, a mockup image or a description. Covers Vue 3 projects with Tailwind CSS and @nethesis/vue-components (My Nethesis, NethSecurity, the NethServer 8 user manager), changes to @nethesis/vue-components itself, and, for text, icons, colors, typography and accessibility only, frontends built with other stacks, such as the React app of NethVoice CTI. For NethServer 8 modules built with Vue 2 and Carbon, only the text rules apply.'
 ---
 
 # Nethesis frontend
@@ -17,15 +17,17 @@ dependencies:
   apps built this way included.
 - **`@nethesis/vue-components` itself** (its `name`): the design rules apply to its components.
   Its texts are props with English defaults, not i18n keys, and it has no installed version to
-  check. Follow its `AGENTS.md` and `CONTRIBUTING.md` for stories, exports and deprecations.
+  check. Follow its `AGENTS.md` and `CONTRIBUTING.md` for stories, exports and deprecations,
+  and `references/library.md`.
 - **Vue 2, `carbon-components-vue` or `@nethserver/ns8-ui-lib`**: a NethServer 8 module, which
   follows the Carbon Design System. Say so, and apply only the writing guidelines and the
   glossary (`references/text.md`).
 - **Another stack, such as React** (NethVoice CTI): apply the rules for text, icons, typography,
-  accessibility and foundations. For colors, no hex or arbitrary values: use the project's theme.
-  Keep the project's own components, comparing their behavior with the matching `Ne*` component
-  (`references/components.md`), and adapt the commands of `references/review.md` to its files
-  (`*.tsx`).
+  accessibility and foundations. For colors, no hex or arbitrary values: use the project's theme,
+  and report its colors whose values differ from the token's in `colors.json`. Keep the project's
+  own components, comparing their behavior with the matching `Ne*` component
+  (`references/components.md`), and set the file types of the commands of `references/review.md`
+  to its files (`*.tsx`).
 
 ## Sources
 
@@ -47,7 +49,9 @@ files with `jq`: a tool that summarizes a page loses the field names.
 1. The project's `AGENTS.md` or `CLAUDE.md`, and the files and skills it points to, win on how
    the project works: structure, commands, tests, i18n files, validation, the installed version
    of `@nethesis/vue-components`. If one of them is empty, or a file it points to is missing,
-   say so and go on with what exists.
+   say so, look for a file with the same name elsewhere (`.agents/skills/`), and go on with what
+   exists. When the file is long, read its headings first, then the sections about the frontend,
+   i18n, checks and skills.
 2. The design system wins on design: components, colors, typography, icons, interface text and
    terms. When a project file contradicts it, follow the design system and say so in your
    answer.
@@ -67,6 +71,7 @@ files with `jq`: a tool that summarizes a page loses the field names.
 | Colors, semantic tokens, `main.css`, dark theme, primary palette of the product | `references/colors.md` |
 | Building a new screen from a Figma link, a mockup image or a description of the screen | `references/mockups.md` |
 | Reviewing a component, a page or a project against the design system | `references/review.md`, and the files it points to for the checks in scope |
+| Adding or changing a component, a story or a pattern of `@nethesis/vue-components` itself | `references/library.md`, and the files it points to |
 
 ## Always applies
 
@@ -107,8 +112,10 @@ files with `jq`: a tool that summarizes a page loses the field names.
 - Every user-facing string goes in the i18n files, written by the writing guidelines with the
   terms of the glossary. (`references/text.md`) This includes the props of `Ne*` components that
   end in `Label` (`clearSearchLabel`, `closeAriaLabel`, `noOptionsLabel`…): their defaults are
-  English, so pass each one from the i18n files.
-- Interactive elements must work with the keyboard and keep a visible focus ring. Form fields
+  English, so pass each one that the component shows in the way you use it, such as the close
+  label when there is a close button.
+- Interactive elements must work with the keyboard and keep a visible focus ring: a click
+  handler goes on a button or a link, never on a `div`, a `span` or a table row. Form fields
   need a label.
 
 ## Before you finish
@@ -116,11 +123,12 @@ files with `jq`: a tool that summarizes a page loses the field names.
 After writing or changing code:
 
 1. Run the project's checks with the scripts of its `package.json`: lint, type-check and tests
-   (in My Nethesis, `npm run pre-commit` in `frontend`, which also formats the files).
+   (in My Nethesis, `npm run pre-commit` in `frontend`, which also formats the files; in
+   vue-components, the checks of `references/library.md`).
 2. Run the mechanical checks of `references/review.md` on the files you changed.
-3. If you can run the app, check the result in the light and the dark theme, and with the
-   keyboard: every new control reachable with Tab, with a visible focus ring. A product that
-   needs a login and a backend may not run where you work: then list these checks for the
-   developer.
+3. Check the result in the light and the dark theme, and with the keyboard: every new control
+   reachable with Tab, with a visible focus ring. A product that needs a login and a backend may
+   not run where you work: then mount the new component alone in a temporary page with the
+   app's plugins (i18n, store, router), or list these checks for the developer.
 
 Say which of these you could not do.

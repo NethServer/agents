@@ -89,10 +89,16 @@ have an older version. Before using a component, a prop or an event, check the i
 - `node_modules/@nethesis/vue-components/package.json` for the version;
 - `node_modules/@nethesis/vue-components/dist/main.d.ts` for what the package exports;
 - `node_modules/@nethesis/vue-components/dist/components/<Name>.vue.d.ts` for the props, slots
-  and events.
+  and events. The defaults of the props are not there: they are in the component's
+  `componentSource` (latest version) or in `dist/vue-components.js` (installed version).
 
-If the project's version lacks a component or a prop that the task needs, say so and suggest
-updating the dependency instead of rebuilding it.
+If the version in `node_modules` differs from the one in `package-lock.json`, say so: the
+developer should run `npm ci`. Write for the version of the lockfile.
+
+If that version lacks a component or a prop that the task needs, say so and suggest updating the
+dependency instead of rebuilding it. Until it is updated, use the closest component the version
+has, with a `TODO` comment that names the one to use. The code of the patterns follows the latest
+version: if it does not work with the installed one, adapt it and say so.
 
 ## Usage and setup
 

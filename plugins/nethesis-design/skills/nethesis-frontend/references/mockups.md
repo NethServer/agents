@@ -37,4 +37,5 @@ closest Tailwind spacing step, and say which ones you guessed.
 
 Start from the pattern that matches the request, if any (a table page, a delete confirmation,
 an empty state…), then add the components the description asks for. Ask before inventing
-content that the description does not give, such as table columns or form fields.
+content that the description does not give, such as table columns or form fields; if you cannot
+ask, choose, and list your choices in your answer.
