@@ -17,8 +17,7 @@ dependencies:
   apps built this way included.
 - **`@nethesis/vue-components` itself** (its `name`): the design rules apply to its components.
   Its texts are props with English defaults, not i18n keys, and it has no installed version to
-  check. Follow its `AGENTS.md` and `CONTRIBUTING.md` for stories, exports and deprecations,
-  and `references/library.md`.
+  check. See `references/library.md`.
 - **Vue 2, `carbon-components-vue` or `@nethserver/ns8-ui-lib`**: a NethServer 8 module, which
   follows the Carbon Design System. Say so, and apply only the writing guidelines and the
   glossary (`references/text.md`).
@@ -80,8 +79,9 @@ files with `jq`: a tool that summarizes a page loses the field names.
 - Never use a deprecated component, prop or function in new code: `deprecated` in
   `components.json`, `@deprecated` in the installed package. (`references/components.md`)
 - Colors are the semantic tokens of the design system, with a value for the light and one for
-  the dark theme: the project's semantic class when it defines one, otherwise the token's
-  Tailwind classes. No hex values or arbitrary colors in templates. (`references/colors.md`)
+  the dark theme: the project's semantic class for the token, added to the project when it is
+  missing, or the token's Tailwind classes for a one-off color. No hex values or arbitrary
+  colors in templates. (`references/colors.md`)
 - Text uses only two weights of Poppins: `font-normal` and `font-medium`. Never `font-semibold`
   or `font-bold`.
 - Icons: the icon that https://nethesis.github.io/design-system/icons.json gives for the
@@ -126,9 +126,10 @@ After writing or changing code:
    (in My Nethesis, `npm run pre-commit` in `frontend`, which also formats the files; in
    vue-components, the checks of `references/library.md`).
 2. Run the mechanical checks of `references/review.md` on the files you changed.
-3. Check the result in the light and the dark theme, and with the keyboard: every new control
-   reachable with Tab, with a visible focus ring. A product that needs a login and a backend may
-   not run where you work: then mount the new component alone in a temporary page with the
-   app's plugins (i18n, store, router), or list these checks for the developer.
+3. Check the result in the light and the dark theme, at desktop and phone width, and with the
+   keyboard: every new control reachable with Tab, with a visible focus ring. A product that
+   needs a login and a backend may not run where you work: then mount the new component alone
+   in a temporary page with the app's plugins (i18n, store, router), or list these checks for
+   the developer.
 
 Say which of these you could not do.

@@ -27,8 +27,8 @@ interfaces that follow the [Nethesis Design System](https://nethesis.github.io/d
 It is a separate plugin, so you can install it without the NethServer skills:
 
 - `nethesis-frontend` — write and review frontends: Vue 3 projects built with Tailwind CSS and
-  `@nethesis/vue-components` fully; text, icons, colors and typography for other stacks; only
-  text for NethServer 8 modules built with Carbon
+  `@nethesis/vue-components` fully; text, icons, colors, typography and accessibility for other
+  stacks; only text for NethServer 8 modules built with Carbon
 
 ## Skill structure and context cost
 

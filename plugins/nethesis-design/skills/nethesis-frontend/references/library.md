@@ -31,4 +31,4 @@ Then open each story you changed in the light and the dark theme, at desktop and
 (the story id ends the `link` of the story in `components.json`).
 
 Of the commands of `references/review.md`, skip the check for raw elements, which the components
-are made of, and find deprecations with `grep -rn -A3 @deprecated src`.
+are made of, and replace the two deprecation checks with `grep -rn -A3 @deprecated src`.
