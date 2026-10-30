@@ -28,6 +28,8 @@ with their Storybook links and the code of their stories.
   toast, `NeToastNotificationV2`. Follow the *Success toast notification* pattern. After closing
   a modal or a drawer, show the toast once the closing animation has ended, about 500 ms later,
   or it appears while the dialog is still moving.
+- **Creating or editing an object**: a form in a side drawer, opened by the create button of the
+  page or the Edit action of a row. Follow the *Create item drawer* pattern.
 - **Deleting**: follow the *Delete item modal* pattern; its *Type to confirm* story is for
   deletions that lose a lot of data.
 - **A status** (enabled, expired, online…): `NeBadgeV2`.
