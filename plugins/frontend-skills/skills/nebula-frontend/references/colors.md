@@ -47,7 +47,7 @@ The colors of the design system are its semantic tokens, such as `Text/Secondary
 classes are in:
 
 ```
-https://nethesis.github.io/design-system/colors.json
+https://nethesis.github.io/nebula-design-system/colors.json
 ```
 
 Each token in `groups[].tokens[]` has `name`, `description`, `light` and `dark` (each with the

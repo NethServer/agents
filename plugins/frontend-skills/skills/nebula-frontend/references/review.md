@@ -89,8 +89,8 @@ Group the problems by file, most serious first. For each one give:
 - the rule it breaks, with a link to its source. Components and patterns, glossary terms, icon
   meanings and color tokens have their own `link` in `components.json`, `glossary.json`,
   `icons.json` and `colors.json`. A section of the writing guidelines is
-  `https://nethesis.github.io/design-system/?page=writing-guidelines#<heading>`, with the heading
-  written lowercase with hyphens (`#buttons-and-actions`). For a rule that comes only from this
+  `https://nethesis.github.io/nebula-design-system/?page=writing-guidelines#<heading>`, with the
+  heading written lowercase with hyphens (`#buttons-and-actions`). For a rule that comes only from this
   skill, cite the skill;
 - the fix, as a short code change when it is obvious.
 

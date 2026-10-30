@@ -1,11 +1,11 @@
 ---
-name: nethesis-frontend
-description: 'Use when writing, changing or reviewing the frontend of a Nethesis product, or checking that a page, a component or a whole project follows the Nethesis Design System: pages, components, forms, tables, modals, notifications, colors, dark theme, icons, interface text and translations, also from a Figma link, a mockup image or a description. Covers Vue 3 projects with Tailwind CSS and @nethesis/vue-components (My Nethesis, NethSecurity, the NethServer 8 user manager), changes to @nethesis/vue-components itself, and, for text, icons, colors, typography and accessibility only, frontends built with other stacks, such as the React app of NethVoice CTI. For NethServer 8 modules built with Vue 2 and Carbon, only the text rules apply.'
+name: nebula-frontend
+description: 'Use when writing, changing or reviewing the frontend of a Nethesis product, or checking that a page, a component or a whole project follows the Nebula Design System: pages, components, forms, tables, modals, notifications, colors, dark theme, icons, interface text and translations, also from a Figma link, a mockup image or a description. Covers Vue 3 projects with Tailwind CSS and @nethesis/vue-components (My Nethesis, NethSecurity, the NethServer 8 user manager), changes to @nethesis/vue-components itself, and, for text, icons, colors, typography and accessibility only, frontends built with other stacks, such as the React app of NethVoice CTI. For NethServer 8 modules built with Vue 2 and Carbon, only the text rules apply.'
 ---
 
 # Nethesis frontend
 
-Write and review frontend code that follows the Nethesis Design System. Before writing code,
+Write and review frontend code that follows the Nebula Design System. Before writing code,
 read the reference files that the map below gives for your task, and only those.
 
 ## Scope
@@ -32,16 +32,16 @@ dependencies:
 
 1. **`@nethesis/vue-components`**, its components and patterns, documented in the Storybook
    (https://nethesis.github.io/vue-components/). The main source. `references/components.md`
-2. **Writing guidelines and glossary** of the Nethesis Design System. `references/text.md`
+2. **Writing guidelines and glossary** of the Nebula Design System. `references/text.md`
 3. **Icons, colors and foundations**: `icons.json` for the icon of each meaning; colors and
    foundations only when the task needs them, such as a color that is not in the project yet, a
    text style, an icon size, a shadow. `references/colors.md`, and
-   https://nethesis.github.io/design-system/foundations.json for the rest.
+   https://nethesis.github.io/nebula-design-system/foundations.json for the rest.
 
 The Storybook and the design system site are built in the browser: fetching their pages returns
 no content. Read the plain files instead, all listed in
-https://nethesis.github.io/design-system/llms.txt. Fetch them with `curl -s` and filter the JSON
-files with `jq`: a tool that summarizes a page loses the field names.
+https://nethesis.github.io/nebula-design-system/llms.txt. Fetch them with `curl -s` and filter
+the JSON files with `jq`: a tool that summarizes a page loses the field names.
 
 ## When sources disagree
 
@@ -84,7 +84,7 @@ files with `jq`: a tool that summarizes a page loses the field names.
   colors in templates. (`references/colors.md`)
 - Text uses only two weights of Poppins: `font-normal` and `font-medium`. Never `font-semibold`
   or `font-bold`.
-- Icons: the icon that https://nethesis.github.io/design-system/icons.json gives for the
+- Icons: the icon that https://nethesis.github.io/nebula-design-system/icons.json gives for the
   meaning (create, edit, delete, download, status…), from the package of its `pack`, and never
   an icon it lists under `avoid`. For a meaning it does not list, a Font Awesome Solid icon that
   no other meaning uses. An icon next to a text label gets `aria-hidden="true"`; an icon

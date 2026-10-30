@@ -14,9 +14,9 @@
       "category": "development"
     },
     {
-      "name": "nethesis-design",
-      "description": "Coding agent skills for user interfaces that follow the Nethesis Design System",
-      "source": "./plugins/nethesis-design",
+      "name": "frontend-skills",
+      "description": "Coding agent skills for writing and reviewing user interfaces that follow the Nethesis design systems: Nebula and Carbon",
+      "source": "./plugins/frontend-skills",
       "category": "development"
     }
   ]

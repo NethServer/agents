@@ -5,8 +5,8 @@ Design System. Read them; do not rely on memory, and do not copy their rules int
 into comments.
 
 ```
-https://nethesis.github.io/design-system/writing-guidelines.md
-https://nethesis.github.io/design-system/glossary.json
+https://nethesis.github.io/nebula-design-system/writing-guidelines.md
+https://nethesis.github.io/nebula-design-system/glossary.json
 ```
 
 - **Writing guidelines** (markdown): read the sections for the elements you write, such as
