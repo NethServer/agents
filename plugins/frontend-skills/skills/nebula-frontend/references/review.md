@@ -5,15 +5,43 @@ code only if asked to.
 
 ## Mechanical checks
 
-Run these first, from the frontend folder (in My Nethesis, `frontend`). They find candidates,
-not certain problems: read each match before reporting it.
+Run these first, from the frontend folder (in My Nethesis, `frontend`; in NethServer 8 core,
+`core/ui`). They find candidates, not certain problems: read each match before reporting it. In a
+NethServer 8 project built with Carbon, run only the text checks.
+
+Text checks, for every project with i18n files:
 
 ```bash
 # the files in scope: src for the whole frontend, or the files of a page
 scope=src
-# the file types: templates, and templates with scripts (React: *.tsx, and *.tsx with *.ts)
+# the file types: templates, and templates with scripts (React: *.tsx, and *.tsx with *.ts;
+# Vue 2: *.vue with *.js)
 views='--include=*.vue'
 code='--include=*.vue --include=*.ts'
+# the English i18n file (references/text.md)
+en=src/i18n/en/translation.json
+# keys the code uses that the English file lacks: the user sees the key path. Written for t('…')
+# and $t('…') with dots in the path; keys built at run time show up cut, ignore them
+grep -rhoE "\bt\(['\"][a-zA-Z0-9_.-]+['\"]" $scope $code | sed -E "s/.*\(['\"]//; s/['\"]$//" |
+  sort -u | while read -r k; do
+    jq -e --arg k "$k" 'getpath($k | split("."))' $en >/dev/null || echo "missing: $k"
+  done
+# terms the glossary lists under avoid, with the approved terms, skipping lines that already use
+# them; a word avoided for an action can be right in another meaning ("New password")
+curl -s https://nethesis.github.io/nebula-design-system/glossary.json |
+  jq -r '[.terms[].en] as $ok | [.terms[] | .en as $t | .avoid.en[]? | {avoid: ., term: $t}]
+    | group_by(.avoid)[] | select(.[0].avoid as $a | $ok | index($a) | not)
+    | "\(.[0].avoid)\t\(map(.term) | join("|"))"' |
+  while IFS=$'\t' read -r avoid terms; do
+    grep -nwF -- "$avoid" $en | grep -vF -f <(tr '|' '\n' <<<"$terms") |
+      sed "s/^/[$avoid → ${terms//|/ or }] /"
+  done
+```
+
+Checks of components, colors, icons and code, for projects built with Tailwind CSS and
+`@nethesis/vue-components`, and for colors and icons in other stacks:
+
+```bash
 # weights the design system does not use
 grep -rnE 'font-(semibold|bold|extrabold|black)\b' $scope $views
 # hex, rgb() or arbitrary colors
@@ -22,9 +50,13 @@ grep -rnE '#[0-9a-fA-F]{3,8}\b|rgba?\(|(bg|text|border|ring|fill|stroke)-\[#' $s
 grep -rnE '<(button|input|select|textarea|table)\b' $scope $views
 # styles outside Tailwind classes (style="…" and style={{…}}), and arbitrary values
 grep -rnE '\bstyle=["{]|\b[a-z-]+-\[[0-9.]+(px|rem)\]' $scope $views
-# click handlers not on a button or a link on the same line: check the element of each one
-grep -rnE '@click|v-on:click|onClick=' $scope $views |
-  grep -vE '<(NeButton|NeLink|button|a|RouterLink|router-link|Button|Link)\b'
+# click handlers on an element that is not a button or a link: each match names the element
+# the handler belongs to, the last tag opened on its line or before it (Prettier wraps tags)
+for f in $(grep -rlE '@click|v-on:click|onClick=' $scope $views); do
+  awk -v f="$f" '/<[A-Za-z]/ { if (match($0, /<[A-Za-z][A-Za-z0-9.-]*/)) tag = substr($0, RSTART + 1, RLENGTH - 1) }
+    /@click|v-on:click|onClick=/ && tag !~ /^(NeButton|NeLink|button|a|RouterLink|router-link|Button|Link)$/ {
+      print f ":" FNR ": <" tag ">" }' "$f"
+done
 # icons not imported one by one: whole packs, library.add() (faLibrary.add() too), icons named
 # by string
 grep -rnE "import \{ (fas|far|fab|fal) \}|[lL]ibrary\.add\(|['\"]fa[srlb]['\"], *['\"][a-z0-9-]+['\"]|['\"]fa-(solid|regular|light|brands) fa-" $scope $code
@@ -66,9 +98,14 @@ it once for the project with a few examples, not line by line.
 - **Text**: literal strings instead of i18n keys; texts that break the writing guidelines; terms
   the glossary lists under `avoid` (`references/text.md`); raw server or exception messages
   shown as the main message of a notification, such as `error.message` bound to its description
-  (writing guidelines, "Style"); props of `Ne*` components that end in `Label` left to their
+  (writing guidelines, "Style"); i18n keys the code uses that the English file lacks; props of
+  `Ne*` components that end in `Label` left to their
   English default in a project with i18n. List them for a component with
   `grep -oE '\b[a-z][a-zA-Z]*Label\b' node_modules/@nethesis/vue-components/dist/components/<Name>.vue.d.ts | sort -u`.
+- **Italian translations**: when developers edit the Italian file (`references/text.md`), check
+  it too: terms the glossary lists under `avoid.it`, translations other than its `it`, and the
+  Italian rules of the writing guidelines. When only Weblate edits it, report these for the
+  translators.
 - **Accessibility**: form fields without a label, or a label linked to the wrong field (two
   fields with the same `id`); click handlers on elements that are not buttons or links, which
   the keyboard cannot reach; focus rings removed; text dimmed below the WCAG AA contrast of
@@ -81,8 +118,9 @@ Group the problems by file, most serious first. For each one give:
 - the severity: **critical** (broken or inaccessible for some users), **high** (wrong component,
   color or text the user sees), **medium** (inconsistent with the design system, but works),
   **low** (style or naming). For example: a control that the keyboard cannot reach, with no
-  other way to do the same thing, is critical; text below the WCAG AA contrast and a deprecated
-  component are high; a gray one step away from the token, an icon other than the one of its
+  other way to do the same thing, is critical; text below the WCAG AA contrast, a deprecated
+  component, an i18n key path shown to the user and a term the glossary lists under `avoid` are
+  high; a gray one step away from the token, an icon other than the one of its
   meaning and an English label that screen readers read in the Italian interface are medium;
 - `path:line`;
 - the problem, in one sentence;

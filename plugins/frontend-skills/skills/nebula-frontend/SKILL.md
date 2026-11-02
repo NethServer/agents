@@ -18,9 +18,10 @@ dependencies:
 - **`@nethesis/vue-components` itself** (its `name`): the design rules apply to its components.
   Its texts are props with English defaults, not i18n keys, and it has no installed version to
   check. See `references/library.md`.
-- **Vue 2, `carbon-components-vue` or `@nethserver/ns8-ui-lib`**: a NethServer 8 module, which
-  follows the Carbon Design System. Say so, and apply only the writing guidelines and the
-  glossary (`references/text.md`).
+- **Vue 2 with Carbon (`@carbon/vue`, `carbon-components`, `carbon-components-vue`) or
+  `@nethserver/ns8-ui-lib`**: NethServer 8, its core or a module, which follows the Carbon
+  Design System. Say so, and apply only the writing guidelines and the glossary
+  (`references/text.md`), with the text checks of `references/review.md`.
 - **Another stack, such as React** (NethVoice CTI): apply the rules for text, icons, typography,
   accessibility and foundations. For colors, no hex or arbitrary values: use the project's theme,
   and report its colors whose values differ from the token's in `colors.json`. Keep the project's
@@ -46,11 +47,11 @@ the JSON files with `jq`: a tool that summarizes a page loses the field names.
 ## When sources disagree
 
 1. The project's `AGENTS.md` or `CLAUDE.md`, and the files and skills it points to, win on how
-   the project works: structure, commands, tests, i18n files, validation, the installed version
-   of `@nethesis/vue-components`. If one of them is empty, or a file it points to is missing,
-   say so, look for a file with the same name elsewhere (`.agents/skills/`), and go on with what
-   exists. When the file is long, read its headings first, then the sections about the frontend,
-   i18n, checks and skills.
+   the project works: structure, commands, tests, i18n files (but English keys are always added,
+   `references/text.md`), validation, the installed version of `@nethesis/vue-components`. If
+   one of them is empty, or a file it points to is missing, say so, look for a file with the same
+   name elsewhere (`.agents/skills/`), and go on with what exists. When the file is long, read
+   its headings first, then the sections about the frontend, i18n, checks and skills.
 2. The design system wins on design: components, colors, typography, icons, interface text and
    terms. When a project file contradicts it, follow the design system and say so in your
    answer.
@@ -60,6 +61,12 @@ the JSON files with `jq`: a tool that summarizes a page loses the field names.
    between two components that both fit. It never wins over a rule: write new code by the rules
    even when the code around it breaks them, add new i18n keys instead of reusing texts that
    break the writing guidelines, and report the existing code instead of copying it.
+5. A mockup, a Figma frame or a prototype is a draft of one screen: it settles the layout and
+   the content of that screen, not the rules. It can contain mistakes. When it disagrees with
+   several existing pages or components, such as a different component or text for the same
+   job, do not follow it silently: follow the existing pages, warn the user, and say so clearly
+   in your answer. When it drops data or behavior that the existing screen has, such as a column
+   or a state, ask; if you cannot ask, keep it and list it.
 
 ## Reference map
 
@@ -68,7 +75,7 @@ the JSON files with `jq`: a tool that summarizes a page loses the field names.
 | Choosing a component or a pattern, its props, slots and events, forms, deprecated components, the installed version, a new project | `references/components.md` |
 | Labels, titles, descriptions, buttons, empty states, modals, notifications, validation messages, terms, Italian translations, i18n files | `references/text.md` |
 | Colors, semantic tokens, `main.css`, dark theme, primary palette of the product | `references/colors.md` |
-| Building a new screen from a Figma link, a mockup image or a description of the screen | `references/mockups.md` |
+| Building a screen from a Figma link, a mockup image, an HTML prototype or a description | `references/mockups.md`, then `references/components.md` and `references/text.md`, and `references/colors.md` for a color the project lacks |
 | Reviewing a component, a page or a project against the design system | `references/review.md`, and the files it points to for the checks in scope |
 | Adding or changing a component, a story or a pattern of `@nethesis/vue-components` itself | `references/library.md`, and the files it points to |
 
@@ -127,9 +134,11 @@ After writing or changing code:
    vue-components, the checks of `references/library.md`).
 2. Run the mechanical checks of `references/review.md` on the files you changed.
 3. Check the result in the light and the dark theme, at desktop and phone width, and with the
-   keyboard: every new control reachable with Tab, with a visible focus ring. A product that
-   needs a login and a backend may not run where you work: then mount the new component alone
-   in a temporary page with the app's plugins (i18n, store, router), or list these checks for
-   the developer.
+   keyboard: every new control reachable with Tab, with a visible focus ring. Use the running
+   app when it can run where you work; a product that needs a login and a backend often cannot.
+   A component that gets its data through props can then be mounted alone in a temporary page
+   with the app's plugins (i18n, store, router). A page that loads its own data, or needs the
+   signed-in user and route parameters, cannot without mocking them all: list these checks for
+   the developer instead.
 
 Say which of these you could not do.
