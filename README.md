@@ -22,6 +22,16 @@ pick it automatically:
 - `nethserver-release` — create module and package releases following semver
 - `conventional-commit` — conventional commit messages with intelligent staging
 
+The `frontend-skills` plugin, under `plugins/frontend-skills/`, holds the skills for the user
+interfaces that follow the Nethesis design systems: the
+[Nebula Design System](https://nethesis.github.io/nebula-design-system/) and, for NethServer 8, the
+Carbon Design System. It is a separate plugin, so you can install it without the NethServer
+skills:
+
+- `nebula-frontend` — write and review frontends: Vue 3 projects built with Tailwind CSS and
+  `@nethesis/vue-components` fully; text, icons, colors, typography and accessibility for other
+  stacks; only text for NethServer 8 modules built with Carbon
+
 ## Skill structure and context cost
 
 Agents initially load each skill's name and `description`, while its `SKILL.md` body is
@@ -62,7 +72,7 @@ frontier-model turn on mechanical work:
 | --- | --- |
 | `nethserver-pr`, `nethserver-release` | `haiku` |
 | `conventional-commit`, `nethserver-issue`, `nethserver-containerfile` | `sonnet` |
-| `nethserver-admin`, `nethserver-ns8-core`, `nethvoice-admin`, `nethserver-ns8-module` | none — these need full reasoning |
+| `nethserver-admin`, `nethserver-ns8-core`, `nethvoice-admin`, `nethserver-ns8-module`, `nebula-frontend` | none — these need full reasoning |
 
 In Claude Code, the override applies to the turn that invokes the skill and is not saved to
 your settings. Remove the `model:` line if you would rather always use your session model.
@@ -77,6 +87,10 @@ This repository is a Claude Code plugin marketplace. In your Claude Code session
 /plugin install nethserver-skills@nethserver
 /reload-plugins
 ```
+
+For the frontend skills, also run `/plugin install frontend-skills@nethserver`.
+This is the only way to install them for now: the Codex and Pi steps below install the
+`nethserver-skills` only.
 
 No plugin `version` is pinned, so every push to the default branch counts as a new version.
 Claude Code refreshes installed marketplaces in the background (this is a public repo, so the
