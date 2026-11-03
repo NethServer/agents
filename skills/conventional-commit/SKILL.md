@@ -144,7 +144,7 @@ After committing, verify the message and amend immediately if it fails:
 
 ```bash
 git show --format=%B --no-patch HEAD | awk '
-NR == 1 && length($0) > 50 { print "subject >50: " length($0); bad=1 }
+NR == 1 && !/^(fixup|squash|amend)! / && length($0) > 50 { print "subject >50: " length($0); bad=1 }
 NR > 1 && length($0) > 72 { print "body >72: " length($0); bad=1 }
 END { exit bad }
 '
@@ -154,7 +154,10 @@ END { exit bad }
 
 - One logical change per commit
 - Separate subject from body with a blank line
-- Limit the subject line to 50 characters
+- Limit the subject line to 50 characters. Exception: keep the
+  `fixup!`, `squash!` and `amend!` subjects written by
+  `git commit --fixup|--squash` as they are, even if longer:
+  `git rebase --autosquash` finds the target commit by that subject
 - Do not end the subject line with a period
 - Present tense: "add" not "added"
 - Imperative mood: "fix bug" not "fixes bug"
