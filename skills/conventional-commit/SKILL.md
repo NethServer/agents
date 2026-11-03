@@ -118,7 +118,8 @@ Analyze the diff to determine:
 - **Type**: What kind of change is this?
 - **Scope**: What area/module is affected?
 - **Description**: One-line summary of what changed (present tense,
-  imperative mood, short enough that the full subject is <=50 chars)
+  imperative mood, short enough that the full subject is <=50 chars;
+  `fixup!`, `squash!` and `amend!` subjects are exempt, see step 5)
 
 ### 4. Execute Commit
 
@@ -144,17 +145,54 @@ After committing, verify the message and amend immediately if it fails:
 
 ```bash
 git show --format=%B --no-patch HEAD | awk '
-NR == 1 && length($0) > 50 { print "subject >50: " length($0); bad=1 }
+NR == 1 && !/^(fixup|squash|amend)! / && length($0) > 50 { print "subject >50: " length($0); bad=1 }
 NR > 1 && length($0) > 72 { print "body >72: " length($0); bad=1 }
 END { exit bad }
 '
 ```
 
+### 5. Fix an earlier commit
+
+To change a commit that is not `HEAD` on a branch not yet pushed,
+create a fixup commit and let `git rebase` fold it in:
+
+```bash
+# Change the content of <commit>: stage the changes, then
+git commit --fixup=<commit>
+
+# Change the message of <commit> (stage changes too, to change both).
+# Without an editor, write the amend! commit message yourself:
+git commit --allow-empty -F - <<'EOF'
+amend! <target subject>
+
+<new subject>
+
+<new body>
+EOF
+
+# Fold the fixup commits into their targets (Git >= 2.44; older Git
+# needs: GIT_SEQUENCE_EDITOR=: git rebase -i --autosquash <base>)
+git rebase --autosquash <base>
+```
+
+`git commit --fixup=amend:<commit>` and `--fixup=reword:<commit>` build
+the same `amend!` commit but need an editor: keep its first line and
+write the new message below it. Replacing the first line turns it into
+an ordinary commit.
+
+The subject of these commits is `fixup! <target subject>` (or
+`squash!`, `amend!`). Keep it exactly like that, even if it is longer
+than 50 characters: `git rebase --autosquash` finds the target commit
+by that subject, and the prefixed subject disappears when the commit is
+folded in. A `fixup!` commit needs no body; the new message of an
+`amend!` commit follows the usual rules.
+
 ## Commit rules
 
 - One logical change per commit
 - Separate subject from body with a blank line
-- Limit the subject line to 50 characters
+- Limit the subject line to 50 characters, except for `fixup!`,
+  `squash!` and `amend!` commits (see step 5)
 - Do not end the subject line with a period
 - Present tense: "add" not "added"
 - Imperative mood: "fix bug" not "fixes bug"
