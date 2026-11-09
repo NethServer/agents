@@ -58,9 +58,7 @@ Node actions, one set per node. Again a sample.
 | Module hosting | `add-module`, `remove-module`, `restart-module` |
 | Maintenance | `update-os`, `update-core`, `start-support-session` |
 
-Node event handlers live in `node/events/<event-name>/` as numbered steps, run like
-an action. `docs/core/events.md` describes the layout and the injected
-`AGENT_EVENT_NAME` and `AGENT_EVENT_SOURCE`.
+Node event handlers: `ls node/events/`.
 
 The actions under `usr/local/agent/actions/` are inherited by every module. `ls` the
 directory for the list. Changing one changes the contract of every ns8-* module in
@@ -73,11 +71,8 @@ existence. Some share a name with a cluster action, like `update-module` or
 > is accepted on its own `node/<id>/tasks` and refused on `cluster/tasks`; a module agent
 > is refused on both and reaches only `module/<id>/tasks`.
 >
-> `agent.tasks` has two transports. The default goes through the api-server over HTTP
-> (`http://cluster-leader:9311`) and works for any agent, subject to its grants. The api-server
-> accepts agent credentials from loopback and the cluster VPN only (`GetUserNetworks` in
-> `api-server/methods/auth.go`). `endpoint="redis://cluster-leader"` pushes straight into
-> Redis and works only for the cluster agent. See `docs/core/agents.md`.
+> `agent.tasks` still works from any agent, subject to its grants. For the transports and
+> the `endpoint=` argument, see `docs/core/agents.md`.
 >
 > Check it on any node without writing anything:
 > `redis-cli ACL DRYRUN module/<id> LPUSH cluster/tasks x`
@@ -143,7 +138,7 @@ one. A fan-out over several nodes should not be a loop of `run()` calls:
 | `runp_nowait(tasks)` | a task id per task | the same, without waiting |
 | `runp_brief(tasks)` | the count of failures | a fan-out where only "did any fail" matters, errors already on stderr |
 
-All five accept `endpoint=` (see the transport note above). `run()` is itself a one-element `runp()`. Each entry of `tasks` is a dict with
+`run()` is itself a one-element `runp()`. Each entry of `tasks` is a dict with
 `agent_id`, `action` and `data`. Beware that `runp` returns exceptions *inside* the
 result list rather than raising, so a failed task is an `Exception` object where a
 result was expected — `runp_brief` exists to absorb exactly that. `set-fqdn/20set_node_fqdn`
@@ -188,9 +183,7 @@ exist — firewall zones and rich rules, port allocation, restic backup, volume
 arguments, Traefik routes and certificates, service discovery and user domain binding
 are all in there. `grep '^def ' pypkg/agent/__init__.py` is the index.
 
-Read the `redis_connect()` docstring before opening a connection. The default is
-read-only, a write needs `privileged=True`, and `use_replica=True` reads the local
-replica.
+Read the `redis_connect()` docstring before opening a connection.
 
 Every ns8-* module imports this package. A changed signature is a breaking change for
 repositories you will never see, exactly like the inherited actions.

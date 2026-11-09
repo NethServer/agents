@@ -21,8 +21,8 @@ cd core && run-ns8-tests <LEADER_NODE> [robot_options]
 cd core && RUN_UI_TESTS=true run-ns8-tests <LEADER_NODE>
 ```
 
-`RUN_UI_TESTS` and the environment handling belong to the external
-`run-ns8-tests` helper, so check its repository if they behave differently. Suites live in numbered directories such as
+The integration suite reads `SSH_KEYFILE`, `RUN_UI_TESTS` and `COREMODULES` from the
+environment. Suites live in numbered directories such as
 `core/tests/10__cluster_sanity/`, share `keywords.resource`, and follow the same
 numbering discipline as action steps: `00` installs, `99` uninstalls. Use
 `--exclude install` and `--exclude uninstall` to iterate against a cluster that is
