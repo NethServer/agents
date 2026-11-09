@@ -127,24 +127,16 @@ agent.unset_env("KEY")          # remove env var from state/environment
 
 > **⚠️ SECURITY — `agent.set_env()` writes to Redis plain text, readable by ALL modules on the node. NEVER store passwords/tokens/secrets via `agent.set_env()`.**
 >
-> **Secret pattern:** generate in `create-module/10genpasswords` → write one file per component under `state/secrets/` (dir 0700, files 0600) → declare `state/secrets/...` in `etc/state-include.conf` → pass to each container with `--env-file=%S/state/secrets/<component>.env`. Give a container only the secrets it uses. Non-secret vars (`TRAEFIK_HOST`, `LDAP_DOMAIN`, etc.) use `agent.set_env()` normally. Real examples: ns8-discourse, ns8-wazuh.
+> **Secret pattern:** generate in `create-module` → write a file under `state/` with mode 0600 (the name is free, for example `state/passwords.env` or `state/secrets/db.env`) → declare it in `etc/state-include.conf` (restic backup) → load via systemd `EnvironmentFile=-%S/state/passwords.env` when the unit itself needs the value, and inject into the container with `--env-file=%S/state/passwords.env`. Restore gets the file back from restic and clone copies `state/`, so no extra step is needed. Non-secret vars (`TRAEFIK_HOST`, `LDAP_DOMAIN`, etc.) use `agent.set_env()` normally.
 >
 > ```python
 > # create-module/10genpasswords
 > import secrets, os
-> d = os.path.join(os.environ["AGENT_STATE_DIR"], "secrets")
-> os.makedirs(d, mode=0o700, exist_ok=True)
-> p = os.path.join(d, "db.env")
-> if not os.path.exists(p):  # never rotate an existing secret
->     with open(p, "w") as f:
->         f.write(f"DB_PASSWORD={secrets.token_urlsafe(16)}\n")
->     os.chmod(p, 0o600)
+> p = os.path.join(os.environ["AGENT_STATE_DIR"], "passwords.env")
+> fd = os.open(p, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)  # 0600 from the start, never overwrite
+> with os.fdopen(fd, "w") as f:
+>     f.write(f"DB_PASSWORD={secrets.token_urlsafe(16)}\n")
 > ```
->
-> Restore gets the files back from restic. Clone copies `state/` too, but a step that
-> needs the secrets before `configure-module` must check they exist. ns8-bigbluebutton
-> runs a `bin/generate-secrets` helper as `45secrets` in both `restore-module` and
-> `clone-module`.
 
 #### Progress reporting
 Requires frontend `isProgressNotified: true` (see the Frontend § Task progress below):
@@ -238,6 +230,7 @@ Name events in **past tense**: `mail-settings-changed`, `ldap-provider-changed`.
 
 Firing an event (a plain `redis-cli` has no module credentials):
 ```python
+import json, os, agent
 rdb = agent.redis_connect(privileged=True)
 rdb.publish(os.environ["AGENT_ID"] + "/event/my-settings-changed",
             json.dumps({"module_id": os.environ["MODULE_ID"], "module_uuid": os.environ["MODULE_UUID"]}))
@@ -271,10 +264,10 @@ agent.set_route({
     'host': data['host'],
     'http2https': data.get('http2https', True),
     'lets_encrypt': data.get('lets_encrypt', False),
-    'lets_encrypt_check': True,
-    'lets_encrypt_cleanup': True,
 })
 ```
+`set_route()` already sets `lets_encrypt_check` and `lets_encrypt_cleanup` to `True`.
+Default `http2https` to `True`. Add a UI toggle only when the app must serve plain HTTP.
 ns8-traefik drops the route on the `module-removed` event, so `destroy-module` needs no route step.
 
 Ports open to the network: `agent.add_public_service(os.environ['MODULE_ID'], ['1514/tcp'])`
@@ -334,6 +327,3 @@ All three (or more) services must appear in the command. Order matters: pod firs
 Do not use `try-restart` here: it skips stopped units, so the first configure would start
 nothing. `try-restart` belongs in `update-module.d/` and event handlers, where the service
 should restart only if it already runs.
-
-Optional services (a feature the admin can turn off) go in a bash `UNITS` array. Enable and
-restart the array, and `disable --now` the units that are off. See ns8-bigbluebutton.

@@ -8,7 +8,7 @@
 **Only include files that are NOT provided by the module image.** If a file in `state/` is derived from or identical to a file shipped in `imageroot/` (e.g. `state/initdb.d/init.sql` copied from `imageroot/sql/init.sql`), do NOT back it up — regenerate it during restore instead. Back up only:
 - User data volumes (`volumes/myapp-data`)
 - SQL/DB dumps (`state/mydb.sql`, `state/mydb.pg_dump`)
-- Secrets generated at install time (`state/secrets/`)
+- Secrets generated at install time (`state/passwords.env` or similar)
 - Any runtime state not reproducible from the image
 
 ### Excluding files (state-exclude.conf)
@@ -21,9 +21,9 @@ volumes/myapp-data/app.db*
 ### Restore sequence
 `imageroot/actions/restore-module/` — numbered steps, `10restore` inherited (Restic).
 
-- `06copyenv` — restore the env vars the module needs from `request['environment']` via `agent.set_env()`
-- `40restoreDB` — load SQL dump via ephemeral container (see patterns below)
-- `50...` — call `configure-module` via `agent.tasks.run()`. The name varies:
+- `06copyenv`: restore the env vars the module needs from `request['environment']` via `agent.set_env()`
+- `40restoreDB`: load SQL dump via ephemeral container (see patterns below)
+- `50...`: call `configure-module` via `agent.tasks.run()`. The name varies:
   `50traefik`, `50configure`, `50call-configure-module`.
 
 > **⚠️ The `configure-module` call must pass every field it needs**, read from the restored
@@ -31,15 +31,23 @@ volumes/myapp-data/app.db*
 > admin's settings. Read `configure-module/validate-input.json` to list them.
 >
 > ```python
+> import json, os, sys, agent, agent.tasks
 > renv = json.load(sys.stdin)['environment']
 > ret = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='configure-module', data={
 >     "host": renv["TRAEFIK_HOST"],
->     "http2https": renv["TRAEFIK_HTTP2HTTPS"] == "True",
+>     "http2https": renv.get("TRAEFIK_HTTP2HTTPS", "True").lower() == "true",
+>     "lets_encrypt": False,
 >     # every other configure-module field
 > })
 > agent.assert_exp(ret['exit_code'] == 0, "configure-module failed")
 > ```
-> `agent.set_env()` stores booleans as `"True"`/`"False"`. Compare with `== "True"`.
+> Env values are strings. `set_env(True)` stores `"True"`, but some modules store `"true"`,
+> so compare with `.lower() == "true"`, never with `== True`. Use `.get()` with a default
+> for any field an older backup may lack.
+>
+> Never restore `lets_encrypt` on restore, clone or move. The DNS may not point to the new
+> node yet. The certificate request then fails, and `set_route()` checks it by default, so
+> the whole restore fails. The admin turns Let's Encrypt back on once DNS is ready.
 
 ### MariaDB
 - **Dump** (`imageroot/bin/module-dump-state`, CWD=`state/`): `podman exec mariadb-app mysqldump --databases mydb --default-character-set=utf8mb4 --single-transaction --quick --add-drop-table --skip-dump-date > mydb.sql`
@@ -63,14 +71,11 @@ volumes/myapp-data/app.db*
   from the source, live data included. No restic, no SQL dump. The source services stop
   during the copy (rootless modules, through `transfer-state.target`). Env vars missing
   on the destination are imported from the source. The module's own `50...` step then
-  calls `configure-module` with values from `os.environ`.
+  sets the route or calls `configure-module` with values from `os.environ`, with the same
+  `lets_encrypt: False` rule as restore.
 
-On clone, the request field `replace` tells whether the source is removed. When it is
-`false`, the source still owns its host name. Do not register the same route twice:
-ns8-discourse skips its route and asks the admin for a new host.
-
-To skip files during the copy, add `imageroot/etc/state-filter-rules.rsync` (rsync filter
-syntax). See the manual page `clone_module`.
+To skip files during the copy, core supports `imageroot/etc/state-filter-rules.rsync`
+(manual page `clone_module`).
 
 Dump/cleanup scripts (`imageroot/bin/module-dump-state`, `imageroot/bin/module-cleanup-state`) only run during backup — not during clone or restore.
 
@@ -93,5 +98,5 @@ Mount in the systemd service:
 Scripts in `imageroot/update-module.d/` run on `update-module` in lexicographic order.
 If a script fails, execution continues with the next one — each script is independent.
 
-Recommended layout: `05`-`10` pre-restart migrations, `20restart` (`systemctl --user try-restart`), `50`-`60` post-restart reindex/cleanup.
+Recommended layout: migrations first, then a restart step (`systemctl --user try-restart`, most modules name it `20restart`), then post-restart reindex or cleanup.
 Version-specific migrations go before the restart step so the new code starts on updated data.

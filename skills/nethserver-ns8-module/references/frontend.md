@@ -176,5 +176,5 @@ Live examples of most components: `https://nethserver.github.io/ns8-ui-lib/` (St
 ## Translations
 
 **ONLY edit `ui/public/i18n/en/translation.json`.**
-All other language files (`fr/`, `it/`, `de/`, etc.) come from Weblate — never touch them manually.
+All other language files (`fr/`, `it/`, `de/`, etc.) come from Weblate. Never touch them manually.
 If you add or rename a key, add/rename it in `en/translation.json` only. Do NOT create or modify any other `translation.json`.
