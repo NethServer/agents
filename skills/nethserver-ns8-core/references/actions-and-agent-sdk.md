@@ -38,8 +38,8 @@ Four roots, each belonging to a different agent:
 | `var/lib/nethserver/node/events/` | node agent event handlers |
 | `usr/local/agent/actions/` | the module lifecycle actions every module inherits |
 
-Cluster actions, leader only. There are 85 of them; the table names the groups and
-a representative few, not the full set. `ls` the directory for that.
+Cluster actions, leader only. The table names the groups and a representative few,
+not the full set. `ls` the directory for that.
 
 | Group | Actions |
 |---|---|
@@ -49,8 +49,7 @@ a representative few, not the full set. `ls` the directory for that.
 | Backup and restore | `add-backup`, `run-backup`, `add-backup-repository`, `restore-cluster`, `restore-module` |
 | Cluster administration | `create-cluster`, `join-cluster`, `get-cluster-status`, `set-fqdn`, `grant-actions`, `revoke-actions`, `set-smarthost`, `set-subscription` |
 
-Node actions, one set per node, 30 in total — again a sample. The event handlers,
-in contrast, are the complete list.
+Node actions, one set per node. Again a sample.
 
 | Group | Actions |
 |---|---|
@@ -58,21 +57,27 @@ in contrast, are the complete list.
 | Networking | `add-tun`, `allocate-ports`, `deallocate-ports` |
 | Module hosting | `add-module`, `remove-module`, `restart-module` |
 | Maintenance | `update-os`, `update-core`, `start-support-session` |
-| Events | `acl-changed`, `backup-destination-changed`, `backup-schedule-changed`, `default-instance-changed`, `leader-changed`, `subscription-changed`, `vpn-changed` |
 
-The actions under `usr/local/agent/actions/` — `create-module`, `destroy-module`,
-`clone-module`, `import-module`, `restore-module`, `update-module`, `get-status`,
-`list-volumes`, `list-service-providers`, `transfer-state` — are inherited by every
-module. Changing one changes the contract of every ns8-* module in existence.
+Node event handlers live in `node/events/<event-name>/` as numbered steps, run like
+an action. `docs/core/events.md` describes the layout and the injected
+`AGENT_EVENT_NAME` and `AGENT_EVENT_SOURCE`.
+
+The actions under `usr/local/agent/actions/` are inherited by every module. `ls` the
+directory for the list. Changing one changes the contract of every ns8-* module in
+existence. Some share a name with a cluster action, like `update-module` or
+`restore-module`, but they are different code.
 
 > **⚠️ Only the `cluster` agent and `api-server` may LPUSH into `cluster/tasks`.**
 > Measured with `ACL DRYRUN` on a live leader (core 3.22.0-dev.3): `cluster` and
 > `api-server` are accepted on both `cluster/tasks` and `node/<id>/tasks`; a node agent
 > is accepted on its own `node/<id>/tasks` and refused on `cluster/tasks`; a module agent
-> is refused on both and reaches only `module/<id>/tasks`. Module agents therefore submit
-> cluster work through the api-server HTTP API, and `agent.tasks` only works from an action
-> step running as the cluster agent, because the API server accepts agent credentials from
-> loopback and the cluster VPN only.
+> is refused on both and reaches only `module/<id>/tasks`.
+>
+> `agent.tasks` has two transports. The default goes through the api-server over HTTP
+> (`http://cluster-leader:9311`) and works for any agent, subject to its grants. The api-server
+> accepts agent credentials from loopback and the cluster VPN only (`GetUserNetworks` in
+> `api-server/methods/auth.go`). `endpoint="redis://cluster-leader"` pushes straight into
+> Redis and works only for the cluster agent. See `docs/core/agents.md`.
 >
 > Check it on any node without writing anything:
 > `redis-cli ACL DRYRUN module/<id> LPUSH cluster/tasks x`
@@ -138,7 +143,7 @@ one. A fan-out over several nodes should not be a loop of `run()` calls:
 | `runp_nowait(tasks)` | a task id per task | the same, without waiting |
 | `runp_brief(tasks)` | the count of failures | a fan-out where only "did any fail" matters, errors already on stderr |
 
-`run()` is itself a one-element `runp()`. Each entry of `tasks` is a dict with
+All five accept `endpoint=` (see the transport note above). `run()` is itself a one-element `runp()`. Each entry of `tasks` is a dict with
 `agent_id`, `action` and `data`. Beware that `runp` returns exceptions *inside* the
 result list rather than raising, so a failed task is an `Exception` object where a
 result was expected — `runp_brief` exists to absorb exactly that. `set-fqdn/20set_node_fqdn`
@@ -182,6 +187,10 @@ through the module pages. Read the source before writing a helper that may alrea
 exist — firewall zones and rich rules, port allocation, restic backup, volume
 arguments, Traefik routes and certificates, service discovery and user domain binding
 are all in there. `grep '^def ' pypkg/agent/__init__.py` is the index.
+
+Read the `redis_connect()` docstring before opening a connection. The default is
+read-only, a write needs `privileged=True`, and `use_replica=True` reads the local
+replica.
 
 Every ns8-* module imports this package. A changed signature is a breaking change for
 repositories you will never see, exactly like the inherited actions.

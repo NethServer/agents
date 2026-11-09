@@ -21,8 +21,8 @@ cd core && run-ns8-tests <LEADER_NODE> [robot_options]
 cd core && RUN_UI_TESTS=true run-ns8-tests <LEADER_NODE>
 ```
 
-The integration suite reads `SSH_KEYFILE`, `RUN_UI_TESTS` and `COREMODULES` from the
-environment. Suites live in numbered directories such as
+`RUN_UI_TESTS` and the environment handling belong to the external
+`run-ns8-tests` helper, so check its repository if they behave differently. Suites live in numbered directories such as
 `core/tests/10__cluster_sanity/`, share `keywords.resource`, and follow the same
 numbering discipline as action steps: `00` installs, `99` uninstalls. Use
 `--exclude install` and `--exclude uninstall` to iterate against a cluster that is
@@ -99,8 +99,9 @@ Five rules govern those scripts, and the first two are the ones that bite:
 - The scripts come from the newly installed image, not the one being replaced. A hook
   therefore always describes the migration *into* its own version.
 
-Read the existing hooks before writing one. `50update_grants` exists on both the node
-and the cluster side and is a good model for a converging script.
+Read the existing hooks before writing one. New grants go in
+`cluster/update-core-pre-modules.d/50update_grants`. The node copy is frozen: its own
+comment says not to add grants because it will be removed.
 
 Two details of the first stage matter during development. The node compares the image
 tag with the installed one as Semver and installs only if it is greater. A tag that is
