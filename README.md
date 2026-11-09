@@ -14,6 +14,7 @@ pick it automatically:
 
 - `nethserver-admin` — inspect, install, configure, and troubleshoot NS8 nodes over shell/SSH
 - `nethvoice-admin` — diagnose, repair, and operate production NethVoice and NethVoice Proxy instances safely
+- `nethesis-support` — investigate customer tickets and draft sourced answers using documentation, engineering evidence and authorized passive diagnostics (v0.1.0)
 - `nethserver-containerfile` — write and review secure, production-ready Containerfiles
 - `nethserver-issue` — write well-structured GitHub issues
 - `nethserver-ns8-core` — navigate and modify the ns8-core platform repository itself
