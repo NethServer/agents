@@ -72,6 +72,9 @@ Format: `<scope>:<role>`. Multiple roles on the same scope: `node:fwadm,portsadm
 
 The builtin `reader` role needs no grant. For a read-only action, use one of
 the `list-`, `get-`, `show-` or `read-` prefixes and readers can run it.
+Another module requests it like any role, for example
+`mariadb@any:reader`. Every reader can run these actions, so they must
+never return passwords or other secrets.
 
 ### selfadm — module calling its own actions
 A module can grant itself the right to call its own actions via Redis in
