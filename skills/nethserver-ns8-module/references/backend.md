@@ -235,6 +235,8 @@ rdb = agent.redis_connect(privileged=True)
 rdb.publish(os.environ["AGENT_ID"] + "/event/my-settings-changed",
             json.dumps({"module_id": os.environ["MODULE_ID"], "module_uuid": os.environ["MODULE_UUID"]}))
 ```
+Publish on the leader (default connection), never with `use_replica=True`: the replica is
+read-only, and every agent receives events from its local replica, which the leader feeds.
 
 ### Handlers
 Live in `imageroot/events/<event-name>/` — executable scripts, work like action steps.
