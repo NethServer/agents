@@ -61,7 +61,7 @@ Format: `<scope>:<role>`. Multiple roles on the same scope: `node:fwadm,portsadm
 | `fwadm` | ns8-core / node | firewall rules (public services, zones, rich rules) |
 | `portsadm` | ns8-core / node | port allocation |
 | `tunadm` | ns8-core / node | TUN device + fwadm actions |
-| `reader` | ns8-core | `get-*`, `show-*`, `read-*` |
+| `reader` | ns8-core (builtin on every module) | `list-*`, `get-*`, `show-*`, `read-*` |
 | `routeadm` | ns8-traefik | manage Traefik routes |
 | `certadm` | ns8-traefik | certificate management |
 | `fulladm` | ns8-traefik | routeadm + certadm |
@@ -69,6 +69,12 @@ Format: `<scope>:<role>`. Multiple roles on the same scope: `node:fwadm,portsadm
 | `accountconsumer` | cluster | bind/use a user domain (LDAP) |
 | `accountprovider` | cluster | provide a user domain |
 | `selfadm` | built-in | module's own actions (auto-granted) |
+
+The builtin `reader` role needs no grant. For a read-only action, use one of
+the `list-`, `get-`, `show-` or `read-` prefixes and readers can run it.
+Another module requests it like any role, for example
+`mariadb@any:reader`. Every reader can run these actions, so they must
+never return passwords or other secrets.
 
 ### selfadm — module calling its own actions
 A module can grant itself the right to call its own actions via Redis in

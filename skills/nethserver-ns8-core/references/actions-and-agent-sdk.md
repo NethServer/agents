@@ -16,6 +16,10 @@ leader is resolved through `cluster/environment NODE_ID`, then `node/<id>/vpn`.
 | `<agent>/roles/<role>` | grants API | SET of action glob patterns |
 | `roles/<username>` | grants API | HASH mapping agent_id to role |
 
+Core creates two builtin roles on every module, node and the cluster. `owner`
+gets `*`. `reader` gets `list-*`, `get-*`, `show-*` and `read-*`. The grants
+are in `add-module/50update`, `add-node/50update` and `install-finalize.sh`.
+
 Pub/sub channels: `progress/<agent>/task/<uuid>` carries task progress to the UI;
 `<agent>/event/<event-name>` carries events between agents, for example
 `cluster/event/module-added`. Event names are past tense.
