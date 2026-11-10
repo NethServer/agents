@@ -20,6 +20,7 @@ pick it automatically:
 - `nethserver-ns8-module` — develop and review NS8 modules (backend + frontend conventions)
 - `nethserver-pr` — create and manage pull requests
 - `nethserver-release` — create module and package releases following semver
+- `nethvoice-release` — release a NethVoice milestone: ns8-nethvoice, ns8-nethvoice-proxy and NethLink, issue closing and testing cleanup
 - `conventional-commit` — conventional commit messages with intelligent staging
 
 ## Skill structure and context cost
@@ -62,7 +63,7 @@ frontier-model turn on mechanical work:
 | --- | --- |
 | `nethserver-pr`, `nethserver-release` | `haiku` |
 | `conventional-commit`, `nethserver-issue`, `nethserver-containerfile` | `sonnet` |
-| `nethserver-admin`, `nethserver-ns8-core`, `nethvoice-admin`, `nethserver-ns8-module` | none — these need full reasoning |
+| `nethserver-admin`, `nethserver-ns8-core`, `nethvoice-admin`, `nethvoice-release`, `nethserver-ns8-module` | none — these need full reasoning |
 
 In Claude Code, the override applies to the turn that invokes the skill and is not saved to
 your settings. Remove the `model:` line if you would rather always use your session model.
