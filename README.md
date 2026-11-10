@@ -33,6 +33,8 @@ skills:
   `@nethesis/vue-components` fully; text, icons, colors, typography and accessibility for other
   stacks; only text for NethServer 8 modules built with Carbon
 
+To test a change to these skills, run their [eval suite](plugins/frontend-skills/evals/README.md).
+
 ## Skill structure and context cost
 
 Agents initially load each skill's name and `description`, while its `SKILL.md` body is
