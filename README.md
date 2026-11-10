@@ -66,6 +66,10 @@ which reference file gets read. Three corollaries:
 - Reference paths are relative to the skill directory, so `references/backend.md` means
   `skills/<skill>/references/backend.md`.
 
+Checks that are the same every time go in a `scripts/` file that the skill runs, instead of
+commands in a reference: the agent spends one call on them, and every run checks the same things
+(see `plugins/frontend-skills/skills/nebula-frontend/scripts/review-checks.sh`).
+
 ### Model overrides (Claude Code only)
 
 Template-driven skills declare a cheaper model in frontmatter so they do not spend a
