@@ -5,77 +5,34 @@ code only if asked to.
 
 ## Mechanical checks
 
-Run these first, from the frontend folder (in My Nethesis, `frontend`; in NethServer 8 core,
-`core/ui`). They find candidates, not certain problems: read each match before reporting it. In a
-NethServer 8 project built with Carbon, run only the text checks.
-
-Text checks, for every project with i18n files:
+Run `scripts/review-checks.sh`, in the folder of this skill, first. Run it from the frontend
+folder, the one with `package.json` (in My Nethesis, `frontend`; in NethServer 8 core,
+`core/ui`), and pass the files or folders in scope (default `src`):
 
 ```bash
-# the files in scope: src for the whole frontend, or the files of a page
-scope=src
-# the file types: templates, and templates with scripts (React: *.tsx, and *.tsx with *.ts;
-# Vue 2: *.vue with *.js)
-views='--include=*.vue'
-code='--include=*.vue --include=*.ts'
-# the English i18n file (references/text.md)
-en=src/i18n/en/translation.json
-# keys the code uses that the English file lacks: the user sees the key path. Written for t('…')
-# and $t('…') with dots in the path; keys built at run time show up cut, ignore them
-grep -rhoE "\bt\(['\"][a-zA-Z0-9_.-]+['\"]" $scope $code | sed -E "s/.*\(['\"]//; s/['\"]$//" |
-  sort -u | while read -r k; do
-    jq -e --arg k "$k" 'getpath($k | split("."))' $en >/dev/null || echo "missing: $k"
-  done
-# terms the glossary lists under avoid, with the approved terms, skipping lines that already use
-# them; a word avoided for an action can be right in another meaning ("New password")
-curl -s https://nethesis.github.io/nebula-design-system/glossary.json |
-  jq -r '[.terms[].en] as $ok | [.terms[] | .en as $t | .avoid.en[]? | {avoid: ., term: $t}]
-    | group_by(.avoid)[] | select(.[0].avoid as $a | $ok | index($a) | not)
-    | "\(.[0].avoid)\t\(map(.term) | join("|"))"' |
-  while IFS=$'\t' read -r avoid terms; do
-    grep -nwF -- "$avoid" $en | grep -vF -f <(tr '|' '\n' <<<"$terms") |
-      sed "s/^/[$avoid → ${terms//|/ or }] /"
-  done
+bash <skill folder>/scripts/review-checks.sh src/views/CustomersView.vue src/components/customers
 ```
 
-Checks of components, colors, icons and code, for projects built with Tailwind CSS and
-`@nethesis/vue-components`, and for colors and icons in other stacks:
+It finds the English i18n file and the kind of project from `package.json`, and prints one
+section for each check, with `none` when nothing matches:
 
-```bash
-# weights the design system does not use
-grep -rnE 'font-(semibold|bold|extrabold|black)\b' $scope $views
-# hex, rgb() or arbitrary colors
-grep -rnE '#[0-9a-fA-F]{3,8}\b|rgba?\(|(bg|text|border|ring|fill|stroke)-\[#' $scope $views
-# raw elements that usually have a component
-grep -rnE '<(button|input|select|textarea|table)\b' $scope $views
-# styles outside Tailwind classes (style="…" and style={{…}}), and arbitrary values
-grep -rnE '\bstyle=["{]|\b[a-z-]+-\[[0-9.]+(px|rem)\]' $scope $views
-# click handlers on an element that is not a button or a link: each match names the element
-# the handler belongs to, the last tag opened on its line or before it (Prettier wraps tags)
-for f in $(grep -rlE '@click|v-on:click|onClick=' $scope $views); do
-  awk -v f="$f" '/<[A-Za-z]/ { if (match($0, /<[A-Za-z][A-Za-z0-9.-]*/)) tag = substr($0, RSTART + 1, RLENGTH - 1) }
-    /@click|v-on:click|onClick=/ && tag !~ /^(NeButton|NeLink|button|a|RouterLink|router-link|Button|Link)$/ {
-      print f ":" FNR ": <" tag ">" }' "$f"
-done
-# text dimmed with opacity, skipping disabled controls and transitions; a dimmed row of an
-# archived or turned-off item is text, not a disabled control: report it
-grep -rnE '\btext-[a-z]+-[0-9]+/[0-9]+|\bopacity-[0-9]+\b' $scope $views |
-  grep -vE 'disabled|cursor-not-allowed|enter-|leave-'
-# icons not imported one by one: whole packs, library.add() (faLibrary.add() too), icons named
-# by string
-grep -rnE "import \{ (fas|far|fab|fal) \}|[lL]ibrary\.add\(|['\"]fa[srlb]['\"], *['\"][a-z0-9-]+['\"]|['\"]fa-(solid|regular|light|brands) fa-" $scope $code
-# only in projects that use @nethesis/vue-components:
-# deprecated components, from components.json (references/components.md)
-deprecated=$(curl -s https://nethesis.github.io/vue-components/components.json |
-  jq -r '[.components[] | select(.deprecated) | .name] | join("|")')
-grep -rnE "\b($deprecated)\b" $scope $code
-# deprecated props, types and functions of the installed version, with the lines that name them
-grep -rn -A3 @deprecated node_modules/@nethesis/vue-components/dist --include=*.d.ts
-```
+- in every project: i18n keys the code uses that the English file lacks, and terms the glossary
+  lists under avoid;
+- not in NethServer 8 projects built with Carbon, which get only the text checks: font weights,
+  hex and arbitrary colors, `style` attributes and arbitrary values, text dimmed with opacity,
+  click handlers on elements that are not buttons or links, links without an address,
+  `aria-label` on elements that show text, icons not imported one by one;
+- only in projects that use `@nethesis/vue-components`: raw elements that usually have a
+  component (not in vue-components itself), deprecated components, and the `@deprecated` lines
+  of the installed version (of `src` in vue-components).
 
-Search the files in scope for each name the last command finds. A class from `foundations.json`
-that looks like an arbitrary value, such as the drawer shadow, is a token, not a problem. In
-vue-components itself, follow `references/library.md` for these commands.
+Pass `--en <file>` when it finds no English file, and `--text-only` to run only the text checks.
+The matches are candidates, not certain problems: read each one before reporting it.
+
+Search the files in scope for each name of the deprecated section. A class from
+`foundations.json` that looks like an arbitrary value, such as the drawer shadow, is a token, not
+a problem. An `aria-label` that starts with the visible text, such as `Show password` on a
+`Show` button, is right.
 
 Review the files in scope. When a component they import from the project has problems, report
 them apart and briefly, without reviewing the whole component.
@@ -100,12 +57,15 @@ it once for the project with a few examples, not line by line.
   `customIconsWithoutMeaning`; decorative icons without `aria-hidden="true"`; icon-only buttons
   without an accessible label and a tooltip.
 - **Text**: literal strings instead of i18n keys; texts that break the writing guidelines; terms
-  the glossary lists under `avoid` (`references/text.md`); raw server or exception messages
-  shown as the main message of a notification, such as `error.message` bound to its description
-  (writing guidelines, "Style"); i18n keys the code uses that the English file lacks; props of
-  `Ne*` components that end in `Label` left to their
-  English default in a project with i18n. List them for a component with
-  `grep -oE '\b[a-z][a-zA-Z]*Label\b' node_modules/@nethesis/vue-components/dist/components/<Name>.vue.d.ts | sort -u`.
+  the glossary lists under `avoid` (`references/text.md`); server messages shown where the
+  writing guidelines ("Error messages") want a text from the i18n files: a field error that is
+  not turned into a key, or a network error or a 5xx that reaches the user as it is, such as
+  `error.message` bound to the description of a notification with nothing in the project that
+  replaces it (look for an HTTP interceptor first); the message of a 4xx with no field is right
+  as it is; i18n keys the code uses that the English file lacks; props of `Ne*` components that
+  end in `Label` left to their English default in a project with i18n. List them for a component
+  with `grep -oE '\b[a-z][a-zA-Z]*Label\b'
+  node_modules/@nethesis/vue-components/dist/components/<Name>.vue.d.ts | sort -u`.
 - **Italian translations**: when developers edit the Italian file (`references/text.md`), check
   it too: terms the glossary lists under `avoid.it`, translations other than its `it`, and the
   Italian rules of the writing guidelines. When only Weblate edits it, report these for the
@@ -113,11 +73,13 @@ it once for the project with a few examples, not line by line.
 - **Accessibility**, by the rules of
   https://nethesis.github.io/nebula-design-system/accessibility.md: form fields without a label,
   or a label linked to the wrong field (two fields with the same `id`); click handlers on
-  elements that are not buttons or links, which the keyboard cannot reach; focus rings removed
-  without a replacement; text dimmed with opacity (`text-gray-900/60`, `opacity-70`), except on
-  disabled controls, archived or turned-off items included (they take the tertiary neutral text
-  and icon tokens and a status); status shown by color alone; overlays built by hand instead of `NeModal`
-  or `NeSideDrawer`; a `lang` attribute that does not follow the interface language.
+  elements that are not buttons or links, and links without an `href` (`NeLink` with only
+  `@click`), which the keyboard cannot reach; focus rings removed without a replacement; an
+  `aria-label` that replaces the visible text of a link or a button instead of containing it;
+  text dimmed with opacity (`text-gray-900/60`, `opacity-70`), except on disabled controls,
+  archived or turned-off items included (they take the tertiary neutral text and icon tokens and
+  a status); status shown by color alone; overlays built by hand instead of `NeModal` or
+  `NeSideDrawer`; a `lang` attribute that does not follow the interface language.
 
 ## Report
 

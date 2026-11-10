@@ -30,5 +30,6 @@ Then open each story you changed in the light and the dark theme, at desktop and
 `npm run storybook`, then `http://localhost:6006/iframe.html?id=<story-id>&globals=theme:dark`
 (the story id ends the `link` of the story in `components.json`).
 
-Of the commands of `references/review.md`, skip the check for raw elements, which the components
-are made of, and replace the two deprecation checks with `grep -rn -A3 @deprecated src`.
+`scripts/review-checks.sh` (`references/review.md`) recognizes the library from its
+`package.json`: it skips the check for raw elements, which the components are made of, and reads
+the `@deprecated` lines of `src`.

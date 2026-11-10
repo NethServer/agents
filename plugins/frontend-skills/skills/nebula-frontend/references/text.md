@@ -26,6 +26,11 @@ i18n files and use it through the project's i18n library: `vue-i18n` (`t()` or `
 another one in another stack (`react-i18next` in NethVoice CTI). These rules are for writing
 text; in a review, use them to judge the texts and the keys, and report without changing files.
 
+- Server errors (writing guidelines, "Error messages"): a field error shows a text from an i18n
+  key built from the server message, and a missing key shows as the key itself; an error about
+  the state of an object, with no field, shows the server message as it is, with a capital first
+  letter; a network error or a 5xx shows a fixed text from the i18n files, never the server
+  message. Follow the way the project already maps server errors, often in an HTTP interceptor.
 - Find the files and the key naming in the project (for example `src/i18n/en/translation.json`,
   `src/i18n/en.json` or `public/locales/en/translation.json`), and follow the existing structure.
 - When an existing text breaks the writing guidelines, add a new key instead of reusing it. A key

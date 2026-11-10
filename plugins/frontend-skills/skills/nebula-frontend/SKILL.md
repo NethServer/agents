@@ -26,8 +26,8 @@ dependencies:
   accessibility and foundations. For colors, no hex or arbitrary values: use the project's theme,
   and report its colors whose values differ from the token's in `colors.json`. Keep the project's
   own components, comparing their behavior with the matching `Ne*` component
-  (`references/components.md`), and set the file types of the commands of `references/review.md`
-  to its files (`*.tsx`).
+  (`references/components.md`). The checks of `references/review.md` find the file types
+  (`*.tsx`) from `package.json`.
 
 ## Sources
 
@@ -122,10 +122,10 @@ the JSON files with `jq`: a tool that summarizes a page loses the field names.
   English, so pass each one that the component shows in the way you use it, such as the close
   label when there is a close button.
 - Interactive elements must work with the keyboard and keep a visible focus ring: a click
-  handler goes on a button or a link, never on a `div`, a `span` or a table row. Form fields
-  need a label. The other accessibility rules, such as no text dimmed with opacity and no status
-  shown by color alone, are in
-  https://nethesis.github.io/nebula-design-system/accessibility.md.
+  handler goes on a button or a link, never on a `div`, a `span` or a table row, and a link
+  (`NeLink`, `<a>`) needs an `href`: for an action, use `NeButton`. Form fields need a label.
+  The other accessibility rules, such as no text dimmed with opacity and no status shown by
+  color alone, are in https://nethesis.github.io/nebula-design-system/accessibility.md.
 
 ## Before you finish
 
@@ -134,7 +134,7 @@ After writing or changing code:
 1. Run the project's checks with the scripts of its `package.json`: lint, type-check and tests
    (in My Nethesis, `npm run pre-commit` in `frontend`, which also formats the files; in
    vue-components, the checks of `references/library.md`).
-2. Run the mechanical checks of `references/review.md` on the files you changed.
+2. Run `scripts/review-checks.sh` on the files you changed (`references/review.md`).
 3. Check the result in the light and the dark theme, at desktop and phone width, and with the
    keyboard: every new control reachable with Tab, with a visible focus ring. Use the running
    app when it can run where you work; a product that needs a login and a backend often cannot.
