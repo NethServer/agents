@@ -1,6 +1,6 @@
 ---
 name: nebula-frontend
-description: 'Use when writing, changing or reviewing the frontend of a Nethesis product, or checking that a page, a component or a whole project follows the Nebula Design System: pages, components, forms, tables, modals, notifications, colors, dark theme, icons, interface text and translations, also from a Figma link, a mockup image or a description. Covers Vue 3 projects with Tailwind CSS and @nethesis/vue-components (My Nethesis, NethSecurity, the NethServer 8 user manager), changes to @nethesis/vue-components itself, and, for text, icons, colors, typography and accessibility only, frontends built with other stacks, such as the React app of NethVoice CTI. For NethServer 8 modules built with Vue 2 and Carbon, only the text rules apply.'
+description: 'Use when writing, changing or reviewing the frontend of a Nethesis product, or checking that a page, a component or a whole project follows the Nebula Design System: pages, components, forms, tables, modals, notifications, colors, dark theme, icons, interface text and translations, also from a Figma link, a mockup image or a description. Covers Vue 3 projects with Tailwind CSS and @nethesis/vue-components (My Nethesis, NethSecurity, the NethServer 8 user manager), changes to @nethesis/vue-components itself, and, for text, icons, colors, typography and accessibility only, frontends built with other stacks, such as the React apps of NethVoice CTI and NethLink. For NethServer 8 modules built with Vue 2 and Carbon, only the text rules apply.'
 ---
 
 # Nethesis frontend
@@ -22,10 +22,10 @@ dependencies:
   `@nethserver/ns8-ui-lib`**: NethServer 8, its core or a module, which follows the Carbon
   Design System. Say so, and apply only the writing guidelines and the glossary
   (`references/text.md`), with the text checks of `references/review.md`.
-- **Another stack, such as React** (NethVoice CTI): apply the rules for text, icons, typography,
-  accessibility and foundations. For colors, no hex or arbitrary values: use the project's theme,
-  and report its colors whose values differ from the token's in `colors.json`. Keep the project's
-  own components, comparing their behavior with the matching `Ne*` component
+- **Another stack, such as React** (NethVoice CTI, NethLink): apply the rules for text, icons,
+  typography, accessibility and foundations. For colors, no hex or arbitrary values: use the
+  project's theme, and report its colors whose values differ from the token's in `colors.json`.
+  Keep the project's own components, comparing their behavior with the matching `Ne*` component
   (`references/components.md`). The checks of `references/review.md` find the file types
   (`*.tsx`) from `package.json`.
 
