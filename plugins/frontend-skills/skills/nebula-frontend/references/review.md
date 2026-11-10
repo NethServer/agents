@@ -57,6 +57,10 @@ for f in $(grep -rlE '@click|v-on:click|onClick=' $scope $views); do
     /@click|v-on:click|onClick=/ && tag !~ /^(NeButton|NeLink|button|a|RouterLink|router-link|Button|Link)$/ {
       print f ":" FNR ": <" tag ">" }' "$f"
 done
+# text dimmed with opacity, skipping disabled controls and transitions; a dimmed row of an
+# archived or turned-off item is text, not a disabled control: report it
+grep -rnE '\btext-[a-z]+-[0-9]+/[0-9]+|\bopacity-[0-9]+\b' $scope $views |
+  grep -vE 'disabled|cursor-not-allowed|enter-|leave-'
 # icons not imported one by one: whole packs, library.add() (faLibrary.add() too), icons named
 # by string
 grep -rnE "import \{ (fas|far|fab|fal) \}|[lL]ibrary\.add\(|['\"]fa[srlb]['\"], *['\"][a-z0-9-]+['\"]|['\"]fa-(solid|regular|light|brands) fa-" $scope $code
@@ -106,10 +110,14 @@ it once for the project with a few examples, not line by line.
   it too: terms the glossary lists under `avoid.it`, translations other than its `it`, and the
   Italian rules of the writing guidelines. When only Weblate edits it, report these for the
   translators.
-- **Accessibility**: form fields without a label, or a label linked to the wrong field (two
-  fields with the same `id`); click handlers on elements that are not buttons or links, which
-  the keyboard cannot reach; focus rings removed; text dimmed below the WCAG AA contrast of
-  4.5:1, for example with `opacity-50`.
+- **Accessibility**, by the rules of
+  https://nethesis.github.io/nebula-design-system/accessibility.md: form fields without a label,
+  or a label linked to the wrong field (two fields with the same `id`); click handlers on
+  elements that are not buttons or links, which the keyboard cannot reach; focus rings removed
+  without a replacement; text dimmed with opacity (`text-gray-900/60`, `opacity-70`), except on
+  disabled controls, archived or turned-off items included (they take the tertiary neutral text
+  and icon tokens and a status); status shown by color alone; overlays built by hand instead of `NeModal`
+  or `NeSideDrawer`; a `lang` attribute that does not follow the interface language.
 
 ## Report
 

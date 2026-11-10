@@ -123,7 +123,9 @@ the JSON files with `jq`: a tool that summarizes a page loses the field names.
   label when there is a close button.
 - Interactive elements must work with the keyboard and keep a visible focus ring: a click
   handler goes on a button or a link, never on a `div`, a `span` or a table row. Form fields
-  need a label.
+  need a label. The other accessibility rules, such as no text dimmed with opacity and no status
+  shown by color alone, are in
+  https://nethesis.github.io/nebula-design-system/accessibility.md.
 
 ## Before you finish
 
