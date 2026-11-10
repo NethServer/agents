@@ -31,7 +31,11 @@ cat > src/i18n/en/translation.json <<'FIXTURE'
     "status": "Status",
     "archived": "Archived",
     "active": "Active",
-    "modify_customer": "Modify customer"
+    "modify_customer": "Modify customer",
+    "systems": "Systems",
+    "show_systems": "Show the systems of {name}",
+    "show_notes": "Show notes",
+    "cannot_retrieve_customers": "Cannot retrieve customers"
   }
 }
 FIXTURE
@@ -41,26 +45,38 @@ import { useI18n } from 'vue-i18n'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { NeButton, NeHeading } from '@nethesis/vue-components'
+import { NeButton, NeHeading, NeInlineNotification, NeLink } from '@nethesis/vue-components'
 
 library.add(fas)
 
-type Customer = { id: string; name: string; vat: string; archived: boolean }
+type Customer = { id: string; name: string; vat: string; systems: number; archived: boolean }
 
-defineProps<{ customers: Customer[] }>()
-const emit = defineEmits<{ open: [id: string]; edit: [id: string]; remove: [id: string] }>()
+defineProps<{ customers: Customer[]; error?: Error }>()
+const emit = defineEmits<{
+  open: [id: string]
+  edit: [id: string]
+  remove: [id: string]
+  notes: [id: string]
+}>()
 const { t } = useI18n()
 </script>
 
 <template>
   <div>
     <NeHeading tag="h3" class="mb-4 font-bold">{{ t('customers.title') }}</NeHeading>
+    <NeInlineNotification
+      v-if="error"
+      kind="error"
+      :title="t('customers.cannot_retrieve_customers')"
+      :description="error.message"
+    />
     <p v-if="!customers.length" class="text-sm">No customers found</p>
     <table v-else class="w-full text-sm">
       <thead>
         <tr>
           <th>{{ t('customers.name') }}</th>
           <th>{{ t('customers.vat_number') }}</th>
+          <th>{{ t('customers.systems') }}</th>
           <th>{{ t('customers.status') }}</th>
           <th></th>
         </tr>
@@ -75,11 +91,21 @@ const { t } = useI18n()
           <td :class="{ 'opacity-50': customer.archived }">{{ customer.name }}</td>
           <td :class="{ 'opacity-50': customer.archived }">{{ customer.vat }}</td>
           <td>
+            <router-link
+              :to="`/customers/${customer.id}/systems`"
+              :aria-label="t('customers.show_systems', { name: customer.name })"
+              @click.stop
+            >
+              {{ customer.systems }}
+            </router-link>
+          </td>
+          <td>
             <span :style="{ color: customer.archived ? '#9ca3af' : '#15803d' }">
               {{ customer.archived ? t('customers.archived') : t('customers.active') }}
             </span>
           </td>
           <td class="flex gap-2">
+            <NeLink @click.stop="emit('notes', customer.id)">{{ t('customers.show_notes') }}</NeLink>
             <NeButton kind="tertiary" size="sm" @click.stop="emit('edit', customer.id)">
               {{ t('customers.modify_customer') }}
             </NeButton>

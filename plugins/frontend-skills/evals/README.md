@@ -6,7 +6,7 @@ loads when it should and that it makes Claude follow the Nebula Design System.
 
 | Case | What it checks |
 | --- | --- |
-| `review-table` | A review of a table with planted mistakes: opacity on archived rows, `font-bold`, hex colors, a click handler on a row, icons registered as a pack, an icon button without a name, a term to avoid, a literal string, a raw `<table>` |
+| `review-table` | A review of a table with planted mistakes: opacity on archived rows, `font-bold`, hex colors, a click handler on a row, a `NeLink` without `href`, an `aria-label` that hides the visible text, a raw server message, icons registered as a pack, an icon button without a name, a term to avoid, a literal string, a raw `<table>` |
 | `add-archive-action` | An archive action with its confirmation modal: component, icon, button kind, and the English and Italian texts |
 | `trigger-dark-theme` | The skill loads for a dark theme fix in a Vue component |
 | `no-trigger-backend` | The skill does not load for a Go task |
