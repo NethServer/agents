@@ -23,6 +23,18 @@ pick it automatically:
 - `nethvoice-release` — release a NethVoice milestone: ns8-nethvoice, ns8-nethvoice-proxy and NethLink, issue closing and testing cleanup
 - `conventional-commit` — conventional commit messages with intelligent staging
 
+The `frontend-skills` plugin, under `plugins/frontend-skills/`, holds the skills for the user
+interfaces that follow the Nethesis design systems: the
+[Nebula Design System](https://nethesis.github.io/nebula-design-system/) and, for NethServer 8, the
+Carbon Design System. It is a separate plugin, so you can install it without the NethServer
+skills:
+
+- `nebula-frontend` — write and review frontends: Vue 3 projects built with Tailwind CSS and
+  `@nethesis/vue-components` fully; text, icons, colors, typography and accessibility for other
+  stacks; only text for NethServer 8 modules built with Carbon
+
+To test a change to these skills, run their [eval suite](plugins/frontend-skills/evals/README.md).
+
 ## Skill structure and context cost
 
 Agents initially load each skill's name and `description`, while its `SKILL.md` body is
@@ -54,6 +66,10 @@ which reference file gets read. Three corollaries:
 - Reference paths are relative to the skill directory, so `references/backend.md` means
   `skills/<skill>/references/backend.md`.
 
+Checks that are the same every time go in a `scripts/` file that the skill runs, instead of
+commands in a reference: the agent spends one call on them, and every run checks the same things
+(see `plugins/frontend-skills/skills/nebula-frontend/scripts/review-checks.sh`).
+
 ### Model overrides (Claude Code only)
 
 Template-driven skills declare a cheaper model in frontmatter so they do not spend a
@@ -63,7 +79,7 @@ frontier-model turn on mechanical work:
 | --- | --- |
 | `nethserver-pr`, `nethserver-release` | `haiku` |
 | `conventional-commit`, `nethserver-issue`, `nethserver-containerfile` | `sonnet` |
-| `nethserver-admin`, `nethserver-ns8-core`, `nethvoice-admin`, `nethvoice-release`, `nethserver-ns8-module` | none — these need full reasoning |
+| `nethserver-admin`, `nethserver-ns8-core`, `nethvoice-admin`, `nethvoice-release`, `nethserver-ns8-module`, `nebula-frontend` | none — these need full reasoning |
 
 In Claude Code, the override applies to the turn that invokes the skill and is not saved to
 your settings. Remove the `model:` line if you would rather always use your session model.
@@ -78,6 +94,10 @@ This repository is a Claude Code plugin marketplace. In your Claude Code session
 /plugin install nethserver-skills@nethserver
 /reload-plugins
 ```
+
+For the frontend skills, also run `/plugin install frontend-skills@nethserver`.
+This is the only way to install them for now: the Codex and Pi steps below install the
+`nethserver-skills` only.
 
 No plugin `version` is pinned, so every push to the default branch counts as a new version.
 Claude Code refreshes installed marketplaces in the background (this is a public repo, so the
