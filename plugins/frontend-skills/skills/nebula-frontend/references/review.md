@@ -56,7 +56,9 @@ it once for the project with a few examples, not line by line.
   `icons.json` gives for that meaning, or that it lists under `avoid`; custom icons listed under
   `customIconsWithoutMeaning`; decorative icons without `aria-hidden="true"`; icon-only buttons
   without an accessible label and a tooltip.
-- **Text**: literal strings instead of i18n keys; texts that break the writing guidelines; terms
+- **Text**: literal strings instead of i18n keys; values written into an i18n string instead of
+  passed as parameters, such as a minimum length (`references/text.md`); texts that break the
+  writing guidelines; terms
   the glossary lists under `avoid` (`references/text.md`); server messages shown where the
   writing guidelines ("Error messages") want a text from the i18n files: a field error that is
   not turned into a key, or a network error or a 5xx that reaches the user as it is, such as
