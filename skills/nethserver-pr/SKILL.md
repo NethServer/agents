@@ -127,7 +127,11 @@ After opening the PR:
 
 1. **CI must pass**: If automated builds or tests fail, investigate the error before requesting review.
    - If the failure is an infrastructure problem, contact a developer for help.
-2. **Code review**: Another developer must review the PR to confirm it:
+2. **Code review**: Follow the target repository's explicit review policy in
+   `AGENTS.md`, `CLAUDE.md` or its CI/contributor guidance. If it permits agent
+   review or CI-gated merges without human approval, do not impose a
+   separate human-review requirement. Otherwise another developer must review
+   the PR. The applicable review should confirm it:
    - Works as expected
    - Does not break existing behavior
    - Is reasonably readable
@@ -137,6 +141,17 @@ After opening the PR:
 ---
 
 ## Merging a pull request
+
+Read the repository's current merge policy and required checks first. When
+that policy explicitly authorizes automatic merges, review the exact current
+head/diff and enable GitHub auto-merge using the required merge method and
+`--match-head-commit <full-head-sha>`. Do not wait for a separate human approval
+when the project explicitly makes it optional. Keep branch protection and
+current-source checks; never use an admin bypass or force push. A changed head
+or base needs its own review/validation. Use regular merge when the project
+requires preserving tested commits; the squash option below does not override
+that policy. Without explicit project/task authorization, do not enable
+automatic merging on your own.
 
 When merging, **copy the issue reference into the merge commit body** — this is required for automated tooling (changelog generation, issue notifications):
 
