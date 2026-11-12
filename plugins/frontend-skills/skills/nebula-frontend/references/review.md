@@ -13,8 +13,8 @@ folder, the one with `package.json` (in My Nethesis, `frontend`; in NethServer 8
 bash <skill folder>/scripts/review-checks.sh src/views/CustomersView.vue src/components/customers
 ```
 
-It finds the English i18n file and the kind of project from `package.json`, and prints one
-section for each check, with `none` when nothing matches:
+It finds the English i18n file, the kind of project and its data-fetching library from
+`package.json`, and prints one section for each check, with `none` when nothing matches:
 
 - in every project: i18n keys the code uses that the English file lacks, and terms the glossary
   lists under avoid;
@@ -56,7 +56,8 @@ it once for the project with a few examples, not line by line.
   `icons.json` gives for that meaning, or that it lists under `avoid`; custom icons listed under
   `customIconsWithoutMeaning`; decorative icons without `aria-hidden="true"`; icon-only buttons
   without an accessible label and a tooltip.
-- **Text**: literal strings instead of i18n keys; texts that break the writing guidelines; terms
+- **Text**: literal strings instead of i18n keys; values written into an i18n string instead of
+  passed as parameters, such as a minimum length; texts that break the writing guidelines; terms
   the glossary lists under `avoid` (`references/text.md`); server messages shown where the
   writing guidelines ("Error messages") want a text from the i18n files: a field error that is
   not turned into a key, or a network error or a 5xx that reaches the user as it is, such as
@@ -70,6 +71,19 @@ it once for the project with a few examples, not line by line.
   it too: terms the glossary lists under `avoid.it`, translations other than its `it`, and the
   Italian rules of the writing guidelines. When only Weblate edits it, report these for the
   translators.
+- **Server data**, when the project has a data-fetching library (the script prints it): API
+  calls in a component or a store, with loading and error state handled by hand, where a query
+  or a mutation of the library fits; mutations that leave stale the queries whose data they
+  change.
+- **Loading and errors**, by the rules of
+  https://nethesis.github.io/nebula-design-system/loading-and-errors.md, for each part of the page
+  that shows server data, not for each call: report a part that shows nothing, or its empty state,
+  while it loads; an empty state after a load that failed; a load error that the user never sees
+  (only logged, or swallowed) or sees only in a toast when the error is about one part of the page
+  (a toast as well as the inline error is fine); a part that goes back to the skeleton on every
+  refresh; a button that starts a write action without its `loading` state. Before reporting a call,
+  check whether another call of the same part already shows its states, as with calls in parallel,
+  and skip calls that show nothing, such as prefetches.
 - **Accessibility**, by the rules of
   https://nethesis.github.io/nebula-design-system/accessibility.md: form fields without a label,
   or a label linked to the wrong field (two fields with the same `id`); click handlers on

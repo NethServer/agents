@@ -18,8 +18,15 @@ confirmation modal or the table page.
 The patterns named below are in the `patterns` of `components.json` (see "Finding what exists"),
 with their Storybook links and the code of their stories.
 
-- **Loading**: `NeSkeleton` in place of the content that is loading; for a table, the `loading`
-  prop of `NeTable`.
+- **Loading, errors and empty lists**: follow
+  https://nethesis.github.io/nebula-design-system/loading-and-errors.md, for each part of the
+  page that shows server data, not for each call. `NeSkeleton`, or the `loading` prop of
+  `NeTable`, on the first load; on a refresh, the data stays and a delayed `Updating…` spinner
+  appears, as the project already does it (in My Nethesis, `UpdatingSpinner`). With a
+  data-fetching library, the skeleton is for a query with no data yet (`state.status ===
+  'pending'` in Pinia Colada, `isPending` in TanStack Query), the spinner for a query that
+  loads again (`asyncStatus === 'loading'` with data, `isFetching` without `isPending`), and the
+  `loading` of a button follows its mutation.
 - **Nothing to show**: `NeEmptyState`, with a title, a description and, when there is a next
   step, an action. Follow the *Empty state* pattern.
 - **An error in a page or a form**: `NeInlineNotification`. Follow the *Inline error

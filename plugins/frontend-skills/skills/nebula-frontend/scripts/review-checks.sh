@@ -60,6 +60,11 @@ echo "# Review checks"
 echo "scope: ${scope[*]}"
 echo "project: $( $library && echo '@nethesis/vue-components' || { $has_vc && echo 'uses @nethesis/vue-components' || echo 'no @nethesis/vue-components'; })$( $text_only && echo ', text checks only')"
 echo "English i18n file: ${en:-not found}"
+fetching=
+for lib in @pinia/colada @tanstack/vue-query; do
+  has "$lib" && fetching+="${fetching:+, }$lib"
+done
+echo "data fetching: ${fetching:-no library}"
 
 # ---------------------------------------------------------------- text checks
 

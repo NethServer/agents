@@ -33,6 +33,11 @@ text; in a review, use them to judge the texts and the keys, and report without 
   message. Follow the way the project already maps server errors, often in an HTTP interceptor.
 - Find the files and the key naming in the project (for example `src/i18n/en/translation.json`,
   `src/i18n/en.json` or `public/locales/en/translation.json`), and follow the existing structure.
+- Values that are not text to translate, such as a minimum or a maximum length, a number, a
+  size, a name or an address, go in the string as parameters, never written into it:
+  `"Password must contain at least {min} characters"` with `t('...', { min: 8 })` in vue-i18n,
+  `{{min}}` in react-i18next. Translators then can't change or mistype the value, and when it
+  changes in the code, no translation has to change.
 - When an existing text breaks the writing guidelines, add a new key instead of reusing it. A key
   that many places share, such as the close label of every drawer, is the exception: reuse it
   and report it.

@@ -72,7 +72,7 @@ the JSON files with `jq`: a tool that summarizes a page loses the field names.
 
 | Task | Read |
 |---|---|
-| Choosing a component or a pattern, its props, slots and events, forms, deprecated components, the installed version, a new project | `references/components.md` |
+| Choosing a component or a pattern, its props, slots and events, forms, loading and error states, deprecated components, the installed version, a new project | `references/components.md` |
 | Labels, titles, descriptions, buttons, empty states, modals, notifications, validation messages, terms, Italian translations, i18n files | `references/text.md` |
 | Colors, semantic tokens, `main.css`, dark theme, primary palette of the product | `references/colors.md` |
 | Building a screen from a Figma link, a mockup image, an HTML prototype or a description | `references/mockups.md`, then `references/components.md` and `references/text.md`, and `references/colors.md` for a color the project lacks |
@@ -114,6 +114,11 @@ the JSON files with `jq`: a tool that summarizes a page loses the field names.
   only at runtime, with an empty space instead of the icon, and the imports no longer show which
   icons a file uses. In a project that already does it, write the new code with imports, and
   convert the existing code only when asked.
+- Server data: when `package.json` has a data-fetching library, `@pinia/colada` or
+  `@tanstack/vue-query`, read and change server data through it, as the existing code does: a
+  query to read, a mutation to change, then invalidate the queries whose data changed. Don't call
+  the API in a component or a store and track its loading and error state by hand. Don't add
+  such a library to a project that lacks it.
 - Style with Tailwind classes on the spacing scale (`p-4`, `gap-6`): no `style` attributes, and
   no arbitrary values (`w-[137px]`) unless nothing else works.
 - Every user-facing string goes in the i18n files, written by the writing guidelines with the
