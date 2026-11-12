@@ -75,6 +75,15 @@ it once for the project with a few examples, not line by line.
   calls in a component or a store, with loading and error state handled by hand, where a query
   or a mutation of the library fits; mutations that leave stale the queries whose data they
   change.
+- **Loading and errors**, by the rules of
+  https://nethesis.github.io/nebula-design-system/loading-and-errors.md, for each part of the page
+  that shows server data, not for each call: report a part that shows nothing, or its empty state,
+  while it loads; an empty state after a load that failed; a load error that the user never sees
+  (only logged, or swallowed) or sees only in a toast when the error is about one part of the page
+  (a toast as well as the inline error is fine); a part that goes back to the skeleton on every
+  refresh; a button that starts a write action without its `loading` state. Before reporting a call,
+  check whether another call of the same part already shows its states, as with calls in parallel,
+  and skip calls that show nothing, such as prefetches.
 - **Accessibility**, by the rules of
   https://nethesis.github.io/nebula-design-system/accessibility.md: form fields without a label,
   or a label linked to the wrong field (two fields with the same `id`); click handlers on
