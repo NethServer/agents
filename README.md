@@ -95,9 +95,9 @@ This repository is a Claude Code plugin marketplace. In your Claude Code session
 /reload-plugins
 ```
 
-For the frontend skills, also run `/plugin install frontend-skills@nethserver`.
-This is the only way to install them for now: the Codex and Pi steps below install the
-`nethserver-skills` only.
+For the frontend skills, also run `/plugin install frontend-skills@nethserver`. They have been
+tested in Claude Code and Codex (see below). Pi does not install them: it reads only the
+`skills/` directory.
 
 No plugin `version` is pinned, so every push to the default branch counts as a new version.
 Claude Code refreshes installed marketplaces in the background (this is a public repo, so the
@@ -110,6 +110,7 @@ These commands apply only to the Claude Code plugin install above:
 
 ```
 /plugin uninstall nethserver-skills@nethserver
+/plugin uninstall frontend-skills@nethserver
 /plugin marketplace remove nethserver
 /reload-plugins
 ```
@@ -131,7 +132,9 @@ codex plugin add nethserver-skills@nethserver
 codex plugin list --marketplace nethserver
 ```
 
-Confirm that `nethserver-skills` is installed and enabled, then start a new Codex session.
+For the frontend skills, also run `codex plugin add frontend-skills@nethserver`.
+
+Confirm that the plugins are installed and enabled, then start a new Codex session.
 Use `/skills` or the `$` picker to find the installed skills.
 
 To refresh the marketplace and install its current plugin contents:
@@ -139,7 +142,10 @@ To refresh the marketplace and install its current plugin contents:
 ```bash
 codex plugin marketplace upgrade nethserver
 codex plugin add nethserver-skills@nethserver
+codex plugin add frontend-skills@nethserver
 ```
+
+Run the last command only if you installed the frontend skills.
 
 Start a new Codex session after updating. For a pinned installation, add the marketplace
 with `--ref` instead of the first command above. Replace `0.0.3` with the published tag you
@@ -159,15 +165,17 @@ and [marketplace commands](https://learn.chatgpt.com/docs/developer-commands#cod
 
 ```bash
 codex plugin remove nethserver-skills@nethserver
+codex plugin remove frontend-skills@nethserver
 codex plugin marketplace remove nethserver
 ```
 
-The first command removes the installed plugin. The second removes the registered marketplace.
+The first two commands remove the installed plugins. The last removes the registered marketplace.
 Start a new Codex session after removal.
 
 ## Install in Pi
 
-Pi discovers the repository's `skills/` directory when installing it as a Git package.
+Pi discovers the repository's `skills/` directory when installing it as a Git package, so it
+installs the `nethserver-skills` only, not the frontend skills.
 The commands below use the CLI syntax available in Pi `0.87.1`.
 
 Run these commands in your terminal:
