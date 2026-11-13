@@ -8,7 +8,7 @@
 **Only include files that are NOT provided by the module image.** If a file in `state/` is derived from or identical to a file shipped in `imageroot/` (e.g. `state/initdb.d/init.sql` copied from `imageroot/sql/init.sql`), do NOT back it up — regenerate it during restore instead. Back up only:
 - User data volumes (`volumes/myapp-data`)
 - SQL/DB dumps (`state/mydb.sql`, `state/mydb.pg_dump`)
-- Secrets generated at install time (`state/passwords.env` or similar)
+- Secrets generated at install time (`state/passwords.env`)
 - Any runtime state not reproducible from the image
 
 ### Excluding files (state-exclude.conf)
@@ -26,9 +26,8 @@ volumes/myapp-data/app.db*
 - `50...`: call `configure-module` via `agent.tasks.run()`. The name varies:
   `50traefik`, `50configure`, `50call-configure-module`.
 
-> **⚠️ The `configure-module` call must pass every field it needs**, read from the restored
-> environment. Missing fields fall back to empty or default values and silently reset the
-> admin's settings. Read `configure-module/validate-input.json` to list them.
+> **⚠️ Pass every `configure-module` field, read from the restored environment.** Missing
+> fields reset the admin's settings. List them from `configure-module/validate-input.json`.
 >
 > ```python
 > import json, os, sys, agent, agent.tasks
@@ -41,13 +40,10 @@ volumes/myapp-data/app.db*
 > })
 > agent.assert_exp(ret['exit_code'] == 0, "configure-module failed")
 > ```
-> Env values are strings. `set_env(True)` stores `"True"`, but some modules store `"true"`,
-> so compare with `.lower() == "true"`, never with `== True`. Use `.get()` with a default
-> for any field an older backup may lack.
 >
-> Never restore `lets_encrypt` on restore, clone or move. The DNS may not point to the new
-> node yet. The certificate request then fails, and `set_route()` checks it by default, so
-> the whole restore fails. The admin turns Let's Encrypt back on once DNS is ready.
+> - Env values are strings, `"True"` or `"true"`: compare with `.lower() == "true"`.
+> - Use `.get()` with a default: older backups may lack a field.
+> - Always pass `lets_encrypt: False` on restore, clone or move: DNS may not point here yet, and the failed certificate check fails the whole restore.
 
 ### MariaDB
 - **Dump** (`imageroot/bin/module-dump-state`, CWD=`state/`): `podman exec mariadb-app mysqldump --databases mydb --default-character-set=utf8mb4 --single-transaction --quick --add-drop-table --skip-dump-date > mydb.sql`
@@ -67,15 +63,9 @@ volumes/myapp-data/app.db*
 
 ### Clone vs restore
 - **restore-module**: Restic restores files listed in `etc/state-include.conf` → `40restoreDB` loads SQL dump → a `50...` step calls `configure-module`.
-- **clone-module**: core copies the whole `state/` directory and every volume by rsync
-  from the source, live data included. No restic, no SQL dump. The source services stop
-  during the copy (rootless modules, through `transfer-state.target`). Env vars missing
-  on the destination are imported from the source. The module's own `50...` step then
-  sets the route or calls `configure-module` with values from `os.environ`, with the same
-  `lets_encrypt: False` rule as restore.
+- **clone-module**: core rsyncs `state/` and every volume from the source. No restic, no SQL dump. Missing env vars come from the source. The `50...` step calls `configure-module` from `os.environ`, with `lets_encrypt: False`.
 
-To skip files during the copy, core supports `imageroot/etc/state-filter-rules.rsync`
-(manual page `clone_module`).
+To skip files during the copy, use `imageroot/etc/state-filter-rules.rsync`.
 
 Dump/cleanup scripts (`imageroot/bin/module-dump-state`, `imageroot/bin/module-cleanup-state`) only run during backup — not during clone or restore.
 
