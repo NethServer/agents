@@ -14,8 +14,7 @@ Primary references:
 
 ## Delegation tables
 
-Do not restate what the repository already documents. Read the authoritative source
-instead. The repository's own files, first:
+Do not restate what the repository documents. Read the source first:
 
 | Question | Read |
 |---|---|
@@ -29,9 +28,8 @@ instead. The repository's own files, first:
 | api-server routes, JWT config, environment variables | `core/api-server/AGENTS.md` |
 | api-moduled handler layout, `AMLD_*` variables | `core/api-moduled/AGENTS.md` |
 
-Each Go component ships two documents, and the `AGENTS.md` above is the shorter one.
-The `README.md` beside it is the reference — three to four times the length, and the
-only place several protocols are written down at all:
+Each Go component also has a `README.md`, longer than its `AGENTS.md`. Some protocols
+are written down only there:
 
 | Question | Read |
 |---|---|
@@ -43,8 +41,8 @@ only place several protocols are written down at all:
 | `api-server-logs` usage and commands | `core/api-server/README.md` |
 | Implementing an api-moduled handler, command execution, authorization | `core/api-moduled/README.md` |
 
-Then the developer manual. `docs/core/` documents the platform subsystems, and every
-one of them is implemented in this repository unless the page says otherwise:
+Then the developer manual. Each `docs/core/` subsystem is implemented in this
+repository unless the page says otherwise:
 
 | Subsystem | Read |
 |---|---|
@@ -86,19 +84,12 @@ one of them is implemented in this repository unless the page says otherwise:
 | Image build pipeline and SBOM generation | `docs/build_system.md` |
 | How the API documentation is generated and published | `docs/api.md` |
 
-Two of these carry consequences worth knowing before reading them. `docs/api.md`
-explains that the API reference is generated from the `validate-input.json` and
-`validate-output.json` files and published to an `apidoc-<branch>` branch: keeping a
-schema in step with its action is not housekeeping, it is what publishes the
-documentation. And `CONTRIBUTING` delegates the entire contribution process to
-`docs/development_process.md`, so that page, not this skill, is the authority on
-releasing.
+`docs/api.md`: the API reference is generated from `validate-input.json` and
+`validate-output.json` and published to an `apidoc-<branch>` branch. `CONTRIBUTING`
+delegates the release process to `docs/development_process.md`.
 
-When a claim here needs checking, grep for the identifier it names.
-
-`docs/` is a Jekyll site published at nethserver.github.io/ns8-core, and it is more
-detailed than the code comments. Treat it as ground truth. Do not confuse it with the
-separate `NethServer/ns8-docs` repository, which holds end-user documentation.
+`docs/` is the Jekyll site at nethserver.github.io/ns8-core. Treat it as ground truth.
+`NethServer/ns8-docs` is a different repository, for end users.
 
 ## Repository map
 
@@ -121,22 +112,15 @@ core/support/        images. None of them has a Containerfile. support/ is the
 docs/                Jekyll developer manual.
 ```
 
-"Core" is bigger than this repository. A handful of modules are versioned with the
-core and updated by it rather than by the user. They live in their own `ns8-*`
-repositories, but `update-core` updates their instances as part of a core release, so
-a core change that alters a contract they rely on has to land in step with them.
-
-Which modules those are is not decided here, so do not trust a list written down in
-this file or any other. Membership is the `core_module` entry of the Redis set
-`module/<id>/flags`. It usually arrives from the image label `org.nethserver.flags`,
-declared in the module's own `build-images.sh`, but a module may also write it itself
-— `ns8-samba` does, from `import-module/01core_module`. Ask a live cluster instead:
+"Core" includes a few modules in their own `ns8-*` repositories. `update-core` updates
+them with each core release, so a contract change must land in step with them.
+Membership is the `core_module` entry of the Redis set `module/<id>/flags`, usually
+from the image label `org.nethserver.flags`. `ns8-samba` sets it itself in
+`import-module/01core_module`. Do not trust a written list, ask a live cluster:
 
 ```bash
 api-cli run list-core-modules | jq .
 ```
-
-Two things in this tree are easy to get wrong:
 
 > **⚠️ `core/api-server/api-server-logs.go` is a second binary in the same package
 > directory.** `go build .` does not produce it. Build the server explicitly with
