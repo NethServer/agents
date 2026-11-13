@@ -2,7 +2,9 @@
 
 Test cases for [`claude plugin eval`](https://code.claude.com/docs/en/plugin-evals), which runs
 each case with and without the plugin and scores the results. They check that `nebula-frontend`
-loads when it should and that it makes Claude follow the Nebula Design System.
+loads when it should and that it makes Claude follow the Nebula Design System, and that
+`nebula-frontend` and `nebula-design` do not load for each other's tasks: code in a frontend
+project for the first, mockups, prototypes and copy outside a project for the second.
 
 | Case | What it checks |
 | --- | --- |
@@ -10,6 +12,11 @@ loads when it should and that it makes Claude follow the Nebula Design System.
 | `add-archive-action` | An archive action with its confirmation modal: component, icon, button kind, and the English and Italian texts |
 | `trigger-dark-theme` | The skill loads for a dark theme fix in a Vue component |
 | `no-trigger-backend` | The skill does not load for a Go task |
+| `trigger-design-mockup` | `nebula-design`, not `nebula-frontend`, loads for an HTML prototype with no code project |
+| `trigger-design-copy` | `nebula-design`, not `nebula-frontend`, loads for a review of mockup texts outside a project, and finds their mistakes |
+
+The cases that change or review code also check that `nebula-design` does not load
+(`graders/design-not-fired.md`).
 
 Each case has a `prompt.md`, a `case.yaml` that names a `fixture.sh`, which writes a small
 project into the empty workspace, and `graders/`, one file per check: `regex` and `tool_used`

@@ -32,6 +32,9 @@ skills:
 - `nebula-frontend` — write and review frontends: Vue 3 projects built with Tailwind CSS and
   `@nethesis/vue-components` fully; text, icons, colors, typography and accessibility for other
   stacks; only text for NethServer 8 modules built with Carbon
+- `nebula-design` — create mockups and prototypes of Nethesis products for designers, prepare
+  screens for developers and bring them into Figma, and review UI copy, terminology, icons and
+  Italian translations
 
 To test a change to these skills, run their [eval suite](plugins/frontend-skills/evals/README.md).
 
