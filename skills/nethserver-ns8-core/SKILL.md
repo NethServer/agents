@@ -11,17 +11,14 @@ diagnosing an existing behaviour counts. Read that one file, not all of them.
 ## Scope
 
 ns8-core is a production platform with thousands of installations. Breaking changes
-are not allowed. Most conventions are already documented inside the repository —
-`AGENTS.md`, the per-component `AGENTS.md` and `README.md`, and `docs/` — and this
-skill deliberately does not repeat them. `references/repository-and-docs.md` maps
-every question onto the file that answers it; read that map before grepping.
+are not allowed. The repository documents most conventions itself (`AGENTS.md`, the
+per-component `AGENTS.md` and `README.md`, `docs/`), and this skill does not repeat
+them. `references/repository-and-docs.md` maps each question to the file that answers it.
 
-This skill covers ns8-core as an object of development. For writing an ns8-* module
-use `nethserver-ns8-module`; for operating a live cluster use `nethserver-admin`.
+For an ns8-* module use `nethserver-ns8-module`. For a live cluster use `nethserver-admin`.
 
-Cite files and identifiers, never line numbers. Code moves, and a stale line number
-points at the wrong thing without ever saying so, while a renamed identifier returns
-nothing and tells you it moved.
+Cite files and identifiers, never line numbers. A stale line number silently points at
+the wrong code. A renamed identifier returns nothing, so you notice.
 
 ## Reference map
 
@@ -35,32 +32,22 @@ nothing and tells you it moved.
 
 ## Always applies
 
-- stdout belongs to the action output — every log line goes to stderr, prefixed with a
-  journal severity constant in Python or after `exec 1>&2` in bash. (`references/actions-and-agent-sdk.md`)
-- Any non-zero exit from an action step halts the remaining steps. An `update-core`
-  hook is the opposite: a non-zero exit only warns and the next script still runs.
-  (`references/actions-and-agent-sdk.md`, `references/build-test-ship.md`)
-- Only the `cluster` agent and api-server may LPUSH into `cluster/tasks` and a node queue;
-  every other agent reaches its own queue and no one else's. So `agent.tasks` works from a
-  cluster action step, not from a module one. (`references/actions-and-agent-sdk.md`)
-- The actions under `core/imageroot/usr/local/agent/actions/` and the `agent` Python
-  package are public API — a changed signature breaks ns8-* repositories you will
-  never see. `cluster` and `node` are core-internal in name only: `pypkg.pth` puts all
-  three on every agent's path and core's own public surfaces import them:
-  `cluster.backup` from `list-backup-repositories`, `cluster.userdomains` from
-  `agent/ldapproxy.py`. Grep the callers before changing a signature there too.
+- stdout is the action output. Log to stderr. (`references/actions-and-agent-sdk.md`)
+- A non-zero exit in an action step halts the next steps. In an `update-core` hook it
+  only warns. (`references/build-test-ship.md`)
+- Only the `cluster` agent and api-server may LPUSH into `cluster/tasks` and a node
+  queue. Other agents go through `agent.tasks`, see `docs/core/agents.md`.
   (`references/actions-and-agent-sdk.md`)
-- Store state in Redis, never on the filesystem: filesystem state does not replicate
-  and is lost on restore. (`references/actions-and-agent-sdk.md`)
-- An image never migrates an installed cluster. A change needing migration also needs
-  an idempotent script in the matching `update-core` hook directory — and a hook
-  without the executable bit is skipped with only a debug-level message.
-  (`references/build-test-ship.md`)
-- `go build .` does not build api-server: `api-server-logs.go` is a second `func main`
-  in the same package directory, so build it as `go build api-server.go`. The three Go
-  components are three independent modules with no workspace file — run `go fmt` in the
-  directory you touched. (`references/repository-and-docs.md`)
-- Keep `validate-input.json` and `validate-output.json` in step with their action: the
+- The inherited actions under `core/imageroot/usr/local/agent/actions/` and the
+  `agent`, `cluster` and `node` Python packages are public API. Grep the callers
+  before changing a signature. (`references/actions-and-agent-sdk.md`)
+- Store state in Redis, never on the filesystem. Filesystem state does not replicate
+  and is lost on restore.
+- An image never migrates an installed cluster. A migration needs an idempotent,
+  executable script in an `update-core` hook directory. (`references/build-test-ship.md`)
+- Build api-server with `go build api-server.go`, not `go build .`. Run `go fmt` in the
+  Go module you touched. (`references/repository-and-docs.md`)
+- Keep `validate-input.json` and `validate-output.json` in step with their action. The
   published API reference is generated from them. (`references/repository-and-docs.md`)
 
 ## Common mistakes

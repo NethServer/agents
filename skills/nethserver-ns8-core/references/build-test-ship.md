@@ -63,16 +63,10 @@ fastest path when bootstrapping a throwaway node from a branch build.
 
 ## Shipping a change to existing clusters
 
-Building an image and installing it on a throwaway node proves the code runs. It does
-not migrate a cluster that is already installed. A new Redis key, a changed grant, a
-renamed unit: none of it reaches an existing installation unless an update hook does
-it. This is the part `AGENTS.md` does not mention at all, and `docs/core/updates.md`
-is the reference.
-
-`update-core ghcr.io/nethserver/core:<tag>` runs in two stages. The first updates the
-core image on every node; the second lets the leader update the core modules. Three
-hook directories are executed along the way, and the one to pick depends on when the
-change has to happen:
+A new image does not migrate an installed cluster. A new Redis key, a changed grant, a
+renamed unit reach existing installations only through an update hook.
+`docs/core/updates.md` describes the two stages, the order and the idempotency rule.
+Pick the directory by when the change must happen:
 
 | Directory under `core/imageroot` | Stage | Runs on |
 |---|---|---|
@@ -80,67 +74,33 @@ change has to happen:
 | `var/lib/nethserver/cluster/update-core-pre-modules.d/` | 2, before core modules update | leader |
 | `var/lib/nethserver/cluster/update-core-post-modules.d/` | 2, after they update | leader |
 
-Five rules govern those scripts, and the first two are the ones that bite:
+Traps the docs do not state:
 
-- A file without the executable bit is **skipped**, and the message saying so is
-  emitted at debug severity. A hook committed without `chmod +x` never runs and
-  nothing visible says why.
-- They run in alphabetical order, which is why the existing ones are numbered
-  (`05set_agentenv_path`, `10reload_agents`, `50update_grants`, `95cleanup_images`).
-- A non-zero exit prints a warning and execution **continues** with the next script.
-  This is the opposite of an action, where a non-zero step aborts the sequence. A hook
-  cannot stop a bad update; it can only decline to make things worse. The two runners
-  reach that outcome differently: the node loop in `update-core/60run_scriptdir` never
-  tracks failures, while `cluster/bin/run-scriptdir` counts them and exits 1 — a code
-  its only caller, `update-core/70update_modules`, then discards. Reading the cluster
-  runner alone suggests failures propagate. They do not.
-- A hook can be run **more than once**, so it must be idempotent. Write it to converge
-  on the desired state, never to apply a delta.
-- The scripts come from the newly installed image, not the one being replaced. A hook
-  therefore always describes the migration *into* its own version.
-
-Read the existing hooks before writing one. `50update_grants` exists on both the node
-and the cluster side and is a good model for a converging script.
-
-Two details of the first stage matter during development. The node compares the image
-tag with the installed one as Semver and installs only if it is greater. A tag that is
-not valid Semver — a branch name — does not merely lose that comparison, it is
-assigned `0.0.0` as the incoming version while a non-Semver *installed* tag is
-assigned `9999.9999.9999`, so `update-core/50update` exits before pulling anything.
-That comparison, not the pull, is what stops a branch build. Below it sits a second
-effect in the same direction: without `--force` the pull runs through
-`podman-pull-missing`, which fetches only a tag absent from local storage. Hence
-`--force`, and hence a branch tag that appears to do nothing:
+- A hook without the executable bit is skipped, with only a debug-level message.
+- A failing hook never stops the update. `cluster/bin/run-scriptdir` exits 1, but its
+  caller `update-core/70update_modules` discards that code.
+- New grants go in `cluster/update-core-pre-modules.d/50update_grants`. The node copy
+  is frozen.
+- A branch tag is not Semver, so it counts as `0.0.0` and `update-core/50update` exits
+  before pulling. Without `--force` the pull also skips a tag already in local storage.
 
 ```bash
 update-core ghcr.io/nethserver/core:my-branch --force
 update-core ghcr.io/nethserver/core:<tag> --nodes 1 2   # discouraged outside development
 ```
 
-Additional images listed in the core image label `org.nethserver.images` are pulled
-along with it. And if the first stage fails on any node, the leader aborts the whole
-update before the second stage begins.
-
 ## Developer CLI helpers
 
-`core/imageroot/usr/local/bin/` and `usr/local/sbin/` install the cluster-wide
-commands — `api-cli`, `runagent`, `volumectl`, `acl-load`, `switch-leader`,
-`update-core`, `grant-actions` and the rest. The `nethserver-admin` skill documents
-them from the operator's side; use it rather than rediscovering them here.
-
-One of them is a development tool more than an operational one. `runagent` executes a
-command inside an agent's environment, with that agent's `AGENT_ID`, `REDIS_USER`,
-`PATH` and working directory already set:
+The `nethserver-admin` skill documents the cluster-wide commands (`api-cli`,
+`runagent`, `volumectl`, `update-core` and the rest). `runagent` is the development one:
+it runs a command in an agent's environment, so you can replay a step without building
+an image.
 
 ```bash
-runagent -l                       # which agents are running
-runagent python3 ./50update       # -m defaults to cluster
-runagent -m node ./50update       # the node agent
-runagent -m <module_id> <command> # a module agent
+runagent -l                        # which agents are running
+runagent -c python3 ./50update     # cluster agent, keep the current directory
+runagent -m node -c ./50update     # the node agent
+runagent -m <module_id> <command>  # a module agent
 ```
 
-It changes directory to that agent's `AGENT_STATE_DIR` first; `-c` keeps the current
-directory instead, which is what you want when replaying a step straight out of a
-source tree. That is how a single action step gets exercised by hand while it is being
-written, without building and pushing an image.
-
+Without `-c`, `runagent` changes directory to the agent's `AGENT_STATE_DIR` first.
