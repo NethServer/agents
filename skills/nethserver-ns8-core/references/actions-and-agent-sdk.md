@@ -51,13 +51,16 @@ the injected variables and the `SD_*` log prefixes. The rules below are not writ
 it. Print logs to stderr, or start a bash step with `exec 1>&2`.
 
 **Bad input and broken invariant exit differently.** For input the user can fix, call
-`agent.set_status('validation-failed')`, dump a field-level error list to stdout and
-exit. `cluster/actions/set-smarthost/01validate_settings` is the model. For an
-invariant, `agent.assert_exp(cond, "message")` exits 2 with a stack trace.
+`agent.set_status('validation-failed')`, dump a list of
+`{'field', 'parameter', 'value', 'error'}` dicts to stdout and exit.
+`cluster/actions/set-smarthost/01validate_settings` is the model. For an invariant,
+`agent.assert_exp(cond, "message")` exits 2 with a stack trace. Pick a custom exit code
+in `1-7` or `32-255`: `8-31` belong to the agent.
 
 **`agent.tasks.run()` targets another agent, `agent.run_helper()` runs locally.**
 `run()` returns `{'exit_code': int, 'output': dict}`, check the exit code yourself.
-`run_helper()` returns a `CompletedProcess`. Using `run_helper` for another agent's work
+`run_helper()` returns a `CompletedProcess` and does not raise, call
+`.check_returncode()` on it. Using `run_helper` for another agent's work
 bypasses the task framework: nothing is tracked, nothing shows in the UI.
 
 `docs/core/agents.md` documents only `run()`. There are five entry points:
