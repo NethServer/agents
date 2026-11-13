@@ -5,7 +5,7 @@ description: "Use when a designer asks to mock up, prototype or review the desig
 
 # Nebula Design System (NDS): mockups and prototypes
 
-This skill is used by the product designer to create mockups and prototypes of Nethesis products, share them with developers and bring them into Figma. It is not the developers' implementation skill: developers use `nebula-frontend`, in this same plugin, which reads the same site and Storybook.
+This skill is used by the product designer to create mockups and prototypes of Nethesis products, share them with developers and bring them into Figma. It is not the developers' implementation skill: developers use `nebula-frontend`, in the `frontend-skills` plugin of this repository, which reads the same site and Storybook.
 
 The line between the two: this skill produces designs (mockups, prototypes, Figma screens, handoff notes) and reviews copy that is not in a code project yet. As soon as the task is to write, change or review code in a frontend project, including its i18n files, it belongs to `nebula-frontend`: say so and stop, instead of editing the project.
 
@@ -47,7 +47,7 @@ When you find a new inconsistency between the skill and the site, tell the user 
 | Signal | Design system |
 |---|---|
 | NethSecurity, NethVoice admin, NethLink, NethService, My Nethesis; `@nethesis/vue-components`, Vue 3, Tailwind; `Ne*` | **Nebula Design System** (this skill) |
-| NethServer 8 (cluster admin, nodes, NS8 apps/modules, CrowdSec module of NS8); `@nethserver/ns8-ui-lib`, `@carbon/vue`, Vue 2; `Ns*`, `cv-*`, `bx--` | Carbon Design System: use the **carbon-design** skill (coming soon to this plugin; until then, say that NS8 is out of scope for this skill). Only the NDS writing guidelines and glossary apply to NS8 |
+| NethServer 8 (cluster admin, nodes, NS8 apps/modules, CrowdSec module of NS8); `@nethserver/ns8-ui-lib`, `@carbon/vue`, Vue 2; `Ns*`, `cv-*`, `bx--` | Carbon Design System: use the **carbon-design** skill (coming soon to the `design-skills` plugin; until then, say that NS8 is out of scope for this skill). Only the NDS writing guidelines and glossary apply to NS8 |
 | NethVoice CTI (React), NS8 User Portal | Neither for now: say it is out of scope and ask |
 
 NethSecurity has no Carbon features. If signals contradict each other, stop and ask: never mix `Ne*`/Tailwind with `Ns*`/Carbon. In Claude, use the **Nebula Design System** artifact as the design system of mockups and designs, never the Carbon one or another default.

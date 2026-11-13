@@ -32,11 +32,21 @@ skills:
 - `nebula-frontend` — write and review frontends: Vue 3 projects built with Tailwind CSS and
   `@nethesis/vue-components` fully; text, icons, colors, typography and accessibility for other
   stacks; only text for NethServer 8 modules built with Carbon
-- `nebula-design` — create mockups and prototypes of Nethesis products for designers, prepare
-  screens for developers and bring them into Figma, and review UI copy, terminology, icons and
-  Italian translations
 
 To test a change to these skills, run their [eval suite](plugins/frontend-skills/evals/README.md).
+
+The `design-skills` plugin, under `plugins/design-skills/`, holds the skills for designers who
+mock up and prototype the same interfaces. It is a separate plugin too, so designers can install
+it without the coding skills:
+
+- `nebula-design` — create mockups and prototypes of Nethesis products that follow the Nebula
+  Design System, prepare screens for developers and bring them into Figma, and review UI copy,
+  terminology, icons and Italian translations
+- `carbon-design` — the same for NethServer 8 interfaces built with Carbon (coming soon)
+
+Developers keep using `nebula-frontend`: when both plugins are installed, code in a frontend
+project goes to `nebula-frontend`, designs and copy outside a project to `nebula-design`. To
+test a change to these skills, run their [eval suite](plugins/design-skills/evals/README.md).
 
 ## Skill structure and context cost
 
@@ -82,7 +92,7 @@ frontier-model turn on mechanical work:
 | --- | --- |
 | `nethserver-pr`, `nethserver-release` | `haiku` |
 | `conventional-commit`, `nethserver-issue`, `nethserver-containerfile` | `sonnet` |
-| `nethserver-admin`, `nethserver-ns8-core`, `nethvoice-admin`, `nethvoice-release`, `nethserver-ns8-module`, `nebula-frontend` | none — these need full reasoning |
+| `nethserver-admin`, `nethserver-ns8-core`, `nethvoice-admin`, `nethvoice-release`, `nethserver-ns8-module`, `nebula-frontend`, `nebula-design` | none — these need full reasoning |
 
 In Claude Code, the override applies to the turn that invokes the skill and is not saved to
 your settings. Remove the `model:` line if you would rather always use your session model.
@@ -98,8 +108,9 @@ This repository is a Claude Code plugin marketplace. In your Claude Code session
 /reload-plugins
 ```
 
-For the frontend skills, also run `/plugin install frontend-skills@nethserver`. They have been
-tested in Claude Code and Codex (see below). Pi does not install them: it reads only the
+For the frontend skills, also run `/plugin install frontend-skills@nethserver`, and for the
+design skills `/plugin install design-skills@nethserver`. The frontend skills have been tested in
+Claude Code and Codex (see below). Pi does not install either plugin: it reads only the
 `skills/` directory.
 
 No plugin `version` is pinned, so every push to the default branch counts as a new version.
@@ -114,6 +125,7 @@ These commands apply only to the Claude Code plugin install above:
 ```
 /plugin uninstall nethserver-skills@nethserver
 /plugin uninstall frontend-skills@nethserver
+/plugin uninstall design-skills@nethserver
 /plugin marketplace remove nethserver
 /reload-plugins
 ```
@@ -135,7 +147,8 @@ codex plugin add nethserver-skills@nethserver
 codex plugin list --marketplace nethserver
 ```
 
-For the frontend skills, also run `codex plugin add frontend-skills@nethserver`.
+For the frontend skills, also run `codex plugin add frontend-skills@nethserver`, and for the
+design skills `codex plugin add design-skills@nethserver`.
 
 Confirm that the plugins are installed and enabled, then start a new Codex session.
 Use `/skills` or the `$` picker to find the installed skills.
@@ -146,9 +159,10 @@ To refresh the marketplace and install its current plugin contents:
 codex plugin marketplace upgrade nethserver
 codex plugin add nethserver-skills@nethserver
 codex plugin add frontend-skills@nethserver
+codex plugin add design-skills@nethserver
 ```
 
-Run the last command only if you installed the frontend skills.
+Run the last two commands only for the plugins you installed.
 
 Start a new Codex session after updating. For a pinned installation, add the marketplace
 with `--ref` instead of the first command above. Replace `0.0.3` with the published tag you
@@ -169,10 +183,11 @@ and [marketplace commands](https://learn.chatgpt.com/docs/developer-commands#cod
 ```bash
 codex plugin remove nethserver-skills@nethserver
 codex plugin remove frontend-skills@nethserver
+codex plugin remove design-skills@nethserver
 codex plugin marketplace remove nethserver
 ```
 
-The first two commands remove the installed plugins. The last removes the registered marketplace.
+The first three commands remove the installed plugins. The last removes the registered marketplace.
 Start a new Codex session after removal.
 
 ## Install in Pi

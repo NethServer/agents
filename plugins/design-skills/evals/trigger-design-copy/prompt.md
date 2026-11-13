@@ -1,5 +1,5 @@
 ---
-description: A copy review of mockup strings, outside a code project, loads nebula-design, not nebula-frontend
+description: A copy review of mockup strings, outside a code project, loads nebula-design
 tags: [trigger]
 max_turns: 15
 timeout_seconds: 300
