@@ -48,12 +48,30 @@ action, like `update-module` or `restore-module`, but it is different code.
 the injected variables and the `SD_*` log prefixes. The rules below are not written there.
 
 **stdout is the action output.** The agent parses it, and a stray `print()` corrupts
-it. Print logs to stderr, or start a bash step with `exec 1>&2`.
+it. Print logs to stderr, with a severity prefix for journald:
 
-**Bad input and broken invariant exit differently.** For input the user can fix, call
-`agent.set_status('validation-failed')`, dump a list of
-`{'field', 'parameter', 'value', 'error'}` dicts to stdout and exit.
-`cluster/actions/set-smarthost/01validate_settings` is the model. For an invariant,
+```python
+import sys, agent
+print("informational message", file=sys.stderr)
+print(agent.SD_WARNING + "unexpected but recoverable", file=sys.stderr)
+print(agent.SD_ERR + "critical failure", file=sys.stderr)
+```
+
+In bash, start the step with `exec 1>&2`.
+
+**Bad input and broken invariant exit differently.** For input the user can fix,
+set the status, dump a field-level error list to stdout and exit, as
+`cluster/actions/set-smarthost/01validate_settings` does:
+
+```python
+agent.set_status('validation-failed')
+json.dump([{'field': 'smarthost', 'parameter': 'smarthost',
+            'value': data['smarthost'], 'error': 'cannot_connect_to_server'}],
+          fp=sys.stdout)
+sys.exit(3)
+```
+
+For an invariant,
 `agent.assert_exp(cond, "message")` exits 2 with a stack trace. Pick a custom exit code
 in `1-7` or `32-255`: `8-31` belong to the agent.
 
