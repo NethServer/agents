@@ -18,6 +18,9 @@ Never write role keys directly. Use `cluster.grants.grant()` and its siblings in
 the ACTION, ON and TO clauses. The public entry points are the `grant-actions` and
 `revoke-actions` cluster actions.
 
+Events go on `<agent>/event/<event-name>`, named in the past tense. Task progress goes
+on `progress/<agent>/task/<uuid>`. See `docs/core/events.md`.
+
 ## Where actions and events live
 
 | Path under `core/imageroot` | Agent |
@@ -98,7 +101,7 @@ model for a fan-out.
 **Secret masking works by key suffix.** Before storing the task context, the agent
 replaces with `"XXX"` any value whose key ends with `password`, `secret`, `token`, `key`
 or `pass` (`sensitiveList` in `core/agent/htask.go`). `my_api_token` is masked,
-`token_expiry` is not. This does not cover `agent.set_env()`, which writes plain text
+`token_expiry` is not. Name secret fields with one of these suffixes. This does not cover `agent.set_env()`, which writes plain text
 readable by every module on the node.
 
 ## The Python packages are public API
@@ -107,7 +110,8 @@ readable by every module on the node.
 `install-core.sh` drops a `pypkg.pth` into the core interpreter, so all three import
 from any agent, module agents included. Every ns8-* module imports `agent`.
 
-`cluster` is said to be leader-only, but two submodules are not. `cluster.backup` is
+In `cluster`, only `grants`, `alerts`, `inventory`, `modules` and `vpn` are really
+leader-only. Two submodules are not. `cluster.backup` is
 used by `node/bin/run-backup`, `node/bin/rclonegwctl`,
 `node/actions/validate-backup-destination` and the inherited `list-backup-repositories`.
 `cluster.userdomains` is imported by `agent/ldapproxy.py`. `node.ports_manager` runs on
