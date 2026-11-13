@@ -21,23 +21,29 @@ volumes/myapp-data/app.db*
 ### Restore sequence
 `imageroot/actions/restore-module/` — numbered steps, `10restore` inherited (Restic).
 
-- `06copyenv` — restore env vars from `request['environment']` via `agent.set_env()`
-- `40restoreDB` — load SQL dump via ephemeral container (see patterns below)
-- `50call-configure-module` — call `configure-module` with restored env vars via `agent.tasks.run()`
+- `06copyenv`: restore the env vars the module needs from `request['environment']` via `agent.set_env()`
+- `40restoreDB`: load SQL dump via ephemeral container (see patterns below)
+- `50...`: call `configure-module` via `agent.tasks.run()`. The name varies:
+  `50traefik`, `50configure`, `50call-configure-module`.
 
-> **⚠️ `50call-configure-module` must pass ALL vars restored by `06copyenv`**, not just the Traefik ones.
-> `06copyenv` restores every non-secret env var set by `agent.set_env()`.
-> Missing any var leaves `configure-module` with wrong/empty defaults.
+> **⚠️ Pass every `configure-module` field, read from the restored environment.** Missing
+> fields reset the admin's settings. List them from `configure-module/validate-input.json`.
 >
-> Pattern — read from `os.environ` (already populated by `06copyenv`), map to `configure-module` input:
 > ```python
-> agent.tasks.run("module/" + os.environ["MODULE_ID"], action="configure-module", data={
->     "host":      os.environ["TRAEFIK_HOST"],
->     "http2https": os.environ.get("TRAEFIK_HTTP2HTTPS", "false") == "true",
->     # ALL other fields accepted by configure-module — check validate-input.json
+> import json, os, sys, agent, agent.tasks
+> renv = json.load(sys.stdin)['environment']
+> ret = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='configure-module', data={
+>     "host": renv["TRAEFIK_HOST"],
+>     "http2https": renv.get("TRAEFIK_HTTP2HTTPS", "True").lower() == "true",
+>     "lets_encrypt": False,
+>     # every other configure-module field
 > })
+> agent.assert_exp(ret['exit_code'] == 0, "configure-module failed")
 > ```
-> Read `configure-module/validate-input.json` to enumerate every required/optional field.
+>
+> - Env values are strings, `"True"` or `"true"`: compare with `.lower() == "true"`.
+> - Use `.get()` with a default: older backups may lack a field.
+> - Always pass `lets_encrypt: False` on restore, clone or move: DNS may not point here yet, and the failed certificate check fails the whole restore.
 
 ### MariaDB
 - **Dump** (`imageroot/bin/module-dump-state`, CWD=`state/`): `podman exec mariadb-app mysqldump --databases mydb --default-character-set=utf8mb4 --single-transaction --quick --add-drop-table --skip-dump-date > mydb.sql`
@@ -56,8 +62,10 @@ volumes/myapp-data/app.db*
 `state-include.conf`: `state/mydb.pg_dump` + `volumes/postgres-data`
 
 ### Clone vs restore
-- **restore-module**: Restic restores files listed in `etc/state-include.conf` → `40restoreDB` loads SQL dump → `50call-configure-module` reconfigures
-- **clone-module**: no Restic restore, no SQL dump — only `50call-configure-module` (fresh DB, env vars from `os.environ` set by clone framework)
+- **restore-module**: Restic restores files listed in `etc/state-include.conf` → `40restoreDB` loads SQL dump → a `50...` step calls `configure-module`.
+- **clone-module**: core rsyncs `state/` and every volume from the source. No restic, no SQL dump. Missing env vars come from the source. The `50...` step calls `configure-module` from `os.environ`, with `lets_encrypt: False`.
+
+To skip files during the copy, use `imageroot/etc/state-filter-rules.rsync`.
 
 Dump/cleanup scripts (`imageroot/bin/module-dump-state`, `imageroot/bin/module-cleanup-state`) only run during backup — not during clone or restore.
 
@@ -80,5 +88,5 @@ Mount in the systemd service:
 Scripts in `imageroot/update-module.d/` run on `update-module` in lexicographic order.
 If a script fails, execution continues with the next one — each script is independent.
 
-Recommended layout: `05`-`06` pre-restart migrations, `30restart` (`systemctl --user try-restart`), `50`-`60` post-restart reindex/cleanup.
-Version-specific migrations go before `30restart` so the new code starts on updated data.
+Recommended layout: migrations first, then a restart step (`systemctl --user try-restart`, most modules name it `20restart`), then post-restart reindex or cleanup.
+Version-specific migrations go before the restart step so the new code starts on updated data.

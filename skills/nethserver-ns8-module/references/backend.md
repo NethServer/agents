@@ -6,11 +6,12 @@ Scripts inside execute in lexicographic order: `10grants`, `20read`, `80start_se
 Python scripts use the NS8 agent SDK (`import agent`).
 Bash scripts use standard POSIX shell.
 
-Base actions inherited automatically (no need to implement):
-- `create-module` — install + pull image
-- `destroy-module` — cleanup (traefik, firewall, systemd)
-- `get-status` — runtime status (rootless and rootful)
-- `list-service-providers` — service discovery
+Base actions are inherited from core (`/usr/local/agent/actions/` on the node):
+`create-module`, `destroy-module`, `clone-module`, `restore-module`, `import-module`,
+`transfer-state`, `update-module`, `get-status`, `get-name`, `set-name`, `set-note`,
+`list-volumes`, `list-service-providers`, `list-backup-repositories`. A module adds its
+own numbered steps to the same directory name, for example `restore-module/40restoreDB`
+runs after the inherited `10restore`.
 
 ### JSON data flow
 
@@ -126,15 +127,24 @@ agent.unset_env("KEY")          # remove env var from state/environment
 
 > **⚠️ SECURITY — `agent.set_env()` writes to Redis plain text, readable by ALL modules on the node. NEVER store passwords/tokens/secrets via `agent.set_env()`.**
 >
-> **Secret pattern:** generate in `create-module/10genpasswords` → write `state/passwords.env` (mode 0600) → declare in `etc/state-include.conf` (Restic backup) → load via systemd `EnvironmentFile=-%S/state/passwords.env` → inject into container via `--env-file=%S/state/passwords.env`. Restic restores the file on `restore-module` — no extra action needed. Non-secret vars (`TRAEFIK_HOST`, `LDAP_DOMAIN`, etc.) use `agent.set_env()` normally.
+> **Secret pattern:**
+>
+> - Generate secrets in `create-module`, write them to a `state/` file with mode 0600.
+> - List that file in `etc/state-include.conf`. Restore and clone bring it back.
+> - Inject it with `--env-file=%S/state/passwords.env`. Add `EnvironmentFile=-%S/state/passwords.env` only if the unit itself needs a value.
+> - Non-secret vars (`TRAEFIK_HOST`, `LDAP_DOMAIN`) use `agent.set_env()`.
 >
 > ```python
 > # create-module/10genpasswords
-> import secrets, os
+> import secrets, os, agent
 > p = os.path.join(os.environ["AGENT_STATE_DIR"], "passwords.env")
-> with open(p, "w") as f:
->     f.write(f"DB_PASSWORD={secrets.token_urlsafe(16)}\n")
-> os.chmod(p, 0o600)
+> if not os.path.exists(p):
+>     oldmask = os.umask(0o077)  # safe_open creates files with 0666 minus umask
+>     try:
+>         with agent.safe_open(p) as f:
+>             f.write(f"DB_PASSWORD={secrets.token_urlsafe(16)}\n")
+>     finally:
+>         os.umask(oldmask)
 > ```
 
 #### Progress reporting
@@ -227,10 +237,14 @@ os.replace(tmpfile, "discovery.env")
 Events are Redis channel messages. Channel format: `module/<module_id>/event/<event_name>`.
 Name events in **past tense**: `mail-settings-changed`, `ldap-provider-changed`.
 
-Firing an event:
-```bash
-redis-cli PUBLISH "module/mymodule1/event/my-settings-changed" '{"module_id":"mymodule1","module_uuid":"..."}'
+Firing an event (a plain `redis-cli` has no module credentials):
+```python
+import json, os, agent
+rdb = agent.redis_connect(privileged=True)
+rdb.publish(os.environ["AGENT_ID"] + "/event/my-settings-changed",
+            json.dumps({"module_id": os.environ["MODULE_ID"], "module_uuid": os.environ["MODULE_UUID"]}))
 ```
+Publish on the leader (default connection). Never `use_replica=True`: the replica is read-only.
 
 ### Handlers
 Live in `imageroot/events/<event-name>/` — executable scripts, work like action steps.
@@ -240,11 +254,41 @@ Injected env vars: `AGENT_EVENT_SOURCE`, `AGENT_EVENT_NAME`.
 Pattern: `event = json.load(sys.stdin)` → filter with `sys.exit(0)` if not relevant → apply change → `agent.run_helper('systemctl', '--user', '-T', 'try-restart', ...)`.
 `-T` removes the default timeout. `agent.certificate_event_matches(event, hostname)` — built-in helper for `certificate-changed`.
 
-### Built-in platform events
-Module channel `module/<id>/event/<name>`: `user-domain-changed`, `ldap-provider-changed`,
-`certificate-changed`, `mail-settings-changed`, `backup-status-changed`.
-Node channel `node/<id>/event/<name>`: `fqdn-changed`.
-Cluster channel `cluster/event/<name>`: `module-added`, `module-removed`, `leader-changed`.
+### Common events
+Published by core: `smarthost-changed`, `user-domain-changed`,
+`ldap-provider-changed`, `module-domain-changed`, `fqdn-changed`, `backup-status-changed`,
+`module-added`, `module-removed`, `leader-changed`, `subscription-changed`.
+Published by other modules: `certificate-changed` (ns8-traefik), `mail-settings-changed`
+(ns8-mail). Grep `event/` in ns8-core for the full current list.
+
+## Routes, ports and firewall
+
+Web UI behind Traefik:
+
+- Request a port with `--label="org.nethserver.tcp-ports-demand=1"`. Read it as `TCP_PORT` (several: `TCP_PORTS`).
+- Publish on loopback only: `--publish 127.0.0.1:${TCP_PORT}:80`.
+- Set the route in `configure-module/05configure_traefik`. Needs `traefik@node:routeadm`.
+
+```python
+agent.set_route({
+    'instance': os.environ['MODULE_ID'],
+    'url': 'http://127.0.0.1:' + os.environ['TCP_PORT'],
+    'host': data['host'],
+    'http2https': data.get('http2https', True),
+    'lets_encrypt': data.get('lets_encrypt', False),
+})
+```
+
+- `set_route()` already sets `lets_encrypt_check` and `lets_encrypt_cleanup` to `True`.
+- Default `http2https` to `True`. Add a UI toggle only if the app must serve plain HTTP.
+- No route step in `destroy-module`: ns8-traefik drops it on `module-removed`.
+
+Ports open to the network (needs `node:fwadm`):
+
+- Open in `create-module`: `agent.add_public_service(os.environ['MODULE_ID'], ['1514/tcp'])`.
+- If the list changes in `configure-module`, pass `replace_ports=True`.
+- Close in `destroy-module`: `agent.remove_public_service(...)`.
+- Example: ns8-wazuh `create-module/90firewall`.
 
 ## Systemd Services
 
@@ -292,7 +336,7 @@ Services are enabled and started only after successful configuration.
 **CORRECT — list every service explicitly** to guarantee `Before=`/`After=` order is respected:
 ```bash
 systemctl --user enable <module>.service
-# Use try-restart if the service may not be running yet (e.g. first configure)
-systemctl --user try-restart <module>.service db-app.service app-app.service
+systemctl --user restart <module>.service db-app.service app-app.service
 ```
 All three (or more) services must appear in the command. Order matters: pod first, then DB, then app.
+Never `try-restart` here: on first install it starts nothing. Use it only in `update-module.d/` and event handlers.
