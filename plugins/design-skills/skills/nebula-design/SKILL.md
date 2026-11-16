@@ -31,7 +31,7 @@ git clone --depth 1 https://github.com/nethesis/nebula-design-system   # site so
 git clone --depth 1 https://github.com/nethesis/vue-components         # only if you need components
 ```
 
-Then read the source of the file (second column). These are the files the site is built from: same content, raw format (YAML instead of JSON, a TypeScript file for the foundations).
+Then read the source of the file (second column). These are the files the site is built from: same content, raw format (YAML instead of JSON, a TypeScript file for the foundations). The hand-written references keep only the team rules: without the site or the repo, copy, terms, icons and exact values can't be checked.
 
 **3. Neither works.** Don't rebuild the rules from memory. Tell the designer the site can't be read here and ask them to paste the URL of `llms.txt` (or of the file you need) in the chat, then fetch it. Meanwhile continue with the hand-written references, marking copy, terms and icons as "to check against the site".
 
@@ -57,7 +57,7 @@ How to read well:
 - Some fetch tools pass the page through a summarizer: ask for the exact text you need (e.g. "return verbatim the entries for the meanings Delete, Edit, Enabled"), so names, classes and wording are not paraphrased. From the repo, search the file (`grep`) instead of loading it whole.
 - If `llms.txt` lists a file not in the table, or a repo path above no longer exists, tell the designer: the table needs updating.
 
-`references/components-api.md` is generated from the library sources with `scripts/extract_api.py` and says its version: if the library (the `version` in `components.json` or in `vue-components/package.json`) is newer, tell the designer it needs regenerating, then open a pull request on github.com/NethServer/agents with the updated file.
+**Exact props, emits and slots** of a component are not copied in the skill: read them in its source, `vue-components/src/components/<Name>.vue`, or in its Storybook page. Mockups rarely need them.
 
 ## Pending decisions (not on the site yet)
 
@@ -92,17 +92,17 @@ Read what the task needs; don't load everything up front. "live" files are read 
 
 | File | Read when |
 |---|---|
-| `references/components.md` | Always, for the components you're about to use: which component, behavior, component-specific rules, gaps. |
-| `references/patterns.md` | Building a page or flow (table page, create/edit drawer, delete, toasts, errors, empty states). Start from these. |
+| `references/components.md` | Always, for the components you're about to use: which component for which need, the team rules on top of the site and Storybook, gaps. |
+| `references/patterns.md` + the `Pattern*` stories (vue-components) | Building a page or flow (table page, create/edit drawer, delete, toasts, errors, empty states): start from the story, apply the team rules of the file. |
 | live `writing-guidelines.md` | Any time you write, change or review user-facing text (English and Italian). |
 | live `glossary.json` | Choosing the word for an action or object, terms to avoid, Italian translations, product names. |
 | live `icons.json` | Choosing any icon: meaning → icon, icons to avoid, sidebar and custom icons. |
-| `references/foundations.md` | Choosing colors, type, spacing, elevation; product palettes; accessibility rules that affect the look. |
+| `references/foundations.md` | Using colors, surfaces and icons in a mockup; pending decisions on elevation and focus. |
 | live `colors.json` | Exact semantic token and Tailwind classes for a color. |
 | live `foundations.json` | Exact typography, icon sizes, spacing, radius, focus ring, elevation, shadow values. |
 | live `accessibility.md` | Contrast, color, keyboard, focus, screen readers. |
 | live `components.json` (vue-components) | What each Ne* component and pattern is for, deprecated → replacement, Storybook links. |
-| `references/components-api.md` | Exact props/emits/slots of any Ne* component (v3.16.0). |
+| `vue-components/src/components/<Name>.vue` (repo) | Exact props/emits/slots of a Ne* component, only when the design depends on them. |
 | `references/figma-components.md` | Before drawing any component: specs read from the Nebula Figma file (side drawer, text input, radio, icon button, sidebar), focus rules, how to read a component that isn't there. |
 | `references/products/nethsecurity.md` | Any NethSecurity screen: sidebar, top bar, Unsaved changes, staged changes. |
 | live `introduction.md` | What NDS is made of; how it applies to NethServer 8. |
