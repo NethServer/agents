@@ -70,11 +70,10 @@ Format: `<scope>:<role>`. Multiple roles on the same scope: `node:fwadm,portsadm
 | `accountprovider` | cluster | provide a user domain |
 | `selfadm` | built-in | module's own actions (auto-granted) |
 
-The builtin `reader` role needs no grant. For a read-only action, use one of
-the `list-`, `get-`, `show-` or `read-` prefixes and readers can run it.
-Another module requests it like any role, for example
-`mariadb@any:reader`. Every reader can run these actions, so they must
-never return passwords or other secrets.
+The builtin `reader` role needs no grant. A read-only action with a `list-`,
+`get-`, `show-` or `read-` prefix is open to every reader, so it must never
+return secrets. See
+<https://nethserver.github.io/ns8-core/core/agents/#roles-and-authorizations>.
 
 ### selfadm — module calling its own actions
 A module can grant itself the right to call its own actions via Redis in
