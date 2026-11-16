@@ -34,7 +34,7 @@ Pick the one reference file that matches your task from the map below.
 - Never store passwords/tokens/secrets via `agent.set_env()` — it writes to Redis in plain text, readable by all modules on the node. Use the secrets file pattern instead. (`references/backend.md`)
 - Non-zero exit from any action step or event handler step halts the remaining sequence. (`references/backend.md`)
 - Restarting only the pod's `<module>.service` may skip its children. Check the service dependencies in Systemd unit configuration, and list each service as `systemctl --user restart ...` argument. (`references/backend.md`)
-- When `restore-module` or `clone-module` calls `configure-module`, pass every field it needs, read from the restored environment, never defaults. Exception: always pass `lets_encrypt: False`. Check `configure-module/validate-input.json`. (`references/backup-restore.md`)
+- Avoid implicit Let's Encrypt certificate requests during `restore-module` and `clone-module` procedures. If they call `configure-module` as subtask, pass every field it needs, starting from the restored environment keeping `lets_encrypt: False` (or any equivalent LE setting). Check `configure-module/validate-input.json`. (`references/backup-restore.md`)
 - In the frontend, `Ns*` (ns8-ui-lib) components take priority over `cv-*` (Carbon Vue) — only fall back to `cv-*` when no `Ns*` equivalent exists. (`references/frontend.md`)
 
 ## Testing
