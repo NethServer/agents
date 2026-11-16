@@ -3,7 +3,7 @@ description: A copy review of mockup strings, outside a code project, loads nebu
 tags: [trigger]
 max_turns: 15
 timeout_seconds: 300
-allowed_tools: [Read, Glob, Grep, Skill]
+allowed_tools: [Read, Glob, Grep, Skill, Bash]
 ---
 
 strings.md has the texts of a NethSecurity mockup I'm designing. Review them and tell me what to change, in English and with the Italian translation.
