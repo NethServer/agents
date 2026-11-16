@@ -16,7 +16,8 @@ bash <skill folder>/scripts/review-checks.sh src/views/CustomersView.vue src/com
 It finds the English i18n file, the kind of project and its data-fetching library from
 `package.json`, and prints one section for each check, with `none` when nothing matches:
 
-- in every project: i18n keys the code uses that the English file lacks, and terms the glossary
+- in every project: i18n keys the code uses that the English file lacks, links between i18n
+  texts (`@:{'key'}`, `$t(key)`) to a key that their language file lacks, and terms the glossary
   lists under avoid;
 - not in NethServer 8 projects built with Carbon, which get only the text checks: font weights,
   hex and arbitrary colors, `style` attributes and arbitrary values, text dimmed with opacity,
@@ -64,7 +65,9 @@ it once for the project with a few examples, not line by line.
   not turned into a key, or a network error or a 5xx that reaches the user as it is, such as
   `error.message` bound to the description of a notification with nothing in the project that
   replaces it (look for an HTTP interceptor first); the message of a 4xx with no field is right
-  as it is; i18n keys the code uses that the English file lacks; props of `Ne*` components that
+  as it is; i18n keys the code uses that the English file lacks; a text that repeats the label of
+  another element, such as `then choose Change manager again`, instead of linking its key, and a
+  link to a key that a language file lacks (`references/text.md`); props of `Ne*` components that
   end in `Label` left to their English default in a project with i18n. List them for a component
   with `grep -oE '\b[a-z][a-zA-Z]*Label\b'
   node_modules/@nethesis/vue-components/dist/components/<Name>.vue.d.ts | sort -u`.

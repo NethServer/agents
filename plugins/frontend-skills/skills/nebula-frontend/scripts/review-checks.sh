@@ -76,6 +76,31 @@ if [ -n "$en" ]; then
       jq -e --arg k "$k" 'getpath($k | split("."))' "$en" >/dev/null 2>&1 || echo "missing: $k"
     done | report
 
+  # Every language file, found next to the English one: a link resolves in its
+  # own language, so a translation can break it on its own. The forms are
+  # vue-i18n 9 @:{'key'}, vue-i18n 8 @:(key), the bare @:key of both (which
+  # takes a following period into the key) and i18next $t(key); a namespaced
+  # i18next key (ns:key) lives in another file and is skipped.
+  section "links between i18n texts (@:{'key'}, \$t(key)) to a key their language file lacks"
+  case $en in
+    */en/*) langs=("${en%%/en/*}"/*/"${en#*/en/}") ;;
+    */en.json) langs=("${en%/en.json}"/*.json) ;;
+    *) langs=("$en") ;;
+  esac
+  for f in "${langs[@]}"; do
+    [ -f "$f" ] || continue
+    jq -r 'paths(strings) as $p | "\($p | map(tostring) | join("."))\t\(getpath($p) | gsub("[\t\n]"; " "))"' "$f" |
+      perl -ne 'chomp; my ($k, $v) = split /\t/, $_, 2;
+        while ($v =~ /\@(?:\.\w+)?:(?:\{\x27([^\x27]+)\x27\}|\(([^)]+)\)|([^\s{\@|()]+))|\$t\(([^,)]+)/g) {
+          my $t = $1 // $2 // $3 // $4; $t =~ s/^\s+|\s+$//g;
+          print "$k\t$t\n" unless $t =~ /:/;
+        }' |
+      while IFS=$'\t' read -r k target; do
+        jq -e --arg t "$target" 'getpath($t | split("."))' "$f" >/dev/null 2>&1 ||
+          echo "$f: $k → $target"
+      done
+  done | report
+
   section "terms the glossary lists under avoid, in the English file (a word avoided for an action can be right in another meaning)"
   glossary=$(curl -fsS "$SITE/nebula-design-system/glossary.json" 2>/dev/null)
   if [ -z "$glossary" ]; then

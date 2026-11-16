@@ -73,7 +73,7 @@ the JSON files with `jq`: a tool that summarizes a page loses the field names.
 | Task | Read |
 |---|---|
 | Choosing a component or a pattern, its props, slots and events, forms, loading and error states, layout, deprecated components, the installed version, a new project | `references/components.md` |
-| Labels, titles, descriptions, buttons, empty states, modals, notifications, validation messages, terms, Italian translations, i18n files | `references/text.md` |
+| Labels, titles, descriptions, buttons, empty states, modals, notifications, validation messages, terms, Italian translations, i18n files, texts that name another label | `references/text.md` |
 | Colors, semantic tokens, `main.css`, dark theme, primary palette of the product | `references/colors.md` |
 | Building a screen from a Figma link, a mockup image, an HTML prototype or a description | `references/mockups.md`, then `references/components.md` and `references/text.md`, and `references/colors.md` for a color the project lacks |
 | Reviewing a component, a page or a project against the design system | `references/review.md`, and the files it points to for the checks in scope |
