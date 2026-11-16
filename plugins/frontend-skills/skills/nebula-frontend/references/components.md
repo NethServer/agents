@@ -32,9 +32,8 @@ with their Storybook links and the code of their stories.
 - **An error in a page or a form**: `NeInlineNotification`. Follow the *Inline error
   notification* pattern.
 - **The result of an action** the user should notice, such as an object created or deleted: a
-  toast, `NeToastNotificationV2`. Follow the *Success toast notification* pattern. After closing
-  a modal or a drawer, show the toast once the closing animation has ended, about 500 ms later,
-  or it appears while the dialog is still moving.
+  toast, `NeToastNotificationV2`. Follow the *Success toast notification* pattern; after a
+  modal or a drawer, show it when the dialog has closed (Layout, below).
 - **Creating or editing an object**: a form in a side drawer, opened by the create button of the
   page or the Edit action of a row. Follow the *Create item drawer* pattern.
 - **Deleting**: follow the *Delete item modal* pattern; its *Type to confirm* story is for
@@ -42,12 +41,10 @@ with their Storybook links and the code of their stories.
   as My Nethesis, follow the "Archive and destroy confirmation" of the writing guidelines.
 - **A status** (enabled, expired, online…): `NeBadgeV2`.
 - **Buttons that start an action**: `NeButton` with the `kind` its story uses for that role, and
-  `loading` bound while the action runs. Only one `primary` button per view or dialog: the
-  others are `secondary` or `tertiary`. A button that confirms a destructive action is `danger`,
-  in place of the `primary`.
-- **Tables on small screens**: `NeTable` shows each row as a card below its `cardBreakpoint`.
-  Follow the *Table page* pattern for a page that lists objects. Write the rest of the layout
-  mobile first, with the Tailwind breakpoints (`sm:`, `md:`, `lg:`…).
+  `loading` bound while the action runs.
+- **Layout**: follow https://nethesis.github.io/nebula-design-system/layout.md for where the
+  parts of a page go: the primary action of the page header, the buttons of cards, one
+  `primary` button per view or dialog, small screens and toasts after a dialog.
 
 ## Forms
 
