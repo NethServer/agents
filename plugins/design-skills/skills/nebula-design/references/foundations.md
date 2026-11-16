@@ -1,6 +1,6 @@
 # Applying the NDS foundations in mockups
 
-The values live on the design system site and are mirrored here: colors in `site/colors.md`, typography, iconography, spacing, border, focus ring, elevation and shadow in `site/foundations.md`, icons by meaning in `site/icons.md`, accessibility in `site/accessibility.md`. This file only says how to use them. Never hardcode hex, RGB or OKLCH: use Tailwind classes, built from the tokens.
+The values live on the design system site, read live as in "Reading the site" of `SKILL.md`: colors in `site/colors.md`, typography, iconography, spacing, border, focus ring, elevation and shadow in `site/foundations.md`, icons by meaning in `site/icons.md`, accessibility in `site/accessibility.md`. This file only says how to use them. Never hardcode hex, RGB or OKLCH: use Tailwind classes, built from the tokens.
 
 ## Product primary color
 
