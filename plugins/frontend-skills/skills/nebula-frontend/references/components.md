@@ -52,6 +52,8 @@ with their Storybook links and the code of their stories.
   text, and helper text through `helperText`.
 - Validate with the library and the helpers the project already uses (valibot in My Nethesis
   and NethSecurity): find an existing form and follow it.
+- When the validation fails, move the focus to the first invalid field with `focusElement` of
+  `@nethesis/vue-components`, on a `ref` of the field (*Create item drawer* pattern).
 - An error that is not about one field, such as a failed save, goes in an
   `NeInlineNotification` (*Inline error notification* pattern).
 - For a new password, follow the *New password form* pattern.

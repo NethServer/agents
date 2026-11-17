@@ -97,7 +97,8 @@ it once for the project with a few examples, not line by line.
   text dimmed with opacity (`text-gray-900/60`, `opacity-70`), except on disabled controls,
   archived or turned-off items included (they take the tertiary neutral text and icon tokens and
   a status); status shown by color alone; overlays built by hand instead of `NeModal` or
-  `NeSideDrawer`; a `lang` attribute that does not follow the interface language.
+  `NeSideDrawer`; a failed validation that does not move the focus to the first invalid field; a
+  `lang` attribute that does not follow the interface language.
 
 ## Report
 
