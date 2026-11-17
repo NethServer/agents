@@ -26,6 +26,12 @@ The library has no type-check or test script. Run `npm run lint`, `npm run forma
 `src/`: run Prettier on the stories you changed too), `npm run build` and
 `npm run build-storybook`, which also builds `components.json`.
 
+Test the change in the playground first: `npm run playground` (Vite, `http://localhost:5173`),
+with the scenarios written in `playground/App.vue`. Unlike Storybook, `v-model` and the other Vue
+features work there, so it shows how the component behaves: typing, validation, opening and
+closing, focus and keyboard, in both themes (the toggle at the top). The playground is for local
+testing only: do not commit it, and say in the pull request what you tested there.
+
 Then open each story you changed in the light and the dark theme, at desktop and phone width:
 `npm run storybook`, then `http://localhost:6006/iframe.html?id=<story-id>&globals=theme:dark`
 (the story id ends the `link` of the story in `components.json`).
