@@ -40,9 +40,12 @@ gh api graphql -f query='{repository(owner:"NethServer",name:"dev"){issue(number
 The cross-references also show which component each issue touches. Record it, because it
 decides the closing comment:
 
-- PRs in `nethesis/ns8-nethvoice`, `nethesis/nethcti-server`, `nethesis/nethvoice-cti`,
-  `nethesis/phone-island` → NethVoice. The CTI, its server and phone-island ship inside
-  the ns8-nethvoice images.
+- PRs in `nethesis/ns8-nethvoice` or `nethesis/phone-island` → NethVoice. The CTI, its
+  server and middleware, Tancredi, Satellite and the reports are built from the
+  ns8-nethvoice tree, and phone-island ships inside the ns8-nethvoice images. Older
+  issues can still reference PRs in the archived `nethesis/nethcti-server`,
+  `nethesis/nethvoice-cti`, `nethesis/tancredi`, `nethesis/nethcti-middleware`,
+  `nethesis/astproxy` and `nethesis/nethvoice-report`: they count as NethVoice too.
 - PRs in `nethesis/ns8-nethvoice-proxy` → NethVoice Proxy.
 - PRs in `NethServer/nethlink` → NethLink. phone-island also ships inside NethLink.
 
