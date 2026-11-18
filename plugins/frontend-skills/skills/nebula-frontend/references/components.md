@@ -45,7 +45,7 @@ with their Storybook links and the code of their stories.
 - **Layout**: follow https://nethesis.github.io/nebula-design-system/layout.md for where the
   parts of a page go: the app shell (side menu, top bar and page), the primary action of the
   page header, the buttons of cards, one `primary` button per view or dialog, small screens and
-  toasts after a dialog.
+  toasts.
 
 ## Forms
 
