@@ -22,7 +22,8 @@ It finds the English i18n file, the kind of project and its data-fetching librar
 - not in NethServer 8 projects built with Carbon, which get only the text checks: font weights,
   hex and arbitrary colors, `style` attributes and arbitrary values, text dimmed with opacity,
   click handlers on elements that are not buttons or links, links without an address,
-  `aria-label` on elements that show text, icons not imported one by one;
+  `aria-label` on elements that show text, icons not imported one by one, `circle-*` icons
+  inside a badge;
 - only in projects that use `@nethesis/vue-components`: raw elements that usually have a
   component (not in vue-components itself), deprecated components, and the `@deprecated` lines
   of the installed version (of `src` in vue-components).
@@ -57,8 +58,8 @@ it once for the project with a few examples, not line by line.
 - **Icons**: icons not from Font Awesome Solid or the Nethesis packages; icons not imported
   one by one (whole packs, `library.add()`, names as strings); an icon that differs from the one
   `icons.json` gives for that meaning, or that it lists under `avoid`; custom icons listed under
-  `customIconsWithoutMeaning`; decorative icons without `aria-hidden="true"`; icon-only buttons
-  without an accessible label and a tooltip.
+  `customIconsWithoutMeaning`; a `circle-*` icon inside a badge; decorative icons without
+  `aria-hidden="true"`; icon-only buttons without an accessible label and a tooltip.
 - **Text**: literal strings instead of i18n keys; values written into an i18n string instead of
   passed as parameters, such as a minimum length; texts that break the writing guidelines; terms
   the glossary lists under `avoid` (`references/text.md`); server messages shown where the

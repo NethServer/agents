@@ -176,6 +176,21 @@ done | report
 section "icons not imported one by one: whole packs, library.add(), icons named by string"
 grep -rnE "import \{ (fas|far|fab|fal) \}|[lL]ibrary\.add\(|['\"]fa[srlb]['\"], *['\"][a-z0-9-]+['\"]|['\"]fa-(solid|regular|light|brands) fa-" "${scope[@]}" "${code[@]}" | report
 
+# The badge is matched with its content, or alone when it closes itself and
+# takes the icon as a prop (NeBadge). An icon held in a variable is not seen.
+section "circle-* icons inside a badge: use the icon without the circle, such as check instead of circle-check"
+grep -rlE '<NeBadge' "${scope[@]}" "${views[@]}" | while read -r f; do
+  perl -0777 -ne '
+    while (/<(NeBadge(?:V2)?)\b((?:[^>"\x27]|"[^"]*"|\x27[^\x27]*\x27)*)>(?:(?<=\/>)|(.*?)<\/\1>)/gs) {
+      my ($tag, $at, $badge) = ($1, $-[0], $&);
+      while ($badge =~ /\bfaCircle([A-Z]\w*)|[\x27"]circle-([a-z0-9-]+)[\x27"]/g) {
+        my $icon = defined $1 ? "faCircle$1" : "circle-$2";
+        my $line = 1 + (substr($_, 0, $at) =~ tr/\n//);
+        print "$ARGV:$line: <$tag> with $icon\n";
+      }
+    }' "$f"
+done | report
+
 $has_vc || exit 0
 
 if ! $library; then
