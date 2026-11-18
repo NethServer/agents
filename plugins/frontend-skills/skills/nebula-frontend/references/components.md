@@ -43,8 +43,9 @@ with their Storybook links and the code of their stories.
 - **Buttons that start an action**: `NeButton` with the `kind` its story uses for that role, and
   `loading` bound while the action runs.
 - **Layout**: follow https://nethesis.github.io/nebula-design-system/layout.md for where the
-  parts of a page go: the primary action of the page header, the buttons of cards, one
-  `primary` button per view or dialog, small screens and toasts after a dialog.
+  parts of a page go: the app shell (side menu, top bar and page), the primary action of the
+  page header, the buttons of cards, one `primary` button per view or dialog, small screens and
+  toasts after a dialog.
 
 ## Forms
 
@@ -121,4 +122,5 @@ The project's main CSS file imports `@nethesis/vue-components/theme.css` and dec
 
 To set up a new project, follow the Installation, Fontawesome and Font sections of the README of
 vue-components (https://github.com/nethesis/vue-components#installation): the theme and
-`@source`, the Font Awesome CSS in a layer below Tailwind, and Poppins Regular and Medium.
+`@source`, the Font Awesome CSS in a layer below Tailwind, and Poppins Regular and Medium. Build
+its side menu and top bar as the *App shell* of the Layout page says.
