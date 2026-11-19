@@ -33,6 +33,17 @@ text; in a review, use them to judge the texts and the keys, and report without 
   message. Follow the way the project already maps server errors, often in an HTTP interceptor.
 - Find the files and the key naming in the project (for example `src/i18n/en/translation.json`,
   `src/i18n/en.json` or `public/locales/en/translation.json`), and follow the existing structure.
+- Parameters and links to other labels: follow "Text for translation" in the writing
+  guidelines. The syntax depends on the library:
+  - parameters: `{min}` with `t('...', { min: 8 })` in `vue-i18n`, `{{min}}` in `react-i18next`;
+  - links, `vue-i18n` 9 and later: `@:{'customers.change_manager'}`. The braces end the key: a
+    bare `@:customers.change_manager` takes a period or a comma that follows it into the key.
+    Write a literal `@` as `{'@'}`;
+  - links, `vue-i18n` 8 (NethServer 8 modules built with Vue 2): `@:(customers.change_manager)`;
+  - links, `i18next` and `react-i18next`: `$t(customers.change_manager)`.
+
+  Don't add a case modifier such as `@.lower:` to a link, and link only keys that exist in each
+  language file.
 - When an existing text breaks the writing guidelines, add a new key instead of reusing it. A key
   that many places share, such as the close label of every drawer, is the exception: reuse it
   and report it.

@@ -60,6 +60,11 @@ echo "# Review checks"
 echo "scope: ${scope[*]}"
 echo "project: $( $library && echo '@nethesis/vue-components' || { $has_vc && echo 'uses @nethesis/vue-components' || echo 'no @nethesis/vue-components'; })$( $text_only && echo ', text checks only')"
 echo "English i18n file: ${en:-not found}"
+fetching=
+for lib in @pinia/colada @tanstack/vue-query; do
+  has "$lib" && fetching+="${fetching:+, }$lib"
+done
+echo "data fetching: ${fetching:-no library}"
 
 # ---------------------------------------------------------------- text checks
 
@@ -70,6 +75,31 @@ if [ -n "$en" ]; then
     while read -r k; do
       jq -e --arg k "$k" 'getpath($k | split("."))' "$en" >/dev/null 2>&1 || echo "missing: $k"
     done | report
+
+  # Every language file, found next to the English one: a link resolves in its
+  # own language, so a translation can break it on its own. The forms are
+  # vue-i18n 9 @:{'key'}, vue-i18n 8 @:(key), the bare @:key of both (which
+  # takes a following period into the key) and i18next $t(key); a namespaced
+  # i18next key (ns:key) lives in another file and is skipped.
+  section "links between i18n texts (@:{'key'}, \$t(key)) to a key their language file lacks"
+  case $en in
+    */en/*) langs=("${en%%/en/*}"/*/"${en#*/en/}") ;;
+    */en.json) langs=("${en%/en.json}"/*.json) ;;
+    *) langs=("$en") ;;
+  esac
+  for f in "${langs[@]}"; do
+    [ -f "$f" ] || continue
+    jq -r 'paths(strings) as $p | "\($p | map(tostring) | join("."))\t\(getpath($p) | gsub("[\t\n]"; " "))"' "$f" |
+      perl -ne 'chomp; my ($k, $v) = split /\t/, $_, 2;
+        while ($v =~ /\@(?:\.\w+)?:(?:\{\x27([^\x27]+)\x27\}|\(([^)]+)\)|([^\s{\@|()]+))|\$t\(([^,)]+)/g) {
+          my $t = $1 // $2 // $3 // $4; $t =~ s/^\s+|\s+$//g;
+          print "$k\t$t\n" unless $t =~ /:/;
+        }' |
+      while IFS=$'\t' read -r k target; do
+        jq -e --arg t "$target" 'getpath($t | split("."))' "$f" >/dev/null 2>&1 ||
+          echo "$f: $k → $target"
+      done
+  done | report
 
   section "terms the glossary lists under avoid, in the English file (a word avoided for an action can be right in another meaning)"
   glossary=$(curl -fsS "$SITE/nebula-design-system/glossary.json" 2>/dev/null)
@@ -102,7 +132,7 @@ grep -rnE '#[0-9a-fA-F]{3,8}\b|rgba?\(|(bg|text|border|ring|fill|stroke)-\[#' "$
 section "styles outside Tailwind classes, and arbitrary values"
 grep -rnE '\bstyle=["{]|\b[a-z-]+-\[[0-9.]+(px|rem)\]' "${scope[@]}" "${views[@]}" | report
 
-section "text dimmed with opacity (skips disabled controls and transitions; an archived or turned-off item is text, not a disabled control)"
+section "text dimmed with opacity (skips disabled controls and transitions; a soft-deleted or turned-off item is text, not a disabled control)"
 grep -rnE '\btext-[a-z]+-[0-9]+/[0-9]+|\bopacity-[0-9]+\b' "${scope[@]}" "${views[@]}" |
   grep -vE 'disabled|cursor-not-allowed|enter-|leave-' | report
 
@@ -145,6 +175,21 @@ done | report
 
 section "icons not imported one by one: whole packs, library.add(), icons named by string"
 grep -rnE "import \{ (fas|far|fab|fal) \}|[lL]ibrary\.add\(|['\"]fa[srlb]['\"], *['\"][a-z0-9-]+['\"]|['\"]fa-(solid|regular|light|brands) fa-" "${scope[@]}" "${code[@]}" | report
+
+# The badge is matched with its content, or alone when it closes itself and
+# takes the icon as a prop (NeBadge). An icon held in a variable is not seen.
+section "circle-* icons inside a badge: use the icon without the circle, such as check instead of circle-check"
+grep -rlE '<NeBadge' "${scope[@]}" "${views[@]}" | while read -r f; do
+  perl -0777 -ne '
+    while (/<(NeBadge(?:V2)?)\b((?:[^>"\x27]|"[^"]*"|\x27[^\x27]*\x27)*)>(?:(?<=\/>)|(.*?)<\/\1>)/gs) {
+      my ($tag, $at, $badge) = ($1, $-[0], $&);
+      while ($badge =~ /\bfaCircle([A-Z]\w*)|[\x27"]circle-([a-z0-9-]+)[\x27"]/g) {
+        my $icon = defined $1 ? "faCircle$1" : "circle-$2";
+        my $line = 1 + (substr($_, 0, $at) =~ tr/\n//);
+        print "$ARGV:$line: <$tag> with $icon\n";
+      }
+    }' "$f"
+done | report
 
 $has_vc || exit 0
 

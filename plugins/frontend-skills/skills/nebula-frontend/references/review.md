@@ -13,15 +13,17 @@ folder, the one with `package.json` (in My Nethesis, `frontend`; in NethServer 8
 bash <skill folder>/scripts/review-checks.sh src/views/CustomersView.vue src/components/customers
 ```
 
-It finds the English i18n file and the kind of project from `package.json`, and prints one
-section for each check, with `none` when nothing matches:
+It finds the English i18n file, the kind of project and its data-fetching library from
+`package.json`, and prints one section for each check, with `none` when nothing matches:
 
-- in every project: i18n keys the code uses that the English file lacks, and terms the glossary
+- in every project: i18n keys the code uses that the English file lacks, links between i18n
+  texts (`@:{'key'}`, `$t(key)`) to a key that their language file lacks, and terms the glossary
   lists under avoid;
 - not in NethServer 8 projects built with Carbon, which get only the text checks: font weights,
   hex and arbitrary colors, `style` attributes and arbitrary values, text dimmed with opacity,
   click handlers on elements that are not buttons or links, links without an address,
-  `aria-label` on elements that show text, icons not imported one by one;
+  `aria-label` on elements that show text, icons not imported one by one, `circle-*` icons
+  inside a badge;
 - only in projects that use `@nethesis/vue-components`: raw elements that usually have a
   component (not in vue-components itself), deprecated components, and the `@deprecated` lines
   of the installed version (of `src` in vue-components).
@@ -43,8 +45,10 @@ it once for the project with a few examples, not line by line.
 ## What to check
 
 - **Components**: custom markup where a component or a pattern exists; classes that override a
-  component instead of using its props; deprecated components; more than one `primary` button
-  in a view or dialog.
+  component instead of using its props; deprecated components; what breaks
+  https://nethesis.github.io/nebula-design-system/layout.md, such as more than one `primary`
+  button in a view or dialog, card action buttons pushed to the right edge, or a side menu or a
+  top bar that differs from the app shell.
 - **Colors**: hex or arbitrary values; Tailwind palette classes where the project defines a
   semantic color for that role; palette names instead of `primary-*`; colors without a dark
   theme value (`references/colors.md`). In a project with its own theme, such as one built with
@@ -54,15 +58,18 @@ it once for the project with a few examples, not line by line.
 - **Icons**: icons not from Font Awesome Solid or the Nethesis packages; icons not imported
   one by one (whole packs, `library.add()`, names as strings); an icon that differs from the one
   `icons.json` gives for that meaning, or that it lists under `avoid`; custom icons listed under
-  `customIconsWithoutMeaning`; decorative icons without `aria-hidden="true"`; icon-only buttons
-  without an accessible label and a tooltip.
-- **Text**: literal strings instead of i18n keys; texts that break the writing guidelines; terms
+  `customIconsWithoutMeaning`; a `circle-*` icon inside a badge; decorative icons without
+  `aria-hidden="true"`; icon-only buttons without an accessible label and a tooltip.
+- **Text**: literal strings instead of i18n keys; values written into an i18n string instead of
+  passed as parameters, such as a minimum length; texts that break the writing guidelines; terms
   the glossary lists under `avoid` (`references/text.md`); server messages shown where the
   writing guidelines ("Error messages") want a text from the i18n files: a field error that is
   not turned into a key, or a network error or a 5xx that reaches the user as it is, such as
   `error.message` bound to the description of a notification with nothing in the project that
   replaces it (look for an HTTP interceptor first); the message of a 4xx with no field is right
-  as it is; i18n keys the code uses that the English file lacks; props of `Ne*` components that
+  as it is; i18n keys the code uses that the English file lacks; a text that repeats the label of
+  another element, such as `then choose Change manager again`, instead of linking its key, and a
+  link to a key that a language file lacks (`references/text.md`); props of `Ne*` components that
   end in `Label` left to their English default in a project with i18n. List them for a component
   with `grep -oE '\b[a-z][a-zA-Z]*Label\b'
   node_modules/@nethesis/vue-components/dist/components/<Name>.vue.d.ts | sort -u`.
@@ -70,6 +77,19 @@ it once for the project with a few examples, not line by line.
   it too: terms the glossary lists under `avoid.it`, translations other than its `it`, and the
   Italian rules of the writing guidelines. When only Weblate edits it, report these for the
   translators.
+- **Server data**, when the project has a data-fetching library (the script prints it): API
+  calls in a component or a store, with loading and error state handled by hand, where a query
+  or a mutation of the library fits; mutations that leave stale the queries whose data they
+  change.
+- **Loading and errors**, by the rules of
+  https://nethesis.github.io/nebula-design-system/loading-and-errors.md, for each part of the page
+  that shows server data, not for each call: report a part that shows nothing, or its empty state,
+  while it loads; an empty state after a load that failed; a load error that the user never sees
+  (only logged, or swallowed) or sees only in a toast when the error is about one part of the page
+  (a toast as well as the inline error is fine); a part that goes back to the skeleton on every
+  refresh; a button that starts a write action without its `loading` state. Before reporting a call,
+  check whether another call of the same part already shows its states, as with calls in parallel,
+  and skip calls that show nothing, such as prefetches.
 - **Accessibility**, by the rules of
   https://nethesis.github.io/nebula-design-system/accessibility.md: form fields without a label,
   or a label linked to the wrong field (two fields with the same `id`); click handlers on
@@ -77,9 +97,10 @@ it once for the project with a few examples, not line by line.
   `@click`), which the keyboard cannot reach; focus rings removed without a replacement; an
   `aria-label` that replaces the visible text of a link or a button instead of containing it;
   text dimmed with opacity (`text-gray-900/60`, `opacity-70`), except on disabled controls,
-  archived or turned-off items included (they take the tertiary neutral text and icon tokens and
+  soft-deleted or turned-off items included (they take the tertiary neutral text and icon tokens and
   a status); status shown by color alone; overlays built by hand instead of `NeModal` or
-  `NeSideDrawer`; a `lang` attribute that does not follow the interface language.
+  `NeSideDrawer`; a failed validation that does not move the focus to the first invalid field; a
+  `lang` attribute that does not follow the interface language.
 
 ## Report
 

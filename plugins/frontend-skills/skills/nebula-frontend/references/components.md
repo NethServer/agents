@@ -18,29 +18,35 @@ confirmation modal or the table page.
 The patterns named below are in the `patterns` of `components.json` (see "Finding what exists"),
 with their Storybook links and the code of their stories.
 
-- **Loading**: `NeSkeleton` in place of the content that is loading; for a table, the `loading`
-  prop of `NeTable`.
+- **Loading, errors and empty lists**: follow
+  https://nethesis.github.io/nebula-design-system/loading-and-errors.md, for each part of the
+  page that shows server data, not for each call. `NeSkeleton`, or the `loading` prop of
+  `NeTable`, on the first load; on a refresh, the data stays and a delayed `Updating…` spinner
+  appears, as the project already does it (in My Nethesis, `UpdatingSpinner`). With a
+  data-fetching library, the skeleton is for a query with no data yet (`state.status ===
+  'pending'` in Pinia Colada, `isPending` in TanStack Query), the spinner for a query that
+  loads again (`asyncStatus === 'loading'` with data, `isFetching` without `isPending`), and the
+  `loading` of a button follows its mutation.
 - **Nothing to show**: `NeEmptyState`, with a title, a description and, when there is a next
   step, an action. Follow the *Empty state* pattern.
 - **An error in a page or a form**: `NeInlineNotification`. Follow the *Inline error
   notification* pattern.
 - **The result of an action** the user should notice, such as an object created or deleted: a
-  toast, `NeToastNotificationV2`. Follow the *Success toast notification* pattern. After closing
-  a modal or a drawer, show the toast once the closing animation has ended, about 500 ms later,
-  or it appears while the dialog is still moving.
+  toast, `NeToastNotificationV2`. Follow the *Success toast notification* pattern; after a
+  modal or a drawer, show it when the dialog has closed (Layout, below).
 - **Creating or editing an object**: a form in a side drawer, opened by the create button of the
   page or the Edit action of a row. Follow the *Create item drawer* pattern.
 - **Deleting**: follow the *Delete item modal* pattern; its *Type to confirm* story is for
-  deletions that lose a lot of data. Products that archive objects before destroying them, such
-  as My Nethesis, follow the "Archive and destroy confirmation" of the writing guidelines.
+  deletions that lose a lot of data. Products where Delete is a soft delete, which keeps the
+  object so that it can be restored, such as My Nethesis, follow the "Delete and destroy
+  confirmation" of the writing guidelines.
 - **A status** (enabled, expired, online…): `NeBadgeV2`.
 - **Buttons that start an action**: `NeButton` with the `kind` its story uses for that role, and
-  `loading` bound while the action runs. Only one `primary` button per view or dialog: the
-  others are `secondary` or `tertiary`. A button that confirms a destructive action is `danger`,
-  in place of the `primary`.
-- **Tables on small screens**: `NeTable` shows each row as a card below its `cardBreakpoint`.
-  Follow the *Table page* pattern for a page that lists objects. Write the rest of the layout
-  mobile first, with the Tailwind breakpoints (`sm:`, `md:`, `lg:`…).
+  `loading` bound while the action runs.
+- **Layout**: follow https://nethesis.github.io/nebula-design-system/layout.md for where the
+  parts of a page go: the app shell (side menu, top bar and page), the primary action of the
+  page header, the buttons of cards, forms in a page, such as a settings page, one `primary`
+  button per view or dialog, small screens and toasts.
 
 ## Forms
 
@@ -48,6 +54,8 @@ with their Storybook links and the code of their stories.
   text, and helper text through `helperText`.
 - Validate with the library and the helpers the project already uses (valibot in My Nethesis
   and NethSecurity): find an existing form and follow it.
+- When the validation fails, move the focus to the first invalid field with `focusElement` of
+  `@nethesis/vue-components`, on a `ref` of the field (*Create item drawer* pattern).
 - An error that is not about one field, such as a failed save, goes in an
   `NeInlineNotification` (*Inline error notification* pattern).
 - For a new password, follow the *New password form* pattern.
@@ -115,4 +123,5 @@ The project's main CSS file imports `@nethesis/vue-components/theme.css` and dec
 
 To set up a new project, follow the Installation, Fontawesome and Font sections of the README of
 vue-components (https://github.com/nethesis/vue-components#installation): the theme and
-`@source`, the Font Awesome CSS in a layer below Tailwind, and Poppins Regular and Medium.
+`@source`, the Font Awesome CSS in a layer below Tailwind, and Poppins Regular and Medium. Build
+its side menu and top bar as the *App shell* of the Layout page says.
