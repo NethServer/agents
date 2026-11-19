@@ -132,7 +132,7 @@ grep -rnE '#[0-9a-fA-F]{3,8}\b|rgba?\(|(bg|text|border|ring|fill|stroke)-\[#' "$
 section "styles outside Tailwind classes, and arbitrary values"
 grep -rnE '\bstyle=["{]|\b[a-z-]+-\[[0-9.]+(px|rem)\]' "${scope[@]}" "${views[@]}" | report
 
-section "text dimmed with opacity (skips disabled controls and transitions; an archived or turned-off item is text, not a disabled control)"
+section "text dimmed with opacity (skips disabled controls and transitions; a soft-deleted or turned-off item is text, not a disabled control)"
 grep -rnE '\btext-[a-z]+-[0-9]+/[0-9]+|\bopacity-[0-9]+\b' "${scope[@]}" "${views[@]}" |
   grep -vE 'disabled|cursor-not-allowed|enter-|leave-' | report
 

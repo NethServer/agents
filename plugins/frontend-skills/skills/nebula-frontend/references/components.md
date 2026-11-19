@@ -37,8 +37,9 @@ with their Storybook links and the code of their stories.
 - **Creating or editing an object**: a form in a side drawer, opened by the create button of the
   page or the Edit action of a row. Follow the *Create item drawer* pattern.
 - **Deleting**: follow the *Delete item modal* pattern; its *Type to confirm* story is for
-  deletions that lose a lot of data. Products that archive objects before destroying them, such
-  as My Nethesis, follow the "Archive and destroy confirmation" of the writing guidelines.
+  deletions that lose a lot of data. Products where Delete is a soft delete, which keeps the
+  object so that it can be restored, such as My Nethesis, follow the "Delete and destroy
+  confirmation" of the writing guidelines.
 - **A status** (enabled, expired, online…): `NeBadgeV2`.
 - **Buttons that start an action**: `NeButton` with the `kind` its story uses for that role, and
   `loading` bound while the action runs.
