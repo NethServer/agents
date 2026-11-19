@@ -33,25 +33,17 @@ text; in a review, use them to judge the texts and the keys, and report without 
   message. Follow the way the project already maps server errors, often in an HTTP interceptor.
 - Find the files and the key naming in the project (for example `src/i18n/en/translation.json`,
   `src/i18n/en.json` or `public/locales/en/translation.json`), and follow the existing structure.
-- Values that are not text to translate, such as a minimum or a maximum length, a number, a
-  size, a name or an address, go in the string as parameters, never written into it:
-  `"Password must contain at least {min} characters"` with `t('...', { min: 8 })` in vue-i18n,
-  `{{min}}` in react-i18next. Translators then can't change or mistype the value, and when it
-  changes in the code, no translation has to change.
-- A text that names another element of the interface, such as a button, a menu item, a filter or
-  a page (`then choose Change manager again`), links the key of that element's label instead of
-  repeating its words: when the label changes, every text that names it changes too, in every
-  language. The syntax depends on the library:
-  - `vue-i18n` 9 and later: `@:{'customers.change_manager'}`. The braces end the key: a bare
-    `@:customers.change_manager` takes a period or a comma that follows it into the key. Write a
-    literal `@` as `{'@'}`.
-  - `vue-i18n` 8 (NethServer 8 modules built with Vue 2): `@:(customers.change_manager)`.
-  - `i18next` and `react-i18next`: `$t(customers.change_manager)`.
+- Parameters and links to other labels: follow "Text for translation" in the writing
+  guidelines. The syntax depends on the library:
+  - parameters: `{min}` with `t('...', { min: 8 })` in `vue-i18n`, `{{min}}` in `react-i18next`;
+  - links, `vue-i18n` 9 and later: `@:{'customers.change_manager'}`. The braces end the key: a
+    bare `@:customers.change_manager` takes a period or a comma that follows it into the key.
+    Write a literal `@` as `{'@'}`;
+  - links, `vue-i18n` 8 (NethServer 8 modules built with Vue 2): `@:(customers.change_manager)`;
+  - links, `i18next` and `react-i18next`: `$t(customers.change_manager)`.
 
-  Link the label as the interface shows it, without a case modifier such as `@.lower:`: the
-  writing guidelines ("Capitalization") write the name of a page or a menu item exactly as it
-  appears. Translators keep the link as it is in every language, and the link points to a key
-  that exists in each language file.
+  Don't add a case modifier such as `@.lower:` to a link, and link only keys that exist in each
+  language file.
 - When an existing text breaks the writing guidelines, add a new key instead of reusing it. A key
   that many places share, such as the close label of every drawer, is the exception: reuse it
   and report it.
