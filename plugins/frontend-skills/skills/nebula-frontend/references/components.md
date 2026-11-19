@@ -45,8 +45,8 @@ with their Storybook links and the code of their stories.
   `loading` bound while the action runs.
 - **Layout**: follow https://nethesis.github.io/nebula-design-system/layout.md for where the
   parts of a page go: the app shell (side menu, top bar and page), the primary action of the
-  page header, the buttons of cards, one `primary` button per view or dialog, small screens and
-  toasts.
+  page header, the buttons of cards, forms in a page, such as a settings page, one `primary`
+  button per view or dialog, small screens and toasts.
 
 ## Forms
 
