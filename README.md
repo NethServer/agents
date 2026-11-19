@@ -114,9 +114,12 @@ Claude Code and Codex (see below). Pi does not install either plugin: it reads o
 `skills/` directory.
 
 No plugin `version` is pinned, so every push to the default branch counts as a new version.
-Claude Code refreshes installed marketplaces in the background (this is a public repo, so the
-pull needs no credentials), so you pick up new and updated skills automatically — no reinstall
-needed. Force an immediate refresh with `/plugin marketplace update nethserver`.
+Claude Code does not update a third-party marketplace such as this one unless auto-update is on
+for it, and it is off by default. Turn it on once: run `/plugin`, open the **Marketplaces** tab,
+select `nethserver` and enable auto-update. Claude Code then refreshes the marketplace in the
+background after each start (this is a public repo, so the pull needs no credentials), and the
+updated skills load at the next start or after `/reload-plugins`. To update now, choose
+**Update marketplace** on the same menu.
 
 ### Uninstall (Claude Code only)
 
