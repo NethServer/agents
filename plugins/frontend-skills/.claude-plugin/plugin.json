@@ -1,0 +1,8 @@
+{
+  "name": "frontend-skills",
+  "description": "Coding agent skills for writing and reviewing user interfaces that follow the Nethesis design systems: Nebula and Carbon",
+  "author": {
+    "name": "Nethesis",
+    "url": "https://github.com/nethesis"
+  }
+}

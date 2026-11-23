@@ -17,6 +17,9 @@ firmware releases from a push to the `release` branch rather than from a tag, an
 `nethsecurity-ui` is driven by release-please. Stop and ask the author rather than applying
 the rules below there.
 
+For a NethVoice milestone release (ns8-nethvoice, ns8-nethvoice-proxy and NethLink
+together, with the milestone issues), also load `nethvoice-release`.
+
 ---
 
 ## ⚠️ Explicit approval before releasing

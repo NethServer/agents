@@ -75,3 +75,5 @@ Snapshot used to write version-aware guidance on 2026-09-04:
 These revisions explain the guidance; they never override installed actions, schemas, source, or runtime state.
 
 Primary upstreams: [ns8-nethvoice](https://github.com/nethesis/ns8-nethvoice), [ns8-nethvoice-proxy](https://github.com/nethesis/ns8-nethvoice-proxy), [NethVoice administrator manual](https://docs.nethvoice.com/docs/administrator-manual), and [NS8 administrator manual](https://docs.nethserver.org/docs/administrator-manual).
+
+Since ns8-nethvoice#906 the NethCTI server (with astproxy), middleware and UI, Tancredi, Satellite and the reports sources live in the ns8-nethvoice tree; their former repositories are archived. To read the source of an installed version, check out the ns8-nethvoice tag of that version.

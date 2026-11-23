@@ -71,7 +71,9 @@ skill).
 
 ## Issue types
 
-Choose the correct GitHub issue type when opening an issue, and do not use any label:
+Choose the correct GitHub issue type when opening an issue instead of using labels
+that duplicate the type (such as `bug` or `feature`). Product and workflow labels
+remain applicable.
 
 | Type | When to use |
 |---|---|
@@ -117,6 +119,15 @@ Use the **Feature** type. Use the feature template at https://github.com/NethSer
 
 > **Never report security vulnerabilities as public GitHub issues.**
 > Use the [GitHub Security Advisory](https://github.com/NethServer/dev/security/advisories/new) form or email `sviluppo@nethesis.it`.
+
+---
+
+## Product labels
+
+For NethVoice issues in `NethServer/dev`, apply the existing `nethvoice` label in
+addition to the issue type. Determine the product from the issue content; users do
+not need to request the label explicitly. Do not apply it to NethServer or
+NethSecurity issues.
 
 ---
 

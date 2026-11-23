@@ -1,0 +1,162 @@
+---
+name: "nebula-design"
+description: "Use when a designer asks to mock up, prototype or review the design of a page, flow or component of a Nethesis product that follows the Nebula Design System (NethSecurity, NethVoice admin, NethLink, NethService, My Nethesis), to prepare screens for developers or bring them into Figma, or to review UI copy, terms, icons or Italian translations outside a code project, such as in a mockup, a Figma frame or a list of strings. Not for writing, changing or reviewing the code of a frontend project, even from a mockup or a Figma link: use nebula-frontend. Not for NethServer 8 interfaces built with Carbon: use carbon-design (coming soon)."
+---
+
+# Nebula Design System (NDS): mockups and prototypes
+
+This skill is used by the product designer to create mockups and prototypes of Nethesis products, share them with developers and bring them into Figma. It is not the developers' implementation skill: developers use `nebula-frontend`, in the `frontend-skills` plugin of this repository, which reads the same site and Storybook.
+
+The line between the two: this skill produces designs (mockups, prototypes, Figma screens, handoff notes) and reviews copy that is not in a code project yet. As soon as the task is to write, change or review code in a frontend project, including its i18n files, it belongs to `nebula-frontend`: say so and stop, instead of editing the project.
+
+## Sources of truth
+
+In this order:
+1. **The design system site** https://nethesis.github.io/nebula-design-system/ — writing guidelines, glossary, icons, colors, foundations, accessibility. Its pages are built in the browser, so fetching them returns nothing: read the plain files listed in https://nethesis.github.io/nebula-design-system/llms.txt.
+2. **Storybook** https://nethesis.github.io/vue-components/ and the `@nethesis/vue-components` repo — components and patterns; index for agents: https://nethesis.github.io/vue-components/components.json.
+3. **The Nebula Figma file** https://www.figma.com/design/ZRZzzlqb9GfB9Xdz6iGufh/Nebula-Design-System — the designs.
+
+The site wins for text, terms, icons and colors; Storybook wins for how a component looks and behaves. The **Nebula Design System** artifact (https://claude.ai/artifact/5nFYb9CtiRzReUdQzqZifR) and the `references/` of this skill are working copies: if they disagree with a source of truth, follow the source and say what needs updating.
+
+## Reading the site
+
+The skill keeps no copy of the site and has no sync step: the rules are read live every time, so they are always the current ones. Read them in this order and stop at the first way that works.
+
+**1. The published files.** The site's pages are built in the browser, so fetching a page URL returns nothing; the site publishes the same content as plain files for agents, listed in https://nethesis.github.io/nebula-design-system/llms.txt. Fetch the file you need (first column below). Many fetch tools refuse URLs that the user didn't paste: if the fetch is refused, go to step 2 straight away, don't retry it or look for the site with web search (search engines don't index it).
+
+**2. The public GitHub repos (fallback).** The site and the library are public repos, and git usually works where the fetch doesn't. Clone them once per conversation, read-only, into a scratch folder:
+
+```bash
+git clone --depth 1 https://github.com/nethesis/nebula-design-system   # site sources
+git clone --depth 1 https://github.com/nethesis/vue-components         # only if you need components
+```
+
+Then read the source of the file (second column). These are the files the site is built from: same content, raw format (YAML instead of JSON, a TypeScript file for the foundations). The hand-written references keep only the team rules: without the site or the repo, copy, terms, icons and exact values can't be checked.
+
+**3. Neither works.** Don't rebuild the rules from memory. Tell the designer the site can't be read here and ask them to paste the URL of `llms.txt` (or of the file you need) in the chat, then fetch it. Meanwhile continue with the hand-written references, marking copy, terms and icons as "to check against the site".
+
+| Published file (step 1) | Source in the repo (step 2) | What it holds | Called in `references/` |
+|---|---|---|---|
+| https://nethesis.github.io/nebula-design-system/writing-guidelines.md | `nebula-design-system/content/writing-guidelines.md` | Copy rules (buttons, modals, toasts, empty states, filters, errors), Italian translation | `site/writing-guidelines.md` |
+| https://nethesis.github.io/nebula-design-system/glossary.json | `nebula-design-system/glossary.yaml` | Terms, terms to avoid, Italian, product names | `site/glossary.md` |
+| https://nethesis.github.io/nebula-design-system/icons.json | `nebula-design-system/icons.yaml` (+ list below) | Meaning → icon, icons to avoid, sidebar icons, custom icons without a meaning | `site/icons.md` |
+| https://nethesis.github.io/nebula-design-system/colors.json | `nebula-design-system/data/colors.json` | Semantic color tokens with Tailwind classes, both themes | `site/colors.md` |
+| https://nethesis.github.io/nebula-design-system/foundations.json | `nebula-design-system/src/foundations.ts` | Typography, icon sizes, spacing, radius, focus ring, elevation, shadow | `site/foundations.md` |
+| https://nethesis.github.io/nebula-design-system/accessibility.md | `nebula-design-system/content/accessibility.md` | Contrast, color, keyboard, focus, screen readers | `site/accessibility.md` |
+| https://nethesis.github.io/nebula-design-system/introduction.md | `nebula-design-system/content/introduction.md` | What NDS is made of; how it applies to NethServer 8 | `site/introduction.md` |
+| https://nethesis.github.io/vue-components/components.json | `vue-components/src/components/*.vue` and `vue-components/stories/*.stories.ts` (patterns: `stories/Pattern*.stories.ts`) | What each Ne* component and pattern is for, deprecated → replacement | `site/components-index.md` |
+
+The hand-written files in `references/` still name these sources as `site/<name>`: whenever you meet one of those names, read the file of the same row.
+
+**Custom icons without a meaning.** `icons.json` lists them in `customIconsWithoutMeaning`, computed by the site from the icon packages, so `icons.yaml` doesn't have them. When you read from the repo, use this list (as of 2026-11-16; the live file wins when you can read it, and if it differs tell the designer this list needs updating):
+- ns-solid: `ai-spark`, `arrows-repeat`, `broken-repeat`, `buildings`, `child-task`, `circle-completing`, `close`, `display-slash`, `double-exclamation`, `ear-listen`, `elaborate`, `grid-round`, `hangup`, `open`, `parent-task`, `shorten`, `sum`, `traffic-cone`
+- ns-light: `calendar-day`, `clipboard-list`, `cloud`, `credit-card`, `envelope`, `message`, `office-phone`, `route`, `star`, `wrench`
+
+How to read well:
+- Read only the files the task needs, once per conversation, and reuse what you read. Copy needs the writing guidelines and the glossary; icons need the icon dictionary; colors need the colors (and the foundations for focus ring and elevation).
+- Some fetch tools pass the page through a summarizer: ask for the exact text you need (e.g. "return verbatim the entries for the meanings Delete, Edit, Enabled"), so names, classes and wording are not paraphrased. From the repo, search the file (`grep`) instead of loading it whole.
+- If `llms.txt` lists a file not in the table, or a repo path above no longer exists, tell the designer: the table needs updating.
+
+**Exact props, emits and slots** of a component are not copied in the skill: read them in its source, `vue-components/src/components/<Name>.vue`, or in its Storybook page. Mockups rarely need them.
+
+## Pending decisions (not on the site yet)
+
+Decisions of the UX team that are already valid but not yet published on the site. They win over the live site until the site says the same; then remove them from here and from the files that mention them (search for "pending decision").
+
+| Decision | Instead of (site today) | Where the skill applies it |
+|---|---|---|
+| **Create buttons of drawers and modals show only the action, without the object**: drawer `Create contact` ends with `Create`. Edit drawers still end with `Save`. Page header and empty-state buttons keep the object (`Create contact`). | `Create user` drawer ends with `Create user` | `components.md` §2, §8; `patterns.md` §2; checklist and example below |
+| **Custom icons without an agreed meaning are proposed, not avoided**: when a meaning has no icon, propose to the designer both the fitting Nethesis custom icons of the `customIconsWithoutMeaning` list in `icons.json` and a free Font Awesome Solid icon; the designer chooses, then the meaning is added to the dictionary. Never use one without asking. | "Do not use the custom icons listed in customIconsWithoutMeaning" | `foundations.md` "Icons"; `components.md` §11; workflow step 4 |
+| **Status = icon + label, never a badge** (Nebula Figma) | site accessibility "A badge that says Expired"; `NeBadgeV2` described for statuses | `components.md` §1, §4; `patterns.md` §1 |
+| **Italian of `Something went wrong.` = `Qualcosa è andato storto.`** | no Italian given | Italian translations |
+| **Focus ring in the dark theme = `primary-200`** (token `Product Primary/<product>/Focus` dark) | `foundations.json` gives `ring-primary-500` for both themes | `foundations.md`; `figma-components.md` §1 |
+| **Elevation meanings** (Figma variables updated, site colors not re-exported yet): L0 main surfaces such as sidebar and top bar; L1 page and drawer background; L2 content on L1; L2 invert alternative content on L1 (cards); L3 content on L2; L4 content on L3. | old token descriptions in `colors.json` | `foundations.md` "Choosing colors" |
+
+Team rules from the Nebula Figma file that the site doesn't cover (not inconsistencies): kebab trigger = Icon button Tertiary (primary color), danger items last after a divider; table body cells Text/Secondary neutral Regular, headers Text/Primary neutral; empty states with a Solid icon and almost always a description (optional on the site, strongly recommended by the team); radio buttons always vertical; row action `Edit` (details in the edit drawer) with the name not clickable, `Details` only for a dedicated page. They are in `components.md` and `patterns.md`.
+
+When you find a new inconsistency between the skill and the site, tell the user what differs and how to update the skill: say which hand-written files (`SKILL.md`, `references/components.md`, `patterns.md`, `foundations.md`) need the same change by hand.
+
+## Scope: Nebula or Carbon?
+
+| Signal | Design system |
+|---|---|
+| NethSecurity, NethVoice admin, NethLink, NethService, My Nethesis; `@nethesis/vue-components`, Vue 3, Tailwind; `Ne*` | **Nebula Design System** (this skill) |
+| NethServer 8 (cluster admin, nodes, NS8 apps/modules, CrowdSec module of NS8); `@nethserver/ns8-ui-lib`, `@carbon/vue`, Vue 2; `Ns*`, `cv-*`, `bx--` | Carbon Design System: use the **carbon-design** skill (coming soon to the `design-skills` plugin; until then, say that NS8 is out of scope for this skill). Only the NDS writing guidelines and glossary apply to NS8 |
+| NethVoice CTI (React), NS8 User Portal | Neither for now: say it is out of scope and ask |
+
+NethSecurity has no Carbon features. If signals contradict each other, stop and ask: never mix `Ne*`/Tailwind with `Ns*`/Carbon. In Claude, use the **Nebula Design System** artifact as the design system of mockups and designs, never the Carbon one or another default.
+
+## Reference files
+
+Read what the task needs; don't load everything up front. "live" files are read from the site or its repo, as in "Reading the site".
+
+| File | Read when |
+|---|---|
+| `references/components.md` | Always, for the components you're about to use: which component for which need, the team rules on top of the site and Storybook, gaps. |
+| `references/patterns.md` + the `Pattern*` stories (vue-components) | Building a page or flow (table page, create/edit drawer, delete, toasts, errors, empty states): start from the story, apply the team rules of the file. |
+| live `writing-guidelines.md` | Any time you write, change or review user-facing text (English and Italian). |
+| live `glossary.json` | Choosing the word for an action or object, terms to avoid, Italian translations, product names. |
+| live `icons.json` | Choosing any icon: meaning → icon, icons to avoid, sidebar and custom icons. |
+| `references/foundations.md` | Using colors, surfaces and icons in a mockup; pending decisions on elevation and focus. |
+| live `colors.json` | Exact semantic token and Tailwind classes for a color. |
+| live `foundations.json` | Exact typography, icon sizes, spacing, radius, focus ring, elevation, shadow values. |
+| live `accessibility.md` | Contrast, color, keyboard, focus, screen readers. |
+| live `components.json` (vue-components) | What each Ne* component and pattern is for, deprecated → replacement, Storybook links. |
+| `vue-components/src/components/<Name>.vue` (repo) | Exact props/emits/slots of a Ne* component, only when the design depends on them. |
+| `references/figma-components.md` | Before drawing any component: specs read from the Nebula Figma file (side drawer, text input, radio, icon button, sidebar), focus rules, how to read a component that isn't there. |
+| `references/products/nethsecurity.md` | Any NethSecurity screen: sidebar, top bar, Unsaved changes, staged changes. |
+| live `introduction.md` | What NDS is made of; how it applies to NethServer 8. |
+
+## Workflow
+
+0. **Ask what isn't specified.** If the request doesn't say it, ask the designer before building: (a) the output — a design on the canvas with the Nebula Design System kit, or an interactive prototype; (b) when a term is missing from the glossary or an Italian translation isn't in the guidelines, whether to use your proposal (mark it as a proposal for the site). Ask both in one message, with your default proposal, and keep it short.
+1. **Identify the product.** It decides the primary color (cyan NethSecurity, emerald NethVoice, blue NethLink, orange NethService, sky My Nethesis) and the vocabulary (glossary `Products` column). Ask only if it is not clear.
+2. **Plan with NDS patterns and components.** For each part of the screen pick the pattern (`patterns.md`) and the Ne* component (`components.md` §1). Cover every state, not just the happy path: loading (skeleton), empty (right case), no results, error, success toast only where the action applies immediately and its result isn't already visible, disabled and subscription-gated, destructive confirmation. Show the important states as separate frames or toggles.
+3. **Write real copy** in English following the live `writing-guidelines.md` with the terms of the live `glossary.json`: same term for the same concept across title, columns, filters, buttons, toasts and empty states. Realistic sample data, no placeholder text. Give the Italian version only when asked, following "Italian translation" in the guidelines and the glossary.
+4. **Pick icons by meaning** from the live `icons.json` (sidebar sections, actions, statuses), never by look. If a meaning has no icon in the dictionary, **ask the designer before choosing one**: propose the fitting Nethesis custom icons without a meaning (`customIconsWithoutMeaning` in `icons.json`) and a Font Awesome Solid icon that no other meaning uses, then note the chosen meaning as a proposal for the dictionary (pending decision).
+5. **Build the mockup or prototype.**
+   - Always draw the **product shell** (sidebar + top bar) unless the designer asks for the content only: `references/products/<product>.md` when it exists; otherwise the Figma component "Main sidebar + labels" (node 1427:791 of the Nebula file, variants NethSecurity, NethVoice, User portal, Controller, My Nethesis) and the product's UI code. Figma wins over the code; ask if unsure. Never invent a generic top bar.
+   - **Components look exactly like the Nebula Figma components**: read `references/figma-components.md` first; for a component or a detail not there, read it from Figma (read-only, as that file explains) before drawing it. Draw only the layers visible by default (boolean properties off = not drawn) and every state, focus included.
+   - Icons: the SVGs of the Nebula Design System artifact (`project/assets/icons/icon-data.js`), Solid, Light and custom, never placeholders.
+   - Frames default to 1920×1080 (taller only when needed to show all content); card grids use 4 columns; layouts stay responsive.
+   - Only Ne* components and Tailwind classes from the tokens: `primary-*` for brand color, semantic tokens for text, surfaces and status, `dark:` counterparts when showing dark mode, no hex, no arbitrary values, no opacity to dim text, no new visual styles.
+   - For a mockup to keep and share, make a design from the Nebula Design System artifact; for an interactive prototype, a page built with the same components and tokens.
+6. **Bring it into Figma when asked.** Use the Figma connector and the Figma skills, building the screen with the components and variables of the Nebula Figma library rather than redrawing them.
+7. **Self-review** with the checklist below, then hand off.
+
+## Self-review checklist
+
+- [ ] Right design system (Scope) and right product color
+- [ ] Tooltips, kebab menus, paginator (`Show` = `NeListbox`), table card layout, filter/sort triggers and inline notifications match `references/figma-components.md` §8 (tooltip arrow and max width, no item highlighted when a menu opens, rose hover on danger items, actions as the `Actions` row in cards)
+- [ ] Page actions (create, other page-level buttons) sit on the description row, on its right, never on the filter row
+- [ ] Every component matches its Figma component (sizes, padding, dividers, button position, selected and focus states); nothing drawn that is off by default
+- [ ] Product shell drawn (sidebar + top bar of the real product), hovers as in the product
+- [ ] Every state covered: loading, empty (right case), no results, error, success, disabled/gated
+- [ ] One Primary action per view: with no objects yet, the create button is only in the empty state; modal/drawer pairs are Tertiary + Primary; Danger only to confirm destructive actions
+- [ ] Buttons: verb + object, glossary verbs (Create/Add, Edit, Delete/Remove), create buttons of drawers and modals show only the action (`Create`, pending decision), edit drawer `Save`, page header and empty state `Create <object>`, `Details` with eye, kebab items without object, `Go to` vs `Open`; no OK/Yes/Confirm/Submit/Done
+- [ ] Empty states: case and copy from the guidelines, Solid icon, description almost always, ≤2 actions stacked Primary then Tertiary, no action when there's nothing to do
+- [ ] Modals: action-led title, no questions; body names the object without quotes and states consequences; main button repeats the title verb; Cancel vs Close
+- [ ] Toasts: only for actions applied immediately whose result isn't already visible (none for NethSecurity pending changes); `<Object> created` / `<Object type> <name> has been created`
+- [ ] Filters: noun labels, Reset filters / Reset selection / Clear selection / Clear filter used as in the guidelines
+- [ ] Tables: header Text/Primary neutral, cells Text/Secondary neutral Regular; statuses as icon + label (no badges); row action Edit (or Details for a dedicated page); name not clickable; kebab = Tertiary icon button, Delete last after a divider
+- [ ] Forms: radio buttons stacked vertically; noun labels, optional fields marked (not required ones), `e.g.` placeholders, validation as instructions
+- [ ] Icons: the dictionary icon for each meaning, none from its "Avoid" list, missing meanings asked to the designer (with custom and Font Awesome candidates), the choice listed as a dictionary proposal, icon buttons with tooltip = accessible name
+- [ ] Surfaces by elevation: page and drawer L1, cards L2 invert, sidebar and top bar L0 (pending decision)
+- [ ] Colors from semantic tokens; Rose for error/danger; color never the only signal; no opacity on text; archived/off items not dimmed
+- [ ] Glossary terms and product names spelled exactly (Threat Shield, MultiWAN, My Nethesis, Unit, Sign in…)
+- [ ] Copy: sentence case, punctuation rules, `…` for in-progress text, space between number and unit
+- [ ] No deprecated components (`NeBadge`, `NeToastNotification`, `NeDropdownFilter`, `NeCombobox multiple`)
+
+## Handoff to developers
+
+Keep it short: what the screen does and which pattern it follows, the list of new strings, and only the real open points (gaps in the library, missing icon meanings or glossary terms to propose to the UX team, assumed data, deviations from existing screens). Developers implement with `nebula-frontend`, the sources of truth and the Figma file.
+
+## Gaps
+
+When the guidelines and the library differ, **Storybook wins** for how a component looks and behaves. Known missing piece: the **AI button** (`components.md` §11). When a meaning has no icon, ask the designer before choosing; when a concept has no glossary term, propose one and list it as a proposal for the site. Don't invent new visual styles.
+
+## Example
+
+**Request:** "Mock up a NethVoice page to manage speed dials: list, create, delete."
+
+Good result, in short, in emerald, inside the NethVoice shell: a Table page (`patterns.md` §1) titled "Speed dials", description "List of speed dials, including name and phone number." with Primary lg "Create speed dial" (`circle-plus`); toolbar with "Filter speed dials", sort, "Reset filters"; `NeTable` Name / Phone number with Tertiary Edit + Tertiary kebab (divider, Delete). Frames for: loading skeleton; "No speed dials configured" with its icon, a description and Primary "Create speed dial" and **no** button in the header; "No speed dials found" / "Try changing your search filters." with Tertiary "Reset filters"; drawer "Create speed dial" with Cancel + "Create" (pending decision) and the edit variant "Edit speed dial" with Cancel + "Save"; delete `NeModal kind="warning"` "Delete speed dial" / "Speed dial Jenny Wilson will be deleted." / Cancel + Delete (danger); toast "Speed dial created" / "Speed dial Jenny Wilson has been created".

@@ -13,6 +13,11 @@ read-only replicas. `docs/core/database.md` has the full key list.
 | `task/<agent>/<task-id>/…` | Go agent, expires after a few hours |
 | `<agent>/roles/<role>`, `roles/<username>` | grants API |
 
+Builtin roles `owner` and `reader` exist on every module, node and the
+cluster. See <https://nethserver.github.io/ns8-core/core/agents/#roles-and-authorizations>.
+The grants are in `add-module/50update`, `add-node/50update` and
+`install-finalize.sh`.
+
 Never write role keys directly. Use `cluster.grants.grant()` and its siblings in
 `core/imageroot/usr/local/agent/pypkg/cluster/grants.py`. They expand the wildcards in
 the ACTION, ON and TO clauses. The public entry points are the `grant-actions` and
