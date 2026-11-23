@@ -88,7 +88,8 @@ repository unless the page says otherwise:
 `validate-output.json` and published to an `apidoc-<branch>` branch. `CONTRIBUTING`
 delegates the release process to `docs/development_process.md`.
 
-`docs/` is the Jekyll site at nethserver.github.io/ns8-core. Treat it as ground truth.
+`docs/` is the Jekyll site at nethserver.github.io/ns8-core. Treat it as ground truth,
+except where this skill says the code disagrees.
 `NethServer/ns8-docs` is a different repository, for end users.
 
 ## Repository map
@@ -125,7 +126,3 @@ api-cli run list-core-modules | jq .
 > **⚠️ `core/api-server/api-server-logs.go` is a second binary in the same package
 > directory.** `go build .` does not produce it. Build the server explicitly with
 > `go build api-server.go`.
-
-> **⚠️ The three Go components are three independent modules**, each with its own
-> `go.mod`. There is no workspace file. Run `go fmt` in the directory you touched.
-

@@ -24,11 +24,11 @@ the wrong code. A renamed identifier returns nothing, so you notice.
 
 | Task | Read |
 |---|---|
-| Where the repository documents itself: the `AGENTS.md`/`README.md`/`docs/` delegation tables, manual and handbook URLs, repository tree, what "core" covers beyond this repository, `core_module` membership, the two `func main` in `core/api-server`, the three independent `go.mod` | `references/repository-and-docs.md` |
+| Where the repository documents itself: the `AGENTS.md`/`README.md`/`docs/` delegation tables, manual and handbook URLs, repository tree, what "core" covers beyond this repository, `core_module` membership, the two `func main` in `core/api-server` | `references/repository-and-docs.md` |
 | Redis key ownership and pub/sub channels, role grants, where cluster and node actions and event handlers live, the inherited module actions, writing an action step (stdout/stderr, `agent.set_status`, `agent.assert_exp`, exit codes, `agent.tasks` entry points, secret masking), the `agent`/`cluster`/`node` Python packages, agent identity and `AGENT_BASEACTIONS_DIR` | `references/actions-and-agent-sdk.md` |
 | Calling an action from a UI (`createClusterTask`, `createNodeTask`, `createModuleTaskForApp`, the `ForApp` suffix, `taskData`), Vue 2 / Carbon v10 / Vue CLI 4 generations, `@nethserver/ns8-ui-lib` versions and local tarball testing, `core.css` shipped to every module UI, build constraints, running the dev server against a real node | `references/core-ui.md` |
-| api-server authentication, action-based authorization, audit log, Melody WebSocket bridge, api-moduled — where `core/api-server/AGENTS.md` answers, and the four things it does not: the `TODO` on the GET bypass, the `/api/2FA` exemptions, grants re-read on every request, `melody.New()` left unconfigured | `references/api-server.md` |
-| The three test loops and their cost, `run-ns8-tests`, Robot suite layout, `shellcheck`, building an image and pointing a test node at it, `cluster/override/modules`, `update-core` stages and its three hook directories, `runagent` and the cluster-wide CLI helpers | `references/build-test-ship.md` |
+| api-server authentication, action-based authorization, audit log, Melody WebSocket bridge, api-moduled — where `core/api-server/AGENTS.md` answers, and the two things it does not: the `TODO` on the GET bypass, `melody.New()` left unconfigured | `references/api-server.md` |
+| The three test loops and their cost, building an image and pointing a test node at it, `update-core` hook directories and their traps, a branch tag that does nothing, `runagent` | `references/build-test-ship.md` |
 
 ## Always applies
 
@@ -43,10 +43,11 @@ the wrong code. A renamed identifier returns nothing, so you notice.
   before changing a signature. (`references/actions-and-agent-sdk.md`)
 - Store state in Redis, never on the filesystem. Filesystem state does not replicate
   and is lost on restore.
-- An image never migrates an installed cluster. A migration needs an idempotent,
-  executable script in an `update-core` hook directory. (`references/build-test-ship.md`)
-- Build api-server with `go build api-server.go`, not `go build .`. Run `go fmt` in the
-  Go module you touched. (`references/repository-and-docs.md`)
+- An image never migrates an installed cluster. A migration needs an idempotent
+  script in an `update-core` hook directory. Without the executable bit it is skipped
+  silently. (`references/build-test-ship.md`)
+- `go build .` does not build api-server. Use `go build api-server.go`.
+  (`references/repository-and-docs.md`)
 - Keep `validate-input.json` and `validate-output.json` in step with their action. The
   published API reference is generated from them. (`references/repository-and-docs.md`)
 

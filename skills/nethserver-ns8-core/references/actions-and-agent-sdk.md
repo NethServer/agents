@@ -11,6 +11,7 @@ read-only replicas. `docs/core/database.md` has the full key list.
 | `node/<id>/…` | node agent |
 | `module/<id>/…` | module agent |
 | `task/<agent>/<task-id>/…` | Go agent, expires after a few hours |
+| `<agent-id>/tasks` | task queue, see the ACL warning below |
 | `<agent>/roles/<role>`, `roles/<username>` | grants API |
 
 Builtin roles `owner` and `reader` exist on every module, node and the
@@ -53,7 +54,8 @@ action, like `update-module` or `restore-module`, but it is different code.
 ## Writing a core action step
 
 `AGENTS.md` shows the Python skeleton. `core/agent/AGENTS.md` lists the exit codes,
-the injected variables and the `SD_*` log prefixes. The rules below are not written there.
+the injected variables and the `SD_*` log prefixes. The rules below add what is not
+written there.
 
 **stdout is the action output.** The agent parses it, and a stray `print()` corrupts
 it. Print logs to stderr, with a severity prefix for journald:
@@ -79,9 +81,8 @@ json.dump([{'field': 'smarthost', 'parameter': 'smarthost',
 sys.exit(3)
 ```
 
-For an invariant,
-`agent.assert_exp(cond, "message")` exits 2 with a stack trace. Pick a custom exit code
-in `1-7` or `32-255`: `8-31` belong to the agent.
+For an invariant, `agent.assert_exp(cond, "message")` exits 2 with a stack trace.
+Check the reserved range in `core/agent/AGENTS.md` before picking a custom code.
 
 **`agent.tasks.run()` targets another agent, `agent.run_helper()` runs locally.**
 `run()` returns `{'exit_code': int, 'output': dict}`, check the exit code yourself.
@@ -106,8 +107,8 @@ model for a fan-out.
 **Secret masking works by key suffix.** Before storing the task context, the agent
 replaces with `"XXX"` any value whose key ends with `password`, `secret`, `token`, `key`
 or `pass` (`sensitiveList` in `core/agent/htask.go`). `my_api_token` is masked,
-`token_expiry` is not. Name secret fields with one of these suffixes. This does not cover `agent.set_env()`, which writes plain text
-readable by every module on the node.
+`token_expiry` is not. Name secret fields with one of these suffixes. This does not
+cover `agent.set_env()`, which writes plain text readable by every module on the node.
 
 ## The Python packages are public API
 

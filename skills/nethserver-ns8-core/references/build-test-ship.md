@@ -2,64 +2,28 @@
 
 ## Test loops
 
-Three loops, with very different costs. Pick the smallest one that can fail.
+`AGENTS.md` (Test) gives the commands and `docs/core/testing.md` the `run-ns8-tests`
+options, variables and tags. Pick the smallest loop that can fail:
 
-```bash
-# 1. Go agent, seconds, no cluster needed.
-#    Builds the binary, starts an ephemeral Podman Redis, runs the Robot suite
-#    in core/agent/test/ against fixture actions and events.
-cd core/agent && bash test-agent.sh
+1. `core/agent/test-agent.sh`: seconds, no cluster, an ephemeral Redis in Podman.
+2. `yarn lint` in `core/ui`: there is no UI unit suite, `package.json` has no test
+   script. The real UI cases are Robot cases tagged `ui` in loop 3.
+3. `run-ns8-tests`: minutes, a live leader over SSH. Against a provisioned cluster,
+   add `--exclude install --exclude uninstall`.
 
-# 2. UI. There is no unit suite — package.json has no test script. This is a
-#    linter, and a loose one. The real UI cases are Robot cases in loop 3.
-cd core/ui && yarn lint
-
-# 3. Integration, minutes, requires a live leader node reachable over SSH.
-#    run-ns8-tests comes from the external NethServer/ns8-github-actions repo.
-#    UI cases are tagged ui and excluded unless RUN_UI_TESTS is set.
-cd core && run-ns8-tests <LEADER_NODE> [robot_options]
-cd core && RUN_UI_TESTS=true run-ns8-tests <LEADER_NODE>
-```
-
-The integration suite reads `SSH_KEYFILE`, `RUN_UI_TESTS` and `COREMODULES` from the
-environment. Suites live in numbered directories such as
-`core/tests/10__cluster_sanity/`, share `keywords.resource`, and follow the same
-numbering discipline as action steps: `00` installs, `99` uninstalls. Use
-`--exclude install` and `--exclude uninstall` to iterate against a cluster that is
-already provisioned.
-
-Shell code must pass `shellcheck`. There is no Python linter configuration in the
-repository; follow the style of the surrounding action scripts.
+There is no Python linter configuration. Follow the surrounding action scripts.
 
 ## Iterating against a test node
 
 This concerns the backend. The UI has its own live loop, in `references/core-ui.md`.
 
-There is no rsync or scp helper that pushes a working tree onto a running node. The
-loop goes through a container image:
+No helper pushes a working tree onto a running node. Every change goes through an
+image: `core/build-image.sh`, `buildah push` to a personal tag, then the node.
+`docs/quickstart.md` covers `install.sh` with custom images, `podman rmi` of a stale
+tag and `cluster/override/modules`.
 
-1. `cd core && bash build-image.sh` — buildah, reusing the persistent
-   `gobuilder-core` and `nodebuilder-core` containers for caching.
-2. `buildah push` the image to a personal tag on ghcr.io.
-3. On the test node, `podman rmi` the tag first if it was already pulled, otherwise
-   the old layers are reused.
-4. Point the cluster at the new image. For a **core** image, override the resolution
-   map:
-
-   ```bash
-   redis-cli hset cluster/override/modules <image-name> <image-url>
-   # e.g. redis-cli hset cluster/override/modules samba ghcr.io/nethserver/samba:rootless
-   ```
-
-   The hash maps an image *name* to a full URL and is read by
-   `core/imageroot/var/lib/nethserver/cluster/actions/add-module/50update`. For an
-   application module the commands are direct instead: `add-module <image-url>
-   <node-id>` for a new instance, `update-module <image-url> <instance-id> --force` to
-   re-push a mutable tag onto an existing one — same `--force`, same reason as on
-   `update-core`.
-
-`core/install.sh` accepts custom core images as positional arguments, which is the
-fastest path when bootstrapping a throwaway node from a branch build.
+To re-push a mutable tag onto an existing application instance, use
+`update-module <image-url> <instance-id> --force`, same reason as on `update-core`.
 
 ## Shipping a change to existing clusters
 
@@ -79,10 +43,13 @@ Traps the docs do not state:
 - A hook without the executable bit is skipped, with only a debug-level message.
 - A failing hook never stops the update. `cluster/bin/run-scriptdir` exits 1, but its
   caller `update-core/70update_modules` discards that code.
+- Scripts come from the new image, so a hook always describes the migration into its
+  own version.
 - New grants go in `cluster/update-core-pre-modules.d/50update_grants`. The node copy
-  is frozen.
+  has not changed since 2.4.
 - A branch tag is not Semver, so it counts as `0.0.0` and `update-core/50update` exits
-  before pulling. Without `--force` the pull also skips a tag already in local storage.
+  before pulling. `docs/core/updates.md` says the update continues. The code wins.
+  Without `--force` the pull also skips a tag already in local storage.
 
 ```bash
 update-core ghcr.io/nethserver/core:my-branch --force

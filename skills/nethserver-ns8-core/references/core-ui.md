@@ -78,9 +78,9 @@ To test a library change before releasing it, install a `npm run build-pack` tar
 change ships to every module in the cluster.
 
 **The build has two local traps.** It runs on the Node image pinned in
-`core/build-image.sh`, and webpack 4 needs `NODE_OPTIONS=--openssl-legacy-provider` on it. `yarn install --immutable`
-fails when the lockfile drifts from `package.json`. `yarn lint` uses the loosest Vue
-rule set (`core/ui/.eslintrc.js`) and proves little.
+`core/build-image.sh`, and webpack 4 needs `NODE_OPTIONS=--openssl-legacy-provider`
+on it. `yarn install --immutable` fails when the lockfile drifts from `package.json`.
+`yarn lint` uses the loosest Vue rule set (`core/ui/.eslintrc.js`) and proves little.
 
 ### Running the core UI on localhost against a real node
 
