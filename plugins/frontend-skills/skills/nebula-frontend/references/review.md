@@ -87,9 +87,13 @@ it once for the project with a few examples, not line by line.
   while it loads; an empty state after a load that failed; a load error that the user never sees
   (only logged, or swallowed) or sees only in a toast when the error is about one part of the page
   (a toast as well as the inline error is fine); a part that goes back to the skeleton on every
-  refresh; a button that starts a write action without its `loading` state. Before reporting a call,
-  check whether another call of the same part already shows its states, as with calls in parallel,
-  and skip calls that show nothing, such as prefetches.
+  refresh, such as a table whose query changes key with each filter, sort or page and does not
+  keep the previous data; a refresh indicator that moves the layout, such as a spinner that
+  wraps the filters of a toolbar; a refresh spinner that shows at once or hides before 500 ms,
+  such as one created and destroyed with `v-if` on the loading state; a button that starts a
+  write action without its `loading` state. Before reporting a call, check whether another call
+  of the same part already shows its states, as with calls in parallel, and skip calls that show
+  nothing, such as prefetches.
 - **Accessibility**, by the rules of
   https://nethesis.github.io/nebula-design-system/accessibility.md: form fields without a label,
   or a label linked to the wrong field (two fields with the same `id`); click handlers on
@@ -100,7 +104,10 @@ it once for the project with a few examples, not line by line.
   soft-deleted or turned-off items included (they take the tertiary neutral text and icon tokens and
   a status); status shown by color alone; overlays built by hand instead of `NeModal` or
   `NeSideDrawer`; a failed validation that does not move the focus to the first invalid field; a
-  `lang` attribute that does not follow the interface language.
+  `lang` attribute that does not follow the interface language; a control shown only on hover
+  that the keyboard cannot reveal, or whose action touch screens cannot reach anywhere else; an
+  icon button smaller than 24 × 24 px; a control whose result changes with the input, such as a
+  tap that does something else than a click.
 
 ## Report
 

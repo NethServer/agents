@@ -21,12 +21,23 @@ with their Storybook links and the code of their stories.
 - **Loading, errors and empty lists**: follow
   https://nethesis.github.io/nebula-design-system/loading-and-errors.md, for each part of the
   page that shows server data, not for each call. `NeSkeleton`, or the `loading` prop of
-  `NeTable`, on the first load; on a refresh, the data stays and a delayed `Updating…` spinner
-  appears, as the project already does it (in My Nethesis, `UpdatingSpinner`). With a
-  data-fetching library, the skeleton is for a query with no data yet (`state.status ===
-  'pending'` in Pinia Colada, `isPending` in TanStack Query), the spinner for a query that
-  loads again (`asyncStatus === 'loading'` with data, `isFetching` without `isPending`), and the
-  `loading` of a button follows its mutation.
+  `NeTable`, on the first load; on a refresh, the data stays and a delayed indicator appears: over
+  a table, an indeterminate `NeProgressBar` over its top border, out of the layout; elsewhere, an
+  `Updating…` spinner. Use what the project already has (in My Nethesis,
+  `UpdatingTableContainer` around a table, `<UpdatingSpinner :updating="…" />` elsewhere). An
+  indicator with a minimum time on screen stays mounted and gets the loading state as a prop:
+  created and destroyed with `v-if`, it cannot outlast the load. With a data-fetching
+  library, the skeleton is for a query with no data yet (`state.status === 'pending'` in Pinia
+  Colada, `isPending` in TanStack Query), the indicator for a query that loads again
+  (`asyncStatus === 'loading'` with data, `isFetching` without `isPending`), and the `loading` of
+  a button follows its mutation.
+- **A filter, a sort or a page of a table**: they change the key of the query, and a new key has
+  no data yet, so the table goes back to the skeleton, loses the focus of the sort button and
+  jumps. Keep the previous rows until the new ones arrive: `placeholderData: (previousData) =>
+  previousData` in Pinia Colada, `placeholderData: keepPreviousData` in TanStack Query. When the
+  key also names one object, such as the alerts of a system, keep them only while the object
+  stays the same: the rows of another object must never stand in for it (in My Nethesis,
+  `useScopedPlaceholderData`).
 - **Nothing to show**: `NeEmptyState`, with a title, a description and, when there is a next
   step, an action. Follow the *Empty state* pattern.
 - **An error in a page or a form**: `NeInlineNotification`. Follow the *Inline error

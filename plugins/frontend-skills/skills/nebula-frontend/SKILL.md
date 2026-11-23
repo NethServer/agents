@@ -119,6 +119,10 @@ the JSON files with `jq`: a tool that summarizes a page loses the field names.
   query to read, a mutation to change, then invalidate the queries whose data changed. Don't call
   the API in a component or a store and track its loading and error state by hand. Don't add
   such a library to a project that lacks it.
+- Before adding or changing how a part of the page shows that it loads, fails or is empty (a
+  skeleton, a spinner, a progress bar, an error, an empty state), read
+  https://nethesis.github.io/nebula-design-system/loading-and-errors.md: it decides which
+  indicator goes where, and after how long.
 - Style with Tailwind classes on the spacing scale (`p-4`, `gap-6`): no `style` attributes, and
   no arbitrary values (`w-[137px]`) unless nothing else works.
 - Every user-facing string goes in the i18n files, written by the writing guidelines with the
@@ -129,8 +133,11 @@ the JSON files with `jq`: a tool that summarizes a page loses the field names.
 - Interactive elements must work with the keyboard and keep a visible focus ring: a click
   handler goes on a button or a link, never on a `div`, a `span` or a table row, and a link
   (`NeLink`, `<a>`) needs an `href`: for an action, use `NeButton`. Form fields need a label.
-  The other accessibility rules, such as no text dimmed with opacity and no status shown by
-  color alone, are in https://nethesis.github.io/nebula-design-system/accessibility.md.
+  A control that shows only on hover also shows with the focus, and its action is also where
+  touch screens reach it, such as the row menu. The other accessibility rules, such as no text
+  dimmed with opacity, no status shown by color alone, targets of at least 24 × 24 px and the
+  same result with every input, are in
+  https://nethesis.github.io/nebula-design-system/accessibility.md.
 
 ## Before you finish
 
@@ -147,5 +154,7 @@ After writing or changing code:
    with the app's plugins (i18n, store, router). A page that loads its own data, or needs the
    signed-in user and route parameters, cannot without mocking them all: list these checks for
    the developer instead.
+   In a headless browser, `(hover: hover)` is false, and Tailwind applies `hover:` classes only
+   inside that media query: check hover styles in a real browser, or say that you could not.
 
 Say which of these you could not do.
