@@ -33,8 +33,8 @@ the wrong code. A renamed identifier returns nothing, so you notice.
 ## Always applies
 
 - stdout is the action output. Log to stderr. (`references/actions-and-agent-sdk.md`)
-- A non-zero exit in an action step halts the next steps. In an `update-core` hook it
-  only warns. (`references/build-test-ship.md`)
+- A non-zero exit in an action step halts the next steps (`core/agent/README.md`). In
+  an `update-core` hook it only warns. (`references/build-test-ship.md`)
 - Only the `cluster` agent and api-server may LPUSH into `cluster/tasks` and a node
   queue. Other agents go through `agent.tasks`, see `docs/core/agents.md`.
   (`references/actions-and-agent-sdk.md`)
@@ -42,10 +42,10 @@ the wrong code. A renamed identifier returns nothing, so you notice.
   `agent`, `cluster` and `node` Python packages are public API. Grep the callers
   before changing a signature. (`references/actions-and-agent-sdk.md`)
 - Store state in Redis, never on the filesystem. Filesystem state does not replicate
-  and is lost on restore.
+  and is lost on restore. (`references/actions-and-agent-sdk.md`)
 - An image never migrates an installed cluster. A migration needs an idempotent
-  script in an `update-core` hook directory. Without the executable bit it is skipped
-  silently. (`references/build-test-ship.md`)
+  script in an `update-core` hook directory. Without the executable bit it is skipped,
+  with only a debug-level message. (`references/build-test-ship.md`)
 - `go build .` does not build api-server. Use `go build api-server.go`.
   (`references/repository-and-docs.md`)
 - Keep `validate-input.json` and `validate-output.json` in step with their action. The

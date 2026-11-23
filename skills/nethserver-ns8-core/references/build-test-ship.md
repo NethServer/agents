@@ -50,6 +50,8 @@ Traps the docs do not state:
 - A branch tag is not Semver, so it counts as `0.0.0` and `update-core/50update` exits
   before pulling. `docs/core/updates.md` says the update continues. The code wins.
   Without `--force` the pull also skips a tag already in local storage.
+- Once a branch tag is installed, it counts as `9999.9999.9999`. Every later update,
+  even to a release tag, needs `--force`.
 
 ```bash
 update-core ghcr.io/nethserver/core:my-branch --force
