@@ -39,6 +39,8 @@ volumes/myapp-data/app.db*
 > ```
 > Read `configure-module/validate-input.json` to enumerate every required/optional field.
 
+**No migrations in `restore-module`.** A restore always runs with the same module version that produced the backup: it installs the backup's image version, then restores its state. Data and settings never come from an older version, so do not add steps that convert old env vars or DB schemas (e.g. after `06copyenv` or `40restoreDB`) by default; they can help only in unusual manual recoveries. Migrations belong only in `imageroot/update-module.d/` hooks, which run when the restored module is later updated. For the same reason, `06copyenv` only needs the vars the current version uses: a var removed by an update hook can leave its list.
+
 ### MariaDB
 - **Dump** (`imageroot/bin/module-dump-state`, CWD=`state/`): `podman exec mariadb-app mysqldump --databases mydb --default-character-set=utf8mb4 --single-transaction --quick --add-drop-table --skip-dump-date > mydb.sql`
 - **Cleanup** (`imageroot/bin/module-cleanup-state`): `rm -vf mydb.sql`
