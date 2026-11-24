@@ -23,6 +23,43 @@ findmnt -n -o TARGET --target /home 2>/dev/null; df -h /home 2>/dev/null
 pgrep -x sngrep | while read p; do ps -o pid,etimes,cmd -p "$p"; done
 ```
 
+### Historical metrics with Prometheus
+
+If the incident has already passed and the Metrics module is installed, use
+its Prometheus history to compare the affected window with a baseline before
+and after it. Resolve the module ID and node from `api-cli run
+list-installed-modules`, then confirm the running Prometheus container in that
+module's Podman context. The commands below use `metrics1` as an example.
+
+```bash
+runagent -m metrics1 podman ps -a
+runagent -m metrics1 podman port prometheus
+runagent -m metrics1 podman inspect prometheus --format '{{json .Args}}'
+runagent -m metrics1 podman exec prometheus promtool --version
+```
+
+An empty port listing can mean the listener is available only inside the
+container. Use the loopback address and port confirmed by
+`--web.listen-address`. This example uses `127.0.0.1:9091`. Inspect only the
+needed startup argument and omit other arguments from the incident report.
+
+```bash
+runagent -m metrics1 podman exec prometheus promtool query instant http://127.0.0.1:9091 'count by (job) (up)'
+runagent -m metrics1 podman exec prometheus promtool query instant http://127.0.0.1:9091 'count by (__name__) ({__name__=~"ns8_container_.*|node_disk_.*_total"})'
+runagent -m metrics1 podman exec prometheus promtool query range --start=2026-01-01T10:00:00Z --end=2026-01-01T11:00:00Z --step=60s http://127.0.0.1:9091 '100 * max(rate(node_disk_io_time_seconds_total[3m]))'
+runagent -m metrics1 podman exec prometheus promtool query range --start=2026-01-01T10:00:00Z --end=2026-01-01T11:00:00Z --step=60s http://127.0.0.1:9091 'max(rate(ns8_container_blkio_bytes_total{container="mariadb",device="sda",op="read"}[3m]))/1048576'
+```
+
+Replace the example interval with the incident timestamps in UTC, and use
+the observed container and block-device labels. The third query shows disk
+busy time in percent and the fourth shows container reads in MiB/s. Choose
+one device layer to avoid counting the same I/O at both the physical disk
+and its logical volume. Correlate metrics with access or service logs and
+check scrape coverage before interpreting missing samples. If Metrics or the
+relevant series are unavailable, continue with logs and the available host
+diagnostics. Through Gate, submit each command separately and honor its
+approval result.
+
 ### Module inventory from Redis, read-only fallback
 
 Use when `api-cli run list-installed-modules` is unavailable or too coarse.
