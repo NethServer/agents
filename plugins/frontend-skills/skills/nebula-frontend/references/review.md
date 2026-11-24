@@ -47,8 +47,8 @@ it once for the project with a few examples, not line by line.
 - **Components**: custom markup where a component or a pattern exists; classes that override a
   component instead of using its props; deprecated components; what breaks
   https://nethesis.github.io/nebula-design-system/layout.md, such as more than one `primary`
-  button in a view or dialog, card action buttons pushed to the right edge, or a side menu or a
-  top bar that differs from the app shell.
+  button in a view or dialog, card action buttons pushed to the right edge, a notification about
+  a field below it, or a side menu or a top bar that differs from the app shell.
 - **Colors**: hex or arbitrary values; Tailwind palette classes where the project defines a
   semantic color for that role; palette names instead of `primary-*`; colors without a dark
   theme value (`references/colors.md`). In a project with its own theme, such as one built with
