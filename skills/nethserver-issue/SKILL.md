@@ -106,7 +106,7 @@ Use the **Bug** issue type (not the bug label). Use the bug template at https://
 - Actual behavior: what happens instead, with a trimmed log excerpt (only the relevant lines), the impact, and any claims you checked that did not reproduce.
 - Workaround (optional, added after Actual behavior): a tested, safe command or procedure, and how to check that it worked.
 - Components: name and version of the affected application or core, and the environment where you reproduced the bug.
-- See also: links only (forum thread, related issues).
+- See also: links only, showing where the bug comes from: a community forum thread (credit the reporter in the Acknowledgements line), another issue or pull request, or a private team chat. If no link is available, always ask the user for one before filing.
 - Leave fix suggestions and code pointers out of the report unless the user asks for them: they belong in the pull request.
 - Do not repeat the same content in several sections.
 
