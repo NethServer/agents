@@ -23,8 +23,7 @@ volumes/myapp-data/app.db*
 
 - `06copyenv`: restore the env vars the module needs from `request['environment']` via `agent.set_env()`
 - `40restoreDB`: load SQL dump via ephemeral container (see patterns below)
-- `50...`: call `configure-module` via `agent.tasks.run()`. The name varies:
-  `50traefik`, `50configure`, `50call-configure-module`.
+- `50...`: calls `configure-module` via `agent.tasks.run()`
 
 > **⚠️ Pass every `configure-module` field, read from the restored environment.** Missing
 > fields reset the admin's settings. List them from `configure-module/validate-input.json`.
@@ -42,7 +41,6 @@ volumes/myapp-data/app.db*
 > ```
 >
 > - Env values are strings, `"True"` or `"true"`: compare with `.lower() == "true"`.
-> - Use `.get()` with a default: older backups may lack a field.
 > - Always pass `lets_encrypt: False` on restore, clone or move: DNS may not point here yet, and the failed certificate check fails the whole restore.
 
 ### MariaDB
@@ -88,5 +86,5 @@ Mount in the systemd service:
 Scripts in `imageroot/update-module.d/` run on `update-module` in lexicographic order.
 If a script fails, execution continues with the next one — each script is independent.
 
-Recommended layout: migrations first, then a restart step (`systemctl --user try-restart`, most modules name it `20restart`), then post-restart reindex or cleanup.
+Recommended layout: migrations first, then a restart step, then post-restart tasks like reindex or cleanup.
 Version-specific migrations go before the restart step so the new code starts on updated data.

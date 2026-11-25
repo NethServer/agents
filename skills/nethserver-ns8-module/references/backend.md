@@ -244,7 +244,7 @@ rdb = agent.redis_connect(privileged=True)
 rdb.publish(os.environ["AGENT_ID"] + "/event/my-settings-changed",
             json.dumps({"module_id": os.environ["MODULE_ID"], "module_uuid": os.environ["MODULE_UUID"]}))
 ```
-Publish on the leader (default connection). Never `use_replica=True`: the replica is read-only.
+Publish on the leader (default connection).
 
 ### Handlers
 Live in `imageroot/events/<event-name>/` — executable scripts, work like action steps.
@@ -271,7 +271,7 @@ Web UI behind Traefik:
 
 ```python
 agent.set_route({
-    'instance': os.environ['MODULE_ID'],
+    'instance': os.environ['MODULE_ID'], # add a suffix, e.g. MODULE_ID + '-api', only for extra routes; never rename an existing route
     'url': 'http://127.0.0.1:' + os.environ['TCP_PORT'],
     'host': data['host'],
     'http2https': data.get('http2https', True),
@@ -279,16 +279,15 @@ agent.set_route({
 })
 ```
 
-- `set_route()` already sets `lets_encrypt_check` and `lets_encrypt_cleanup` to `True`.
 - Default `http2https` to `True`. Add a UI toggle only if the app must serve plain HTTP.
-- No route step in `destroy-module`: ns8-traefik drops it on `module-removed`.
+- No route cleanup step in `destroy-module`: ns8-traefik drops them if they match the MODULE_ID word (also as prefix or suffix)
 
 Ports open to the network (needs `node:fwadm`):
 
 - Open in `create-module`: `agent.add_public_service(os.environ['MODULE_ID'], ['1514/tcp'])`.
 - If the list changes in `configure-module`, pass `replace_ports=True`.
 - Close in `destroy-module`: `agent.remove_public_service(...)`.
-- Example: ns8-wazuh `create-module/90firewall`.
+- Example: ns8-mail `create-module/90firewall`.
 
 ## Systemd Services
 
