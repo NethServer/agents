@@ -35,7 +35,7 @@ Pick the one reference file that matches your task from the map below.
 - Non-zero exit from any action step or event handler step halts the remaining sequence. (`references/backend.md`)
 - Starting only the pod's `<module>.service` does NOT start its children — list every service explicitly in `systemctl --user try-restart`. (`references/backend.md`)
 - In `restore-module`, `50call-configure-module` must pass ALL vars restored by `06copyenv`, not just a subset — check `configure-module/validate-input.json`. (`references/backup-restore.md`)
-- Never add data or settings migrations to `restore-module`: a restore runs the same version that made the backup. Migrations go in `imageroot/update-module.d/` only. (`references/backup-restore.md`)
+- No data or settings migrations in `restore-module` (except Traefik): put them in `imageroot/update-module.d/`. (`references/backup-restore.md`)
 - In the frontend, `Ns*` (ns8-ui-lib) components take priority over `cv-*` (Carbon Vue) — only fall back to `cv-*` when no `Ns*` equivalent exists. (`references/frontend.md`)
 
 ## Testing
