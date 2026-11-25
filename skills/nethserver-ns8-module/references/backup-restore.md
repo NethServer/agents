@@ -41,6 +41,7 @@ volumes/myapp-data/app.db*
 > ```
 >
 > - Env values are strings, `"True"` or `"true"`: compare with `.lower() == "true"`.
+> - Use `.get()` with a default for optional variables
 > - Always pass `lets_encrypt: False` on restore, clone or move: DNS may not point here yet, and the failed certificate check fails the whole restore.
 
 ### MariaDB
