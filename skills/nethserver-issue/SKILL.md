@@ -99,6 +99,17 @@ Use the **Bug** issue type (not the bug label). Use the bug template at https://
 - Include the minimal steps to reproduce reliably.
 - Good text formatting and screenshots make the report much more useful.
 
+**Splitting content across the template sections**:
+- Opening text (before the first heading): one or two sentences on the symptom, as the user sees it. No logs, no root-cause details.
+- Steps to reproduce: the shortest sequence of steps that works, with exact commands or UI actions. Mention briefly what triggers the bug when that explains a step.
+- Expected behavior: one or two sentences.
+- Actual behavior: what happens instead, with a trimmed log excerpt (only the relevant lines), the impact, and any claims you checked that did not reproduce.
+- Workaround (optional, added after Actual behavior): a tested, safe command or procedure, and how to check that it worked.
+- Components: name and exact version of each affected application or core module (e.g. "Nextcloud 1.7.5", "core 3.25.1", as shown in the Applications page), and the environment where you reproduced the bug. If a name or version is unknown, always ask the user for it before filing.
+- See also: links only, showing where the bug comes from: a community forum thread (credit the reporter in the Acknowledgements line), another issue or pull request, or a private team chat. If no link is available, always ask the user for one before filing.
+- Leave fix suggestions and code pointers out of the report unless the user asks for them: they belong in the pull request.
+- Do not repeat the same content in several sections.
+
 ---
 
 ## Writing a feature request
