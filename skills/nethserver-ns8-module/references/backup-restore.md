@@ -39,6 +39,8 @@ volumes/myapp-data/app.db*
 > ```
 > Read `configure-module/validate-input.json` to enumerate every required/optional field.
 
+**No migrations in `restore-module`.** A restore installs the module version that made the backup, so data and settings migrations go only in `imageroot/update-module.d/`. Traefik is the exception: see <https://nethserver.github.io/ns8-core/modules/backup_restore/#module-version-and-migrations>.
+
 ### MariaDB
 - **Dump** (`imageroot/bin/module-dump-state`, CWD=`state/`): `podman exec mariadb-app mysqldump --databases mydb --default-character-set=utf8mb4 --single-transaction --quick --add-drop-table --skip-dump-date > mydb.sql`
 - **Cleanup** (`imageroot/bin/module-cleanup-state`): `rm -vf mydb.sql`
