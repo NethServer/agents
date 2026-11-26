@@ -133,19 +133,7 @@ agent.unset_env("KEY")          # remove env var from state/environment
 > - List that file in `etc/state-include.conf`. Restore and clone bring it back.
 > - Inject it with `--env-file=%S/state/passwords.env`. Add `EnvironmentFile=-%S/state/passwords.env` only if the unit itself needs a value.
 > - Non-secret vars (`TRAEFIK_HOST`, `LDAP_DOMAIN`) use `agent.set_env()`.
->
-> ```python
-> # create-module/10genpasswords
-> import secrets, os, agent
-> p = os.path.join(os.environ["AGENT_STATE_DIR"], "passwords.env")
-> if not os.path.exists(p):
->     oldmask = os.umask(0o077)  # safe_open creates files with 0666 minus umask
->     try:
->         with agent.safe_open(p) as f:
->             f.write(f"DB_PASSWORD={secrets.token_urlsafe(16)}\n")
->     finally:
->         os.umask(oldmask)
-> ```
+> - Write the file with `agent.safe_open()` under `umask 0o077`: https://nethserver.github.io/ns8-core/modules/code_snippets/#atomic-file-write
 
 #### Progress reporting
 Requires frontend `isProgressNotified: true` (see the Frontend § Task progress below):
@@ -237,14 +225,7 @@ os.replace(tmpfile, "discovery.env")
 Events are Redis channel messages. Channel format: `module/<module_id>/event/<event_name>`.
 Name events in **past tense**: `mail-settings-changed`, `ldap-provider-changed`.
 
-Firing an event (a plain `redis-cli` has no module credentials):
-```python
-import json, os, agent
-rdb = agent.redis_connect(privileged=True)
-rdb.publish(os.environ["AGENT_ID"] + "/event/my-settings-changed",
-            json.dumps({"module_id": os.environ["MODULE_ID"], "module_uuid": os.environ["MODULE_UUID"]}))
-```
-Publish on the leader (default connection).
+Fire an event from a Python step with `agent.redis_connect(privileged=True)`, never the read-only replica: https://nethserver.github.io/ns8-core/core/events/#signaling-events
 
 ### Handlers
 Live in `imageroot/events/<event-name>/` — executable scripts, work like action steps.
@@ -263,31 +244,13 @@ Published by other modules: `certificate-changed` (ns8-traefik), `mail-settings-
 
 ## Routes, ports and firewall
 
-Web UI behind Traefik:
-
-- Request a port with `--label="org.nethserver.tcp-ports-demand=1"`. Read it as `TCP_PORT` (several: `TCP_PORTS`).
-- Publish on loopback only: `--publish 127.0.0.1:${TCP_PORT}:80`.
-- Set the route in `configure-module/05configure_traefik`. Needs `traefik@node:routeadm`.
-
-```python
-agent.set_route({
-    'instance': os.environ['MODULE_ID'], # add a suffix, e.g. MODULE_ID + '-api', only for extra routes; never rename an existing route
-    'url': 'http://127.0.0.1:' + os.environ['TCP_PORT'],
-    'host': data['host'],
-    'http2https': data.get('http2https', True),
-    'lets_encrypt': data.get('lets_encrypt', False),
-})
-```
-
+- Publish the web port on loopback only: `--publish 127.0.0.1:${TCP_PORT}:80`.
+- Set the route in `configure-module` with `agent.set_route()`. Needs `traefik@node:routeadm`. See https://nethserver.github.io/ns8-core/modules/certificates/
+- `instance` is MODULE_ID. Add a suffix like `-api` only for extra routes. Never rename an existing route.
 - Default `http2https` to `True`. Add a UI toggle only if the app must serve plain HTTP.
-- No route cleanup step in `destroy-module`: ns8-traefik drops them if they match the MODULE_ID word (also as prefix or suffix)
-
-Ports open to the network (needs `node:fwadm`):
-
-- Open in `create-module`: `agent.add_public_service(os.environ['MODULE_ID'], ['1514/tcp'])`.
-- If the list changes in `configure-module`, pass `replace_ports=True`.
-- Close in `destroy-module`: `agent.remove_public_service(...)`.
-- Example: ns8-mail `create-module/90firewall`.
+- Traefik removes the module routes on removal only if `instance` contains MODULE_ID not next to a letter or digit (`mymodule1-api` yes, `mymodule1api` no).
+- Ports open to the network need `node:fwadm`. Open them in `create-module`, pass `replace_ports=True` if `configure-module` changes them.
+- The core does not clean the firewall on removal. Remove public services, rich rules, zones and tun in `destroy-module`. See https://nethserver.github.io/ns8-core/core/firewall/
 
 ## Systemd Services
 
