@@ -54,7 +54,7 @@ After every install, update, configure, restart, remove, route, certificate, or 
 | Task | Read |
 | --- | --- |
 | Day-to-day operations: `api-cli`, `runagent`, `podman`, `systemctl`, `journalctl`, `redis-cli`, install/remove/update a module, configure a module, rootless vs rootfull, logs, containers/volumes/mounts, Traefik HTTP routes, issuing/replacing a certificate (`set-route`, `set-certificate`), service discovery/users/events/firewall | `references/operations.md` |
-| Diagnostics and reporting: support bundle, health check, node identity/pressure, module inventory, container and unit health, read-only TLS expiry scan across endpoints, severe host log patterns, "the server is broken", troubleshooting sequence, report format | `references/diagnostics.md` |
+| Diagnostics and reporting: support bundle, health check, node identity/pressure, historical Prometheus metrics, module inventory, container and unit health, read-only TLS expiry scan across endpoints, severe host log patterns, "the server is broken", troubleshooting sequence, report format | `references/diagnostics.md` |
 | NethVoice / telephony quick entry and mandatory handoff to the production-specific skill | `references/nethvoice.md` |
 | CrowdSec issues: `cscli`, bans, decisions | `references/crowdsec.md` |
 
