@@ -23,7 +23,7 @@ volumes/myapp-data/app.db*
 
 - `06copyenv`: `state/environment` is not extracted. Read old values from `request['environment']`, set them with `agent.set_env()`.
 - `40restoreDB`: load SQL dump via ephemeral container (see patterns below)
-- `50...`: calls `configure-module` via `agent.tasks.run()`
+- `50...`: calls `configure-module` via `agent.tasks.run()`, then fails if `ret['exit_code'] != 0`, or the restore reports success on a broken module
 
 > **⚠️ Pass every `configure-module` field, read from the restored environment.** Missing
 > fields reset the admin's settings. List them from `configure-module/validate-input.json`.

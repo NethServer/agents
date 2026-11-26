@@ -129,11 +129,11 @@ agent.unset_env("KEY")          # remove env var from state/environment
 >
 > **Secret pattern:**
 >
-> - Generate secrets in `create-module`, write them to a `state/` file with mode 0600.
+> - Generate secrets in `create-module`, only if the file is missing, so a re-run never rotates a password.
+> - Write them to a `state/` file with mode 0600: `agent.safe_open()` under `umask 0o077`, see https://nethserver.github.io/ns8-core/modules/code_snippets/#atomic-file-write
 > - List that file in `etc/state-include.conf`. Restore and clone bring it back.
 > - Inject it with `--env-file=%S/state/passwords.env`. Add `EnvironmentFile=-%S/state/passwords.env` only if the unit itself needs a value.
 > - Non-secret vars (`TRAEFIK_HOST`, `LDAP_DOMAIN`) use `agent.set_env()`.
-> - Write the file with `agent.safe_open()` under `umask 0o077`: https://nethserver.github.io/ns8-core/modules/code_snippets/#atomic-file-write
 
 #### Progress reporting
 Requires frontend `isProgressNotified: true` (see the Frontend § Task progress below):
