@@ -52,6 +52,10 @@ Authorizations are declared as container labels in `build-images.sh`:
 ```
 Format: `<scope>:<role>`. Multiple roles on the same scope: `node:fwadm,portsadm`.
 
+Other labels modules often need: `org.nethserver.tcp-ports-demand=N` / `udp-ports-demand=N`
+(ports given as `TCP_PORT`, `TCP_PORTS`), `org.nethserver.min-core=X.Y.Z` (refuses install on
+older core), `org.nethserver.max-per-node=N`, `org.nethserver.flags=...`. Manual page: `images`.
+
 **Scopes:** `node` (node agent), `cluster` (cluster agent), `<module>@node` (first instance on same node), `<module>@any` (all instances of that module).
 
 **Available roles:**
@@ -68,7 +72,7 @@ Format: `<scope>:<role>`. Multiple roles on the same scope: `node:fwadm,portsadm
 | `mailadm` | ns8-mail | master credentials, relay rules, BCC |
 | `accountconsumer` | cluster | bind/use a user domain (LDAP) |
 | `accountprovider` | cluster | provide a user domain |
-| `selfadm` | built-in | module's own actions (auto-granted) |
+| `selfadm` | built-in | module's own actions; core grants only `configure-module` |
 
 The builtin `reader` role needs no grant. A read-only action with a `list-`,
 `get-`, `show-` or `read-` prefix is open to every reader, so it must never
@@ -76,8 +80,9 @@ return secrets. See
 <https://nethserver.github.io/ns8-core/core/agents/#roles-and-authorizations>.
 
 ### selfadm — module calling its own actions
-A module can grant itself the right to call its own actions via Redis in
-`imageroot/actions/create-module/10grants`:
+Core already puts `configure-module` in the module's `selfadm` role
+(`create-module/10selfadm_role`), so restore and clone steps can call it with no grant.
+To call any other own action, grant it in `imageroot/actions/create-module/10grants`:
 ```bash
 redis-exec SADD "${AGENT_ID}/roles/selfadm" "action-name"
 ```
