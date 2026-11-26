@@ -52,9 +52,7 @@ Authorizations are declared as container labels in `build-images.sh`:
 ```
 Format: `<scope>:<role>`. Multiple roles on the same scope: `node:fwadm,portsadm`.
 
-Other labels modules often need: `org.nethserver.tcp-ports-demand=N` / `udp-ports-demand=N`
-(ports given as `TCP_PORT`, `TCP_PORTS`), `org.nethserver.min-core=X.Y.Z` (refuses install on
-older core), `org.nethserver.max-per-node=N`, `org.nethserver.flags=...`. Manual page: `images`.
+Other labels: https://nethserver.github.io/ns8-core/modules/images/#image-labels. Ports: https://nethserver.github.io/ns8-core/modules/port_allocation/
 
 **Scopes:** `node` (node agent), `cluster` (cluster agent), `<module>@node` (first instance on same node), `<module>@any` (all instances of that module).
 
@@ -80,10 +78,5 @@ return secrets. See
 <https://nethserver.github.io/ns8-core/core/agents/#roles-and-authorizations>.
 
 ### selfadm — module calling its own actions
-Core already puts `configure-module` in the module's `selfadm` role
-(`create-module/10selfadm_role`), so restore and clone steps can call it with no grant.
-To call any other own action, grant it in `imageroot/actions/create-module/10grants`:
-```bash
-redis-exec SADD "${AGENT_ID}/roles/selfadm" "action-name"
-```
-Use this when an action needs to trigger another action of the same module.
+Core grants only `configure-module` to `selfadm`, so restore and clone steps can call it.
+Grant any other own action in `create-module`: https://nethserver.github.io/ns8-core/core/agents/#roles-and-authorizations

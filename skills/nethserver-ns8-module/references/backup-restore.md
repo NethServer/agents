@@ -21,28 +21,16 @@ volumes/myapp-data/app.db*
 ### Restore sequence
 `imageroot/actions/restore-module/` — numbered steps, `10restore` inherited (Restic).
 
-- `06copyenv`: restore the env vars the module needs from `request['environment']` via `agent.set_env()`
+- `06copyenv`: `state/environment` is not extracted. Read old values from `request['environment']`, set them with `agent.set_env()`.
 - `40restoreDB`: load SQL dump via ephemeral container (see patterns below)
-- `50...`: calls `configure-module` via `agent.tasks.run()`
+- `50...`: calls `configure-module` via `agent.tasks.run()`, then fails if `ret['exit_code'] != 0`, or the restore reports success on a broken module
 
 > **⚠️ Pass every `configure-module` field, read from the restored environment.** Missing
 > fields reset the admin's settings. List them from `configure-module/validate-input.json`.
->
-> ```python
-> import json, os, sys, agent, agent.tasks
-> renv = json.load(sys.stdin)['environment']
-> ret = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='configure-module', data={
->     "host": renv["TRAEFIK_HOST"],
->     "http2https": renv.get("TRAEFIK_HTTP2HTTPS", "True").lower() == "true",
->     "lets_encrypt": False,
->     # every other configure-module field
-> })
-> agent.assert_exp(ret['exit_code'] == 0, "configure-module failed")
-> ```
->
-> - Env values are strings, `"True"` or `"true"`: compare with `.lower() == "true"`.
-> - Use `.get()` with a default for optional variables
-> - Always pass `lets_encrypt: False` on restore, clone or move: DNS may not point here yet, and the failed certificate check fails the whole restore.
+> Always pass `lets_encrypt: False` on restore, clone or move: DNS may not point here yet,
+> and the failed certificate check fails the whole restore.
+> Env values are strings: compare booleans with `.lower() == "true"`, use `.get()` with a default for optional variables.
+> See https://nethserver.github.io/ns8-core/modules/backup_restore/
 
 ### MariaDB
 - **Dump** (`imageroot/bin/module-dump-state`, CWD=`state/`): `podman exec mariadb-app mysqldump --databases mydb --default-character-set=utf8mb4 --single-transaction --quick --add-drop-table --skip-dump-date > mydb.sql`
@@ -64,7 +52,7 @@ volumes/myapp-data/app.db*
 - **restore-module**: Restic restores files listed in `etc/state-include.conf` → `40restoreDB` loads SQL dump → a `50...` step calls `configure-module`.
 - **clone-module**: core rsyncs `state/` and every volume from the source. No restic, no SQL dump. Missing env vars come from the source. The `50...` step calls `configure-module` from `os.environ`, with `lets_encrypt: False`.
 
-To skip files during the copy, use `imageroot/etc/state-filter-rules.rsync`.
+To skip files during the copy, use `imageroot/etc/state-filter-rules.rsync`. See https://nethserver.github.io/ns8-core/core/clone_module/
 
 Dump/cleanup scripts (`imageroot/bin/module-dump-state`, `imageroot/bin/module-cleanup-state`) only run during backup — not during clone or restore.
 
