@@ -21,14 +21,39 @@ with their Storybook links and the code of their stories.
 - **Loading, errors and empty lists**: follow
   https://nethesis.github.io/nebula-design-system/loading-and-errors.md, for each part of the
   page that shows server data, not for each call. `NeSkeleton`, or the `loading` prop of
-  `NeTable`, on the first load; on a refresh, the data stays and a delayed `Updating…` spinner
-  appears, as the project already does it (in My Nethesis, `UpdatingSpinner`). With a
-  data-fetching library, the skeleton is for a query with no data yet (`state.status ===
-  'pending'` in Pinia Colada, `isPending` in TanStack Query), the spinner for a query that
-  loads again (`asyncStatus === 'loading'` with data, `isFetching` without `isPending`), and the
-  `loading` of a button follows its mutation.
+  `NeTable`, on the first load; on a refresh, the data stays and a delayed indicator appears: over
+  a table, an indeterminate `NeProgressBar` over its top border, out of the layout; elsewhere, an
+  `Updating…` spinner. Use what the project already has (in My Nethesis,
+  `UpdatingTableContainer` around a table, `<UpdatingSpinner :updating="…" />` elsewhere). An
+  indicator with a minimum time on screen stays mounted and gets the loading state as a prop:
+  created and destroyed with `v-if`, it cannot outlast the load. With a data-fetching
+  library, the skeleton is for a query with no data yet (`state.status === 'pending'` in Pinia
+  Colada, `isPending` in TanStack Query), the indicator for a query that loads again
+  (`asyncStatus === 'loading'` with data, `isFetching` without `isPending`), and the `loading` of
+  a button follows its mutation.
+- **A filter, a sort or a page of a table**: they change the key of the query, and a new key has
+  no data yet, so the table goes back to the skeleton, loses the focus of the sort button and
+  jumps. Keep the previous rows until the new ones arrive: `placeholderData: (previousData) =>
+  previousData` in Pinia Colada, `placeholderData: keepPreviousData` in TanStack Query. When the
+  key also names one object, such as the alerts of a system, keep them only while the object
+  stays the same: the rows of another object must never stand in for it (in My Nethesis,
+  `useScopedPlaceholderData`).
+- **Rows per page of a table**: `NePaginator` with 10 rows by default and the sizes
+  `[5, 10, 25, 50, 100]`, as the *Table page* pattern. Keep the size the user chooses for that
+  user and table with `savePreference` and `getPreference` of `@nethesis/vue-components`
+  (`<table>PageSize`), as "Tables" in the Layout page says. Use what the project already has (in
+  My Nethesis, `loadPageSizeFromStorage` and `savePageSizeToStorage`). A new size goes back to
+  the first page.
+- **A dashboard**: a grid of `NeCard` cards, counters, charts or other statistics, as
+  "Dashboard" in the Layout page says: the icon and the title in the `title` slot, the number of
+  a counter in the `topRight` slot. Use what the project already has (in My Nethesis,
+  `CounterCard`, whose titles are still in capitals).
 - **Nothing to show**: `NeEmptyState`, with a title, a description and, when there is a next
-  step, an action. Follow the *Empty state* pattern.
+  step, an action. Follow the *Empty state* pattern. On the page, in place of a table or a list,
+  give it the background of a card as the pattern does, `class="bg-white dark:bg-gray-950"`; its
+  default gray (`bg-gray-100`) is for an empty state inside a card. A semantic class with the
+  same color, such as `bg-elevation-0`, does not override the default: Tailwind 4 writes the
+  classes in name order, and `bg-gray-100` comes later. Check the computed color.
 - **An error in a page or a form**: `NeInlineNotification`. Follow the *Inline error
   notification* pattern.
 - **The result of an action** the user should notice, such as an object created or deleted: a
@@ -45,8 +70,15 @@ with their Storybook links and the code of their stories.
   `loading` bound while the action runs.
 - **Layout**: follow https://nethesis.github.io/nebula-design-system/layout.md for where the
   parts of a page go: the app shell (side menu, top bar and page), the primary action of the
-  page header, the buttons of cards, forms in a page, such as a settings page, one `primary`
-  button per view or dialog, small screens and toasts.
+  page header, the buttons of cards, forms in a page, such as a settings page, the notification
+  about a field, dashboards of cards, the pagination of tables, one `primary` button per
+  view or dialog, small screens and toasts.
+- **Compact view**: an item of the account menu, as "Top bar" in the Layout page says. It sets
+  the class `compact` on `<html>`, and the main CSS of the project tightens the spacing there:
+  `html.compact { --spacing: 0.2rem; }`, since every Tailwind 4 spacing utility derives from
+  `--spacing`. Save the choice per user with `savePreference('density', …)` and read it with
+  `getPreference` when the user signs in. Use what the project already has (in My Nethesis, the
+  density store).
 
 ## Forms
 

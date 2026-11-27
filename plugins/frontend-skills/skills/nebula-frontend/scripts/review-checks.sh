@@ -39,6 +39,11 @@ library=false
 has_vc=false
 if [[ "$deps" == @nethesis/vue-components\ * ]]; then library=true; has_vc=true
 elif has @nethesis/vue-components; then has_vc=true; fi
+tailwind4=false
+if has @tailwindcss/vite || has @tailwindcss/postcss || has @tailwindcss/cli ||
+  jq -e '(.dependencies // {}) + (.devDependencies // {}) | .tailwindcss // "" | test("^[\\^~>=v ]*4")' package.json >/dev/null 2>&1; then
+  tailwind4=true
+fi
 if has @carbon/vue || has carbon-components || has carbon-components-vue || has @nethserver/ns8-ui-lib; then
   text_only=true
 fi
@@ -60,6 +65,7 @@ echo "# Review checks"
 echo "scope: ${scope[*]}"
 echo "project: $( $library && echo '@nethesis/vue-components' || { $has_vc && echo 'uses @nethesis/vue-components' || echo 'no @nethesis/vue-components'; })$( $text_only && echo ', text checks only')"
 echo "English i18n file: ${en:-not found}"
+echo "Tailwind CSS 4: $tailwind4"
 fetching=
 for lib in @pinia/colada @tanstack/vue-query; do
   has "$lib" && fetching+="${fetching:+, }$lib"
@@ -132,6 +138,15 @@ grep -rnE '#[0-9a-fA-F]{3,8}\b|rgba?\(|(bg|text|border|ring|fill|stroke)-\[#' "$
 section "styles outside Tailwind classes, and arbitrary values"
 grep -rnE '\bstyle=["{]|\b[a-z-]+-\[[0-9.]+(px|rem)\]' "${scope[@]}" "${views[@]}" | report
 
+# Only the Tailwind 3 names that mean nothing else in Tailwind 4: shadow-sm,
+# rounded-sm, outline-none and ring still exist there with another size or
+# meaning, so a match could not tell which one was meant.
+if $tailwind4; then
+  section "Tailwind 3 class names: use shrink-*, grow-*, wrap-break-word, text-ellipsis, box-decoration-*, and an opacity modifier (bg-gray-900/50)"
+  grep -rnE '(^|[^a-z0-9-])(break-words|flex-(shrink|grow)(-[0-9]+)?|overflow-ellipsis|decoration-(slice|clone)|(bg|text|border|divide|ring|placeholder)-opacity-[0-9]+)([^a-z0-9-]|$)' "${scope[@]}" "${code[@]}" |
+    grep -vE 'flex-(shrink|grow)[[:space:]]*:' | report
+fi
+
 section "text dimmed with opacity (skips disabled controls and transitions; a soft-deleted or turned-off item is text, not a disabled control)"
 grep -rnE '\btext-[a-z]+-[0-9]+/[0-9]+|\bopacity-[0-9]+\b' "${scope[@]}" "${views[@]}" |
   grep -vE 'disabled|cursor-not-allowed|enter-|leave-' | report
@@ -196,6 +211,13 @@ $has_vc || exit 0
 if ! $library; then
   section "raw elements that usually have a component"
   grep -rnE '<(button|input|select|textarea|table)\b' "${scope[@]}" "${views[@]}" | report
+
+  section "date pickers of other libraries and date or time inputs: use NeDatePicker, or NeDateRangeFilter for a table filter"
+  pickers='@vuepic/vue-datepicker|vue-datepicker|vue3-datepicker|vuejs-datepicker|v-calendar|flatpickr|vue-flatpickr-component'
+  {
+    for p in ${pickers//|/ }; do has "$p" && echo "package.json: $p"; done
+    grep -rnE "(from|import|require\()\s*['\"]($pickers)(/[^'\"]*)?['\"]|type=['\"](date|time|datetime-local|month|week)['\"]" "${scope[@]}" "${code[@]}"
+  } | report
 fi
 
 section "deprecated components, from components.json"

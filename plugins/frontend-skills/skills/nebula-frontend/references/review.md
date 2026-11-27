@@ -23,10 +23,11 @@ It finds the English i18n file, the kind of project and its data-fetching librar
   hex and arbitrary colors, `style` attributes and arbitrary values, text dimmed with opacity,
   click handlers on elements that are not buttons or links, links without an address,
   `aria-label` on elements that show text, icons not imported one by one, `circle-*` icons
-  inside a badge;
+  inside a badge, and, in Tailwind CSS 4 projects, Tailwind 3 class names such as
+  `break-words` and `flex-shrink-0`;
 - only in projects that use `@nethesis/vue-components`: raw elements that usually have a
-  component (not in vue-components itself), deprecated components, and the `@deprecated` lines
-  of the installed version (of `src` in vue-components).
+  component and date pickers of other libraries (not in vue-components itself), deprecated
+  components, and the `@deprecated` lines of the installed version (of `src` in vue-components).
 
 Pass `--en <file>` when it finds no English file, and `--text-only` to run only the text checks.
 The matches are candidates, not certain problems: read each one before reporting it.
@@ -47,8 +48,8 @@ it once for the project with a few examples, not line by line.
 - **Components**: custom markup where a component or a pattern exists; classes that override a
   component instead of using its props; deprecated components; what breaks
   https://nethesis.github.io/nebula-design-system/layout.md, such as more than one `primary`
-  button in a view or dialog, card action buttons pushed to the right edge, or a side menu or a
-  top bar that differs from the app shell.
+  button in a view or dialog, card action buttons pushed to the right edge, a notification about
+  a field below it, or a side menu or a top bar that differs from the app shell.
 - **Colors**: hex or arbitrary values; Tailwind palette classes where the project defines a
   semantic color for that role; palette names instead of `primary-*`; colors without a dark
   theme value (`references/colors.md`). In a project with its own theme, such as one built with
@@ -87,9 +88,25 @@ it once for the project with a few examples, not line by line.
   while it loads; an empty state after a load that failed; a load error that the user never sees
   (only logged, or swallowed) or sees only in a toast when the error is about one part of the page
   (a toast as well as the inline error is fine); a part that goes back to the skeleton on every
-  refresh; a button that starts a write action without its `loading` state. Before reporting a call,
-  check whether another call of the same part already shows its states, as with calls in parallel,
-  and skip calls that show nothing, such as prefetches.
+  refresh, such as a table whose query changes key with each filter, sort or page and does not
+  keep the previous data; a refresh indicator that moves the layout, such as a spinner that
+  wraps the filters of a toolbar; a refresh spinner that shows at once or hides before 500 ms,
+  such as one created and destroyed with `v-if` on the loading state; a button that starts a
+  write action without its `loading` state. Before reporting a call, check whether another call
+  of the same part already shows its states, as with calls in parallel, and skip calls that show
+  nothing, such as prefetches.
+- **Empty state background**, by "Empty state" in
+  https://nethesis.github.io/nebula-design-system/loading-and-errors.md: an `NeEmptyState` on the
+  page, in place of a table or a list, without `bg-white dark:bg-gray-950`, or with a class that
+  does not override its default gray, such as `bg-elevation-0`.
+- **Dashboard cards**, by "Dashboard" in
+  https://nethesis.github.io/nebula-design-system/layout.md: a card whose title is in capitals
+  (`uppercase`, `uppercaseTitle`, `toUpperCase()`) or whose colors are not the tokens of that
+  section, and a counter whose number is not a link to the list it counts.
+- **Table pagination**, by "Tables" in
+  https://nethesis.github.io/nebula-design-system/layout.md: a paginated table that does not
+  start at 10 rows or lacks some of the sizes 5, 10, 25, 50 and 100, or that forgets the size
+  the user chose when the page opens again.
 - **Accessibility**, by the rules of
   https://nethesis.github.io/nebula-design-system/accessibility.md: form fields without a label,
   or a label linked to the wrong field (two fields with the same `id`); click handlers on
@@ -100,7 +117,10 @@ it once for the project with a few examples, not line by line.
   soft-deleted or turned-off items included (they take the tertiary neutral text and icon tokens and
   a status); status shown by color alone; overlays built by hand instead of `NeModal` or
   `NeSideDrawer`; a failed validation that does not move the focus to the first invalid field; a
-  `lang` attribute that does not follow the interface language.
+  `lang` attribute that does not follow the interface language; a control shown only on hover
+  that the keyboard cannot reveal, or whose action touch screens cannot reach anywhere else; an
+  icon button smaller than 24 × 24 px; a control whose result changes with the input, such as a
+  tap that does something else than a click.
 
 ## Report
 
