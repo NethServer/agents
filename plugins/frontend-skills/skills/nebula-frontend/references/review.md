@@ -23,7 +23,8 @@ It finds the English i18n file, the kind of project and its data-fetching librar
   hex and arbitrary colors, `style` attributes and arbitrary values, text dimmed with opacity,
   click handlers on elements that are not buttons or links, links without an address,
   `aria-label` on elements that show text, icons not imported one by one, `circle-*` icons
-  inside a badge;
+  inside a badge, and, in Tailwind CSS 4 projects, Tailwind 3 class names such as
+  `break-words` and `flex-shrink-0`;
 - only in projects that use `@nethesis/vue-components`: raw elements that usually have a
   component (not in vue-components itself), deprecated components, and the `@deprecated` lines
   of the installed version (of `src` in vue-components).

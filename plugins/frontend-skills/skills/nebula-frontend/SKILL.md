@@ -124,7 +124,12 @@ the JSON files with `jq`: a tool that summarizes a page loses the field names.
   https://nethesis.github.io/nebula-design-system/loading-and-errors.md: it decides which
   indicator goes where, and after how long.
 - Style with Tailwind classes on the spacing scale (`p-4`, `gap-6`): no `style` attributes, and
-  no arbitrary values (`w-[137px]`) unless nothing else works.
+  no arbitrary values (`w-[137px]`) unless nothing else works. Use the class names of the
+  project's Tailwind version: a Tailwind CSS 4 project (`@import "tailwindcss"` in its CSS, no
+  `tailwind.config.js`) takes `wrap-break-word`, `shrink-0`, `grow`, `text-ellipsis`,
+  `outline-hidden`, `shadow-xs` and `rounded-xs` where Tailwind 3 had `break-words`,
+  `flex-shrink-0`, `flex-grow`, `overflow-ellipsis`, `outline-none`, `shadow-sm` and
+  `rounded-sm`, and an opacity modifier (`bg-gray-900/50`) instead of `bg-opacity-50`.
 - Every user-facing string goes in the i18n files, written by the writing guidelines with the
   terms of the glossary. (`references/text.md`) This includes the props of `Ne*` components that
   end in `Label` (`clearSearchLabel`, `closeAriaLabel`, `noOptionsLabel`…): their defaults are
