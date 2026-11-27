@@ -95,6 +95,10 @@ it once for the project with a few examples, not line by line.
   write action without its `loading` state. Before reporting a call, check whether another call
   of the same part already shows its states, as with calls in parallel, and skip calls that show
   nothing, such as prefetches.
+- **Dashboard cards**, by "Dashboard" in
+  https://nethesis.github.io/nebula-design-system/layout.md: a card whose title is in capitals
+  (`uppercase`, `uppercaseTitle`, `toUpperCase()`) or whose colors are not the tokens of that
+  section, and a counter whose number is not a link to the list it counts.
 - **Table pagination**, by "Tables" in
   https://nethesis.github.io/nebula-design-system/layout.md: a paginated table that does not
   start at 10 rows or lacks some of the sizes 5, 10, 25, 50 and 100, or that forgets the size

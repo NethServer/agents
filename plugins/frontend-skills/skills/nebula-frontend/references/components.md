@@ -44,6 +44,10 @@ with their Storybook links and the code of their stories.
   (`<table>PageSize`), as "Tables" in the Layout page says. Use what the project already has (in
   My Nethesis, `loadPageSizeFromStorage` and `savePageSizeToStorage`). A new size goes back to
   the first page.
+- **A dashboard**: a grid of `NeCard` cards, counters, charts or other statistics, as
+  "Dashboard" in the Layout page says: the icon and the title in the `title` slot, the number of
+  a counter in the `topRight` slot. Use what the project already has (in My Nethesis,
+  `CounterCard`, whose titles are still in capitals).
 - **Nothing to show**: `NeEmptyState`, with a title, a description and, when there is a next
   step, an action. Follow the *Empty state* pattern.
 - **An error in a page or a form**: `NeInlineNotification`. Follow the *Inline error
@@ -63,8 +67,8 @@ with their Storybook links and the code of their stories.
 - **Layout**: follow https://nethesis.github.io/nebula-design-system/layout.md for where the
   parts of a page go: the app shell (side menu, top bar and page), the primary action of the
   page header, the buttons of cards, forms in a page, such as a settings page, the notification
-  about a field, the pagination of tables, one `primary` button per view or dialog, small
-  screens and toasts.
+  about a field, dashboards of cards, the pagination of tables, one `primary` button per
+  view or dialog, small screens and toasts.
 
 ## Forms
 
