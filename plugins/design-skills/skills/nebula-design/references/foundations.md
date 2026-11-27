@@ -38,7 +38,7 @@ The site gives `ring-primary-500` for both themes; the team uses `Product Primar
 
 **Where to take them:** from the Nebula Design System artifact, `project/assets/icons/icon-data.js` (Solid, Light and Nethesis custom icons as SVG, names in PascalCase, Light variants ending in `Light`: `block-brick-fire` → `BlockBrickFire`, inactive sidebar `HouseLight`), or the `Icon` component of its bundle. Never placeholders, never Font Awesome from the internet (it lacks the Light and custom icons).
 
-Which icon: the meaning in `site/icons.md`, respecting its "Avoid" column. When a meaning is missing, **ask the designer before choosing** (pending decision): propose the fitting Nethesis custom icons that have no meaning yet (`customIconsWithoutMeaning`, list in `SKILL.md`) and a Font Awesome Solid icon that no other meaning uses. Once chosen, the meaning goes to the dictionary.
+Which icon: the meaning in `site/icons.md`, respecting its "Avoid" column. When a meaning is missing, **ask the designer before choosing** (pending decision): propose the fitting Nethesis custom icons that have no meaning yet (`customIconsWithoutMeaning`; reading from the repo, see `SKILL.md`) and a Font Awesome Solid icon that no other meaning uses. Once chosen, the meaning goes to the dictionary.
 
 ## AI
 

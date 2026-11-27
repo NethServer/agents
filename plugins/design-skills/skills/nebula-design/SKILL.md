@@ -48,9 +48,7 @@ Then read the source of the file (second column). These are the files the site i
 
 The hand-written files in `references/` still name these sources as `site/<name>`: whenever you meet one of those names, read the file of the same row.
 
-**Custom icons without a meaning.** `icons.json` lists them in `customIconsWithoutMeaning`, computed by the site from the icon packages, so `icons.yaml` doesn't have them. When you read from the repo, use this list (as of 2026-11-16; the live file wins when you can read it, and if it differs tell the designer this list needs updating):
-- ns-solid: `ai-spark`, `arrows-repeat`, `broken-repeat`, `buildings`, `child-task`, `circle-completing`, `close`, `display-slash`, `double-exclamation`, `ear-listen`, `elaborate`, `grid-round`, `hangup`, `open`, `parent-task`, `shorten`, `sum`, `traffic-cone`
-- ns-light: `calendar-day`, `clipboard-list`, `cloud`, `credit-card`, `envelope`, `message`, `office-phone`, `route`, `star`, `wrench`
+**Custom icons without a meaning.** `icons.json` lists them in `customIconsWithoutMeaning`, computed by the site from the icon packages, so `icons.yaml` doesn't have them. When you read from the repo, a custom icon has a meaning only when an `icons.yaml` entry uses it: an ns-solid or ns-brands icon as its `icon` with that `pack`, an ns-light icon as the `icon` of a sidebar entry or of an entry with `light: true`. Every other icon of the packages, listed in the Custom icons section of the Iconography page, has no meaning yet.
 
 How to read well:
 - Read only the files the task needs, once per conversation, and reuse what you read. Copy needs the writing guidelines and the glossary; icons need the icon dictionary; colors need the colors (and the foundations for focus ring and elevation).
