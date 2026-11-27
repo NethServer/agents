@@ -95,6 +95,10 @@ it once for the project with a few examples, not line by line.
   write action without its `loading` state. Before reporting a call, check whether another call
   of the same part already shows its states, as with calls in parallel, and skip calls that show
   nothing, such as prefetches.
+- **Table pagination**, by "Tables" in
+  https://nethesis.github.io/nebula-design-system/layout.md: a paginated table that does not
+  start at 10 rows or lacks some of the sizes 5, 10, 25, 50 and 100, or that forgets the size
+  the user chose when the page opens again.
 - **Accessibility**, by the rules of
   https://nethesis.github.io/nebula-design-system/accessibility.md: form fields without a label,
   or a label linked to the wrong field (two fields with the same `id`); click handlers on

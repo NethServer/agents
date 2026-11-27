@@ -38,6 +38,12 @@ with their Storybook links and the code of their stories.
   key also names one object, such as the alerts of a system, keep them only while the object
   stays the same: the rows of another object must never stand in for it (in My Nethesis,
   `useScopedPlaceholderData`).
+- **Rows per page of a table**: `NePaginator` with 10 rows by default and the sizes
+  `[5, 10, 25, 50, 100]`, as the *Table page* pattern. Keep the size the user chooses for that
+  user and table with `savePreference` and `getPreference` of `@nethesis/vue-components`
+  (`<table>PageSize`), as "Tables" in the Layout page says. Use what the project already has (in
+  My Nethesis, `loadPageSizeFromStorage` and `savePageSizeToStorage`). A new size goes back to
+  the first page.
 - **Nothing to show**: `NeEmptyState`, with a title, a description and, when there is a next
   step, an action. Follow the *Empty state* pattern.
 - **An error in a page or a form**: `NeInlineNotification`. Follow the *Inline error
@@ -57,7 +63,8 @@ with their Storybook links and the code of their stories.
 - **Layout**: follow https://nethesis.github.io/nebula-design-system/layout.md for where the
   parts of a page go: the app shell (side menu, top bar and page), the primary action of the
   page header, the buttons of cards, forms in a page, such as a settings page, the notification
-  about a field, one `primary` button per view or dialog, small screens and toasts.
+  about a field, the pagination of tables, one `primary` button per view or dialog, small
+  screens and toasts.
 
 ## Forms
 
