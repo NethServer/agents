@@ -73,6 +73,12 @@ with their Storybook links and the code of their stories.
   page header, the buttons of cards, forms in a page, such as a settings page, the notification
   about a field, dashboards of cards, the pagination of tables, one `primary` button per
   view or dialog, small screens and toasts.
+- **Compact view**: an item of the account menu, as "Top bar" in the Layout page says. It sets
+  the class `compact` on `<html>`, and the main CSS of the project tightens the spacing there:
+  `html.compact { --spacing: 0.2rem; }`, since every Tailwind 4 spacing utility derives from
+  `--spacing`. Save the choice per user with `savePreference('density', …)` and read it with
+  `getPreference` when the user signs in. Use what the project already has (in My Nethesis, the
+  density store).
 
 ## Forms
 
