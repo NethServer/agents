@@ -49,7 +49,11 @@ with their Storybook links and the code of their stories.
   a counter in the `topRight` slot. Use what the project already has (in My Nethesis,
   `CounterCard`, whose titles are still in capitals).
 - **Nothing to show**: `NeEmptyState`, with a title, a description and, when there is a next
-  step, an action. Follow the *Empty state* pattern.
+  step, an action. Follow the *Empty state* pattern. On the page, in place of a table or a list,
+  give it the background of a card as the pattern does, `class="bg-white dark:bg-gray-950"`; its
+  default gray (`bg-gray-100`) is for an empty state inside a card. A semantic class with the
+  same color, such as `bg-elevation-0`, does not override the default: Tailwind 4 writes the
+  classes in name order, and `bg-gray-100` comes later. Check the computed color.
 - **An error in a page or a form**: `NeInlineNotification`. Follow the *Inline error
   notification* pattern.
 - **The result of an action** the user should notice, such as an object created or deleted: a

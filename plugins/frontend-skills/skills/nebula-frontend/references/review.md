@@ -95,6 +95,10 @@ it once for the project with a few examples, not line by line.
   write action without its `loading` state. Before reporting a call, check whether another call
   of the same part already shows its states, as with calls in parallel, and skip calls that show
   nothing, such as prefetches.
+- **Empty state background**, by "Empty state" in
+  https://nethesis.github.io/nebula-design-system/loading-and-errors.md: an `NeEmptyState` on the
+  page, in place of a table or a list, without `bg-white dark:bg-gray-950`, or with a class that
+  does not override its default gray, such as `bg-elevation-0`.
 - **Dashboard cards**, by "Dashboard" in
   https://nethesis.github.io/nebula-design-system/layout.md: a card whose title is in capitals
   (`uppercase`, `uppercaseTitle`, `toUpperCase()`) or whose colors are not the tokens of that
