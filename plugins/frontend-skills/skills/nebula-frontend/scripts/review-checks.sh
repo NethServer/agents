@@ -211,6 +211,13 @@ $has_vc || exit 0
 if ! $library; then
   section "raw elements that usually have a component"
   grep -rnE '<(button|input|select|textarea|table)\b' "${scope[@]}" "${views[@]}" | report
+
+  section "date pickers of other libraries and date or time inputs: use NeDatePicker, or NeDateRangeFilter for a table filter"
+  pickers='@vuepic/vue-datepicker|vue-datepicker|vue3-datepicker|vuejs-datepicker|v-calendar|flatpickr|vue-flatpickr-component'
+  {
+    for p in ${pickers//|/ }; do has "$p" && echo "package.json: $p"; done
+    grep -rnE "(from|import|require\()\s*['\"]($pickers)(/[^'\"]*)?['\"]|type=['\"](date|time|datetime-local|month|week)['\"]" "${scope[@]}" "${code[@]}"
+  } | report
 fi
 
 section "deprecated components, from components.json"

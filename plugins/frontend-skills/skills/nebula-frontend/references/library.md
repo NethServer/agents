@@ -37,5 +37,5 @@ Then open each story you changed in the light and the dark theme, at desktop and
 (the story id ends the `link` of the story in `components.json`).
 
 `scripts/review-checks.sh` (`references/review.md`) recognizes the library from its
-`package.json`: it skips the check for raw elements, which the components are made of, and reads
-the `@deprecated` lines of `src`.
+`package.json`: it skips the checks for raw elements and date pickers, which the components are
+made of, and reads the `@deprecated` lines of `src`.

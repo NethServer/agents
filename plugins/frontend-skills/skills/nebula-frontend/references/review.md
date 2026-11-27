@@ -26,8 +26,8 @@ It finds the English i18n file, the kind of project and its data-fetching librar
   inside a badge, and, in Tailwind CSS 4 projects, Tailwind 3 class names such as
   `break-words` and `flex-shrink-0`;
 - only in projects that use `@nethesis/vue-components`: raw elements that usually have a
-  component (not in vue-components itself), deprecated components, and the `@deprecated` lines
-  of the installed version (of `src` in vue-components).
+  component and date pickers of other libraries (not in vue-components itself), deprecated
+  components, and the `@deprecated` lines of the installed version (of `src` in vue-components).
 
 Pass `--en <file>` when it finds no English file, and `--text-only` to run only the text checks.
 The matches are candidates, not certain problems: read each one before reporting it.
